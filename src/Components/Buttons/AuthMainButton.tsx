@@ -11,7 +11,7 @@ const AuthMainButton: React.FC<ButtonProps> = ({text}) => {
   return (
     <View
       style={[
-        tailwind`w-full flex justify-center items-center rounded-2 border-2 mt-6 py-4`,
+        tailwind`w-full flex justify-center items-center rounded-2 border-2 mt-6 py-2`,
         {
           borderColor: themeColors.primary,
           backgroundColor: themeColors.primary,

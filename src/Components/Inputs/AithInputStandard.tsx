@@ -1,5 +1,5 @@
 import React from 'react';
-import {Text, TextInput, View} from 'react-native';
+import {Dimensions, Text, TextInput, View} from 'react-native';
 import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
 
@@ -8,21 +8,26 @@ interface InputProps {
   value: string;
   changeText: (data: string) => void;
   secure?: boolean;
+  valid?: boolean;
 }
+
+const screenHeight = Dimensions.get('window').height;
 
 const AithInputStandard: React.FC<InputProps> = ({
   fieldName,
   value,
   changeText,
   secure,
+  valid,
 }) => {
   return (
     <View
       style={[
-        tailwind`w-full h-16 flex justify-center pl-3.5 rounded-2 border-2 mt-4`,
+        tailwind`w-full h-14 flex justify-center pl-3.5 rounded-2 border-2`,
         {
-          borderColor: themeColors.primary,
+          borderColor: valid ? themeColors.primary : 'red',
           backgroundColor: themeColors.secondary,
+          marginTop: screenHeight * 0.015,
         },
       ]}>
       <View style={tailwind`absolute left-3 top--3.5`}>

@@ -8,23 +8,29 @@ import {
   View,
 } from 'react-native';
 import tailwind from 'twrnc';
-import themeColors from '../Utils/custonColors';
-import Logo from '../Assets/marhaba-name-only-green.png';
-import Icon from '../Assets/marhaba-icon-full-beige.png';
-import AithInputStandard from '../Components/Inputs/AithInputStandard';
-import {usernameUpdate, passwordUpdate} from '../Utils/Functions/AuthFuncation';
-import AuthMainButton from '../Components/Buttons/AuthMainButton';
-import GoogleButton from '../Components/Buttons/GoogleButton';
-import AppleButton from '../Components/Buttons/AppleButton';
+import themeColors from '../../Utils/custonColors';
+import Logo from '../../Assets/marhaba-name-only-green.png';
+import Icon from '../../Assets/marhaba-icon-full-beige.png';
+import AithInputStandard from '../../Components/Inputs/AithInputStandard';
+import {
+  usernameUpdate,
+  passwordUpdate,
+} from '../../Utils/Functions/AuthFuncation';
+import AuthMainButton from '../../Components/Buttons/AuthMainButton';
+import GoogleButton from '../../Components/Buttons/GoogleButton';
+import AppleButton from '../../Components/Buttons/AppleButton';
+import {useNavigation} from '@react-navigation/native';
 
 const screenHeight = Dimensions.get('window').height;
 
 const LoginScreen = () => {
-  const [username, setUsername] = useState<string>('');
+  const navigation = useNavigation();
+
+  const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
 
-  const handleUsernameUpdate = (data: string) => {
-    setUsername(usernameUpdate(data));
+  const handleEmailUpdate = (data: string) => {
+    setEmail(usernameUpdate(data));
   };
 
   const handleUpdatePassword = (data: string) => {
@@ -51,23 +57,25 @@ const LoginScreen = () => {
             </Text>
           </View>
         </View>
-        <View style={tailwind`w-full flex items-center mt-10`}>
+        <View style={tailwind`w-full flex items-center mt-6`}>
           <View style={tailwind`w-3/4`}>
             <AithInputStandard
-              fieldName="Username:"
-              value={username}
-              changeText={handleUsernameUpdate}
+              fieldName="Email"
+              value={email}
+              changeText={handleEmailUpdate}
+              valid
             />
             <AithInputStandard
-              fieldName="Password:"
+              fieldName="Password"
               value={password}
               changeText={handleUpdatePassword}
               secure={true}
+              valid
             />
             <View style={tailwind`w-full flex flex-row justify-end mt-2 pr-2`}>
               <TouchableWithoutFeedback
                 onPress={() => {
-                  setUsername('forgot password');
+                  setEmail('forgot password');
                 }}>
                 <View style={tailwind`bg-transparent`}>
                   <Text style={tailwind`font-semibold`}>Forgot Password?</Text>
@@ -82,11 +90,11 @@ const LoginScreen = () => {
                 style={tailwind`${
                   Platform.OS === 'ios' ? 'w-1/2 pr-1' : 'w-full'
                 }`}>
-                <GoogleButton />
+                <GoogleButton text="Login" />
               </View>
               {Platform.OS === 'ios' && (
                 <View style={tailwind`w-1/2 pl-1`}>
-                  <AppleButton />
+                  <AppleButton text="Login" />
                 </View>
               )}
             </View>
@@ -97,7 +105,7 @@ const LoginScreen = () => {
         <Text style={tailwind`text-base`}>I'm a new user. </Text>
         <TouchableWithoutFeedback
           onPress={() => {
-            setUsername('signup');
+            navigation.navigate('Signup');
           }}>
           <View style={tailwind``}>
             <Text
