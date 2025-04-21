@@ -12,18 +12,27 @@
     "dev:tailwind": "concurrently \"tailwindcss --input input.css --output tailwind.css --no-autoprefixer --watch\" \"tailwind-rn --watch\""
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "^2.1.2",
     "@react-navigation/bottom-tabs": "^7.3.10",
     "@react-navigation/native": "^7.1.6",
     "@react-navigation/stack": "^7.2.10",
-    "@supabase/supabase-js": "^2.49.4",
+    "@supabase/realtime-js": "^2.11.5",
     "axios": "^1.8.4",
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "helmet": "^8.1.0",
+    "morgan": "^1.10.0",
     "react": "19.0.0",
     "react-native": "0.79.1",
+    "react-native-config": "^1.5.5",
+    "react-native-dotenv": "^3.4.11",
     "react-native-feather": "^1.1.2",
     "react-native-safe-area-context": "^5.4.0",
     "react-native-screens": "^4.10.0",
     "react-native-svg": "^15.11.2",
+    "react-native-url-polyfill": "^2.0.0",
     "react-native-vector-icons": "^10.2.0",
+    "react-native-websocket": "^1.0.2",
     "twrnc": "^4.6.1"
   },
   "devDependencies": {
