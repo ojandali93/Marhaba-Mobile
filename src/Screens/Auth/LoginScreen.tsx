@@ -85,7 +85,7 @@ const LoginScreen = () => {
             <View style={tailwind`w-full flex flex-row justify-end`}>
               <AuthMainButton text={'Login'} />
             </View>
-            <View style={tailwind`w-full flex flex-row justify-between`}>
+            {/* <View style={tailwind`w-full flex flex-row justify-between`}>
               <View
                 style={tailwind`${
                   Platform.OS === 'ios' ? 'w-1/2 pr-1' : 'w-full'
@@ -97,7 +97,7 @@ const LoginScreen = () => {
                   <AppleButton text="Login" />
                 </View>
               )}
-            </View>
+            </View> */}
           </View>
         </View>
       </View>

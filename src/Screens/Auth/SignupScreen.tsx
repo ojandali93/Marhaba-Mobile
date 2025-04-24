@@ -1,5 +1,6 @@
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {
+  Alert,
   Dimensions,
   Image,
   Platform,
@@ -13,14 +14,15 @@ import Logo from '../../Assets/marhaba-name-only-green.png';
 import Icon from '../../Assets/marhaba-icon-full-beige.png';
 import AithInputStandard from '../../Components/Inputs/AithInputStandard';
 import {
-  usernameUpdate,
+  emailUpdate,
   passwordUpdate,
   verifyUpdate,
 } from '../../Utils/Functions/AuthFuncation';
 import AuthMainButton from '../../Components/Buttons/AuthMainButton';
 import GoogleButton from '../../Components/Buttons/GoogleButton';
 import AppleButton from '../../Components/Buttons/AppleButton';
-import {useNavigation} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -31,11 +33,34 @@ const SignupScreen = () => {
   const [password, setPassword] = useState<string>('');
   const [verify, setVerify] = useState<string>('');
 
+  const [validEmail, setValidEmail] = useState<boolean>(true);
   const [validPassowrd, setValidPassword] = useState<boolean>(true);
   const [validVerify, setValidVerify] = useState<boolean>(true);
 
+  useFocusEffect(
+    useCallback(() => {
+      loadPreferences();
+    }, []),
+  );
+
+  const loadPreferences = async () => {
+    const storedEmail = await AsyncStorage.getItem('email');
+    const storedPassword = await AsyncStorage.getItem('password');
+
+    if (storedEmail) {
+      setEmail(storedEmail);
+    }
+    if (storedPassword) {
+      setPassword(storedPassword);
+      setVerify(storedPassword);
+    }
+  };
+
   const handleEmailUpdate = (data: string) => {
-    setEmail(usernameUpdate(data));
+    setEmail(data.toLowerCase());
+    if (email.length > 0) {
+      setValidEmail(emailUpdate(data.toLowerCase()));
+    }
   };
 
   const handleUpdatePassword = (data: string) => {
@@ -54,6 +79,26 @@ const SignupScreen = () => {
     } else {
       setValidVerify(true);
     }
+  };
+
+  const redirectToIdentity = () => {
+    email.length > 0 &&
+    password.length > 0 &&
+    verify.length > 0 &&
+    validEmail &&
+    validPassowrd &&
+    validVerify
+      ? storeNextScreen()
+      : Alert.alert(
+          'Requirements',
+          'Please make sure all fields are filled out correctly.',
+        );
+  };
+
+  const storeNextScreen = async () => {
+    await AsyncStorage.setItem('email', email);
+    await AsyncStorage.setItem('password', password);
+    navigation.navigate('Identity');
   };
 
   return (
@@ -84,6 +129,11 @@ const SignupScreen = () => {
               changeText={handleEmailUpdate}
               valid
             />
+            {!validEmail && (
+              <Text style={tailwind`text-xs text-red-600 mt-1`}>
+                Enter valid email.
+              </Text>
+            )}
             <AithInputStandard
               fieldName="Password:"
               value={password}
@@ -110,9 +160,9 @@ const SignupScreen = () => {
               </Text>
             )}
             <View style={tailwind`w-full flex flex-row justify-end`}>
-              <AuthMainButton text={'Signup'} />
+              <AuthMainButton text={'Signup'} click={redirectToIdentity} />
             </View>
-            <View style={tailwind`w-full flex flex-row justify-between`}>
+            {/* <View style={tailwind`w-full flex flex-row justify-between`}>
               <View
                 style={tailwind`${
                   Platform.OS === 'ios' ? 'w-1/2 pr-1' : 'w-full'
@@ -124,7 +174,7 @@ const SignupScreen = () => {
                   <AppleButton text="Signup" />
                 </View>
               )}
-            </View>
+            </View> */}
           </View>
         </View>
       </View>

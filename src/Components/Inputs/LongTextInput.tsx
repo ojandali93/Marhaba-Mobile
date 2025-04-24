@@ -8,26 +8,25 @@ interface InputProps {
   value: string;
   changeText: (data: string) => void;
   secure?: boolean;
-  valid?: boolean;
   optional?: boolean;
+  multiline?: boolean;
 }
 
 const screenHeight = Dimensions.get('window').height;
 
-const AithInputStandard: React.FC<InputProps> = ({
+const LongTextInput: React.FC<InputProps> = ({
   fieldName,
   value,
   changeText,
-  secure,
-  valid,
   optional,
+  multiline,
 }) => {
   return (
     <View
       style={[
         tailwind`w-full h-14 flex justify-center pl-3.5 rounded-2 border-2`,
         {
-          borderColor: valid ? themeColors.primary : 'red',
+          borderColor: themeColors.primary,
           backgroundColor: themeColors.secondary,
           marginTop: screenHeight * 0.015,
         },
@@ -47,11 +46,10 @@ const AithInputStandard: React.FC<InputProps> = ({
           onChangeText={changeText}
           placeholder={fieldName.toLowerCase()}
           placeholderTextColor={'grey'}
-          secureTextEntry={secure}
+          multiline={multiline}
           style={[
             tailwind`text-lg mx-1.5 mr-5`,
             {
-              height: 64, // matches parent h-16
               paddingBottom: 8,
               paddingTop: 8,
               lineHeight: 24, // or match to font size
@@ -64,4 +62,4 @@ const AithInputStandard: React.FC<InputProps> = ({
   );
 };
 
-export default AithInputStandard;
+export default LongTextInput;

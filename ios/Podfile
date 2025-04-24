@@ -17,6 +17,23 @@ end
 target 'Marhaba' do
   config = use_native_modules!
 
+  use_frameworks! :linkage => :static
+  $RNFirebaseAsStaticFramework = true
+
+  # Environment config
+  pod 'react-native-config', :path => '../node_modules/react-native-config'
+
+  # Firebase and related dependencies
+  pod 'Firebase'
+  pod 'FirebaseCore'
+  pod 'GoogleUtilities'
+  pod 'FirebaseCoreInternal'
+  pod 'Firebase/Messaging'
+  
+  # React Native Firebase modules
+  pod 'RNFBApp', :path => '../node_modules/@react-native-firebase/app'
+  pod 'RNFBMessaging', :path => '../node_modules/@react-native-firebase/messaging'
+
   use_react_native!(
     :path => config[:reactNativePath],
     # An absolute path to your application root.

@@ -1,6 +1,7 @@
-const usernameUpdate = (data: string) => {
-  return data.toLowerCase();
-}
+export const emailUpdate = (data: string) => {
+  const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data);
+  return isValidEmail;
+};
 
 const passwordUpdate = (data: string): boolean => {
     const hasMinLength = data.length >= 8;
@@ -14,4 +15,4 @@ const verifyUpdate = (data: string, password: string): boolean => {
   return data === password;
 };
 
-module.exports = {usernameUpdate, passwordUpdate, verifyUpdate};
+module.exports = {emailUpdate, passwordUpdate, verifyUpdate};

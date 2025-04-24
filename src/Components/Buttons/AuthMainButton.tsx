@@ -1,15 +1,17 @@
 import React from 'react';
-import {Text, View} from 'react-native';
+import {Text, TouchableOpacity, View} from 'react-native';
 import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
 
 interface ButtonProps {
   text: string;
+  click?: () => void;
 }
 
-const AuthMainButton: React.FC<ButtonProps> = ({text}) => {
+const AuthMainButton: React.FC<ButtonProps> = ({text, click}) => {
   return (
-    <View
+    <TouchableOpacity
+      onPress={click}
       style={[
         tailwind`w-full flex justify-center items-center rounded-2 border-2 mt-6 py-2`,
         {
@@ -17,8 +19,8 @@ const AuthMainButton: React.FC<ButtonProps> = ({text}) => {
           backgroundColor: themeColors.primary,
         },
       ]}>
-      <Text style={tailwind`font-bold text-white text-lg`}>{text}</Text>
-    </View>
+      <Text style={tailwind`font-semibold text-white text-lg`}>{text}</Text>
+    </TouchableOpacity>
   );
 };
 
