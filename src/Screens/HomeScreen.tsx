@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNavigation} from '@react-navigation/native';
 import axios from 'axios';
-import React from 'react';
+import React, {useEffect} from 'react';
 import {Text, TouchableOpacity, View} from 'react-native';
 import tailwind from 'twrnc';
 import themeColors from '../Utils/custonColors';
@@ -11,10 +11,10 @@ const HomeScreen = () => {
 
   const logout = async () => {
     try {
-      await AsyncStorage.removeItem('session'); // removes auth info
-      await AsyncStorage.removeItem('userId'); // or any other identifier
+      await AsyncStorage.removeItem('session');
+      await AsyncStorage.removeItem('userId');
     } catch (err) {
-      console.error('Logout error:', err);
+      console.error('❌ Logout exception:', err);
     }
   };
 

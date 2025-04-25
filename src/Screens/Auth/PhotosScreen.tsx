@@ -20,7 +20,7 @@ import {
   uploadBytes,
   uploadBytesResumable,
 } from 'firebase/storage';
-import {storage} from '../../Services/FirebaseConfig';
+import {storage, storageRef} from '../../Services/FirebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const screenHeight = Dimensions.get('window').height;
@@ -108,8 +108,8 @@ const PhotosScreen = () => {
       //   return;
       // }
       const uniqueName = `${Date.now()}_${image.fileName}`;
-      const storageRef = ref(storage, `UserImages/${uniqueName}`);
-      const snapshot = await uploadBytesResumable(storageRef, blob);
+      const storageImageRef = ref(storageRef, `UserImages/${uniqueName}`);
+      const snapshot = await uploadBytesResumable(storageImageRef, blob);
       const downloadURL = await getDownloadURL(snapshot.ref);
       return downloadURL;
     } catch (err) {

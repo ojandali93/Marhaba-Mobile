@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Alert,
   Dimensions,
@@ -16,6 +16,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from '../../Assets/marhaba-icon-full-beige.png';
 import Logo from '../../Assets/marhaba-name-only-green.png';
+import {supabase} from '../../Services/Supabase';
 
 const screenHeight = Dimensions.get('window').height;
 
