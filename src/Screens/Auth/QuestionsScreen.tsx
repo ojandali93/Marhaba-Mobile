@@ -104,7 +104,7 @@ const QuestionsScreen = () => {
         tailwind`flex-1 w-full h-full flex items-center`,
         {backgroundColor: themeColors.secondary},
       ]}>
-      <View style={tailwind`w-3/4 flex`}>
+      <View style={tailwind`w-11/12 h-10/12 flex`}>
         <View style={{marginTop: screenHeight * 0.1}}>
           <Text
             style={[
@@ -125,7 +125,7 @@ const QuestionsScreen = () => {
         </View>
 
         <ScrollView
-          style={[tailwind`mt-4 h-6/12`, {marginTop: screenHeight * 0.05}]}>
+          style={[tailwind`mt-4 h-6/12`, {marginTop: screenHeight * 0.02}]}>
           {eitherOrQuestions.map((q, index) => {
             const [selectedValue, setSelectedValue] =
               questionStateMap[q.question];

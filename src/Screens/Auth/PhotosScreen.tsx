@@ -37,10 +37,10 @@ const PhotosScreen = () => {
   const navigation = useNavigation();
 
   const [uploadedImageUrls, setUploadedImageUrls] = useState<(string | null)[]>(
-    Array(12).fill(null),
+    Array(9).fill(null),
   );
   const [loadingStates, setLoadingStates] = useState<boolean[]>(
-    Array(12).fill(false),
+    Array(9).fill(false),
   );
 
   useFocusEffect(
@@ -102,11 +102,11 @@ const PhotosScreen = () => {
     try {
       const response = await fetch(image.uri);
       const blob = await response.blob();
-      if (blob.size > 5 * 1024 * 1024) {
-        // 5MB
-        Alert.alert('Image too large', 'Please select a smaller image.');
-        return;
-      }
+      // if (blob.size > 5 * 1024 * 1024) {
+      //   // 5MB
+      //   Alert.alert('Image too large', 'Please select a smaller image.');
+      //   return;
+      // }
       const uniqueName = `${Date.now()}_${image.fileName}`;
       const storageRef = ref(storage, `UserImages/${uniqueName}`);
       const snapshot = await uploadBytesResumable(storageRef, blob);
@@ -146,7 +146,7 @@ const PhotosScreen = () => {
         tailwind`flex-1 w-full h-full flex items-center`,
         {backgroundColor: themeColors.secondary},
       ]}>
-      <View style={tailwind`w-3/4 flex`}>
+      <View style={tailwind`w-11/12 h-10/12 flex`}>
         <View
           style={[
             tailwind`flex`,
@@ -169,12 +169,12 @@ const PhotosScreen = () => {
         <View
           style={[
             tailwind`w-full flex flex-row items-center`,
-            {marginTop: screenHeight * 0.03},
+            {marginTop: screenHeight * 0.02},
           ]}>
-          <View style={tailwind`flex-row flex-wrap`}>
+          <View style={tailwind`flex-1 flex-row flex-wrap`}>
             {uploadedImageUrls.map((_, index) => (
               <View
-                style={tailwind`w-1/3 h-32 items-center justify-center p-1`}
+                style={tailwind`w-1/3 h-48 items-center justify-center p-1`}
                 key={index}>
                 <TouchableOpacity
                   onPress={() => handlePickImage(index)}

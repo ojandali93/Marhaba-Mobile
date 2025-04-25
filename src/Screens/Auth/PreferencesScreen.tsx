@@ -1,5 +1,12 @@
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
-import {Alert, Dimensions, Text, TouchableOpacity, View} from 'react-native';
+import {
+  Alert,
+  Dimensions,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
 import AuthMainButton from '../../Components/Buttons/AuthMainButton';
@@ -11,6 +18,7 @@ import ReligiousViewsSelect from '../../Components/Select/ReligiousViewsSelect';
 import ReligiousSectSelect from '../../Components/Select/ReligiousSectSelect';
 import ReligionSelect from '../../Components/Select/ReligionSelect';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import BackgroundSelect from '../../Components/Select/BackgroundSelect';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -25,6 +33,7 @@ const PreferencesScreen = () => {
   const [views, setViews] = useState<string>('');
   const [sect, setSect] = useState<string>('');
   const [religion, setReligion] = useState<string>('');
+  const [background, setBackground] = useState<string>('');
 
   const [ageRange, setAgeRange] = useState<[number, number]>([18, 60]);
 
@@ -42,6 +51,7 @@ const PreferencesScreen = () => {
     const storedReligion = await AsyncStorage.getItem('prefReligion');
     const storeAgeMin = await AsyncStorage.getItem('preAgeMin');
     const storeAgeMax = await AsyncStorage.getItem('prefAgeMax');
+    const storeBackground = await AsyncStorage.getItem('prefBackground');
 
     if (storedGender) {
       setGender(storedGender);
@@ -58,13 +68,16 @@ const PreferencesScreen = () => {
     if (storedReligion) {
       setReligion(storedReligion);
     }
+    if (storeBackground) {
+      setBackground(storeBackground);
+    }
     if (storeAgeMin && storeAgeMax) {
       setAgeRange([parseInt(storeAgeMin), parseInt(storeAgeMax)]);
     }
   };
 
   const redirectToPersonalityScreen = () => {
-    if (gender != '' && radius != '') {
+    if (gender != '' && radius != '' && background != '') {
       storeNextScreen();
     } else {
       Alert.alert('Requirements', 'Please fill out missing info.');
@@ -77,6 +90,7 @@ const PreferencesScreen = () => {
     await AsyncStorage.setItem('prefViews', views);
     await AsyncStorage.setItem('prefSect', sect);
     await AsyncStorage.setItem('prefReligion', religion);
+    await AsyncStorage.setItem('prefBackground', background);
     await AsyncStorage.setItem('preAgeMin', ageRange[0].toString());
     await AsyncStorage.setItem('prefAgeMax', ageRange[1].toString());
     navigation.navigate('Photos');
@@ -88,7 +102,7 @@ const PreferencesScreen = () => {
         tailwind`flex-1 w-full h-full flex items-center`,
         {backgroundColor: themeColors.secondary},
       ]}>
-      <View style={tailwind`w-3/4 flex`}>
+      <View style={tailwind`w-11/12 h-10/12 flex`}>
         <View
           style={[
             tailwind`flex`,
@@ -107,8 +121,9 @@ const PreferencesScreen = () => {
         <View
           style={[
             tailwind`w-full flex flex items-center`,
-            {marginTop: screenHeight * 0.05},
-          ]}>
+            {marginTop: screenHeight * 0.02},
+          ]}></View>
+        <ScrollView style={tailwind`w-full flex-1`}>
           <AgeSliderSelect
             fieldName="Age Range"
             minAge={18}
@@ -125,6 +140,11 @@ const PreferencesScreen = () => {
             fieldName="Distance"
             selected={radius}
             onSelect={setRaidus}
+          />
+          <BackgroundSelect
+            fieldName="Background"
+            selected={background}
+            onSelect={setBackground}
           />
           <ReligionSelect
             fieldName="Religion"
@@ -144,7 +164,7 @@ const PreferencesScreen = () => {
             onSelect={setViews}
             optional
           />
-        </View>
+        </ScrollView>
       </View>
       <View style={tailwind`absolute w-3/4 bottom-12`}>
         <View style={tailwind` w-full flex flex-row justify-end`}>

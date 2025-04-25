@@ -1,25 +1,21 @@
 import React, {useState} from 'react';
 import {
+  Alert,
   Dimensions,
   Image,
-  Platform,
   Text,
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
-import Logo from '../../Assets/marhaba-name-only-green.png';
-import Icon from '../../Assets/marhaba-icon-full-beige.png';
 import AithInputStandard from '../../Components/Inputs/AithInputStandard';
-import {
-  usernameUpdate,
-  passwordUpdate,
-} from '../../Utils/Functions/AuthFuncation';
 import AuthMainButton from '../../Components/Buttons/AuthMainButton';
-import GoogleButton from '../../Components/Buttons/GoogleButton';
-import AppleButton from '../../Components/Buttons/AppleButton';
 import {useNavigation} from '@react-navigation/native';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Icon from '../../Assets/marhaba-icon-full-beige.png';
+import Logo from '../../Assets/marhaba-name-only-green.png';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -29,12 +25,28 @@ const LoginScreen = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
 
-  const handleEmailUpdate = (data: string) => {
-    setEmail(usernameUpdate(data));
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const handleUpdateEmail = (data: string) => {
+    setEmail(data.toLowerCase());
   };
 
-  const handleUpdatePassword = (data: string) => {
-    setPassword(passwordUpdate(data));
+  const login = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.post(
+        'https://marhaba-server.onrender.com/api/auth/loginUser',
+        {email, password},
+      );
+
+      const {session, userId} = response.data;
+
+      await AsyncStorage.setItem('session', JSON.stringify(session));
+      await AsyncStorage.setItem('userId', userId);
+      setLoading(false);
+    } catch (error) {
+      Alert.alert('Login Failed', 'Email / Password do not match our records.');
+    }
   };
 
   return (
@@ -62,13 +74,13 @@ const LoginScreen = () => {
             <AithInputStandard
               fieldName="Email"
               value={email}
-              changeText={handleEmailUpdate}
+              changeText={handleUpdateEmail}
               valid
             />
             <AithInputStandard
               fieldName="Password"
               value={password}
-              changeText={handleUpdatePassword}
+              changeText={setPassword}
               secure={true}
               valid
             />
@@ -83,7 +95,7 @@ const LoginScreen = () => {
               </TouchableWithoutFeedback>
             </View>
             <View style={tailwind`w-full flex flex-row justify-end`}>
-              <AuthMainButton text={'Login'} />
+              <AuthMainButton text={'Login'} click={login} loading={loading} />
             </View>
             {/* <View style={tailwind`w-full flex flex-row justify-between`}>
               <View

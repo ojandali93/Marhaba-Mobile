@@ -68,7 +68,7 @@ const HobbiesAndTraitsScreen = () => {
         tailwind`flex-1 w-full h-full flex items-center`,
         {backgroundColor: themeColors.secondary},
       ]}>
-      <View style={tailwind`w-3/4 flex`}>
+      <View style={tailwind`w-11/12 h-10/12 flex`}>
         <View
           style={[
             tailwind`flex`,
@@ -84,7 +84,7 @@ const HobbiesAndTraitsScreen = () => {
             </Text>
           </View>
         </View>
-        <View style={{marginTop: screenHeight * 0.05}}>
+        <View style={{marginTop: screenHeight * 0.02}}>
           <View
             style={tailwind`w-full flex flex-row items-center justify-between`}>
             <Text style={tailwind`text-base mt-1`}>
@@ -95,7 +95,7 @@ const HobbiesAndTraitsScreen = () => {
             </Text>
           </View>
           <ScrollView
-            style={tailwind`h-7/12 mt-4`}
+            style={tailwind`h-9/12 mt-4`}
             showsVerticalScrollIndicator={false}>
             <View style={tailwind`flex-row flex-wrap justify-between`}>
               {traitsAndHobbies.map((trait, idx) => (

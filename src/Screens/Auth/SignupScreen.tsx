@@ -3,7 +3,6 @@ import {
   Alert,
   Dimensions,
   Image,
-  Platform,
   Text,
   TouchableWithoutFeedback,
   View,
@@ -19,8 +18,6 @@ import {
   verifyUpdate,
 } from '../../Utils/Functions/AuthFuncation';
 import AuthMainButton from '../../Components/Buttons/AuthMainButton';
-import GoogleButton from '../../Components/Buttons/GoogleButton';
-import AppleButton from '../../Components/Buttons/AppleButton';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 

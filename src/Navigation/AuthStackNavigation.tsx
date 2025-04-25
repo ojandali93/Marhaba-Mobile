@@ -12,6 +12,7 @@ import NotificationScreen from '../Screens/Auth/NotificationScreen';
 import HobbiesAndTraitsScreen from '../Screens/Auth/HobbiesAndTraitsScreen';
 import CreatingProfileScreen from '../Screens/Auth/CreatingProfileScreen';
 import QuestionsScreen from '../Screens/Auth/QuestionsScreen';
+import IdentityThirdScreen from '../Screens/Auth/IdentityThirdScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -30,6 +31,7 @@ const AuthStack = () => {
       <Stack.Screen name="Hobbies" component={HobbiesAndTraitsScreen} />
       <Stack.Screen name="CreatingProfile" component={CreatingProfileScreen} />
       <Stack.Screen name="Questions" component={QuestionsScreen} />
+      <Stack.Screen name="IdentityThird" component={IdentityThirdScreen} />
     </Stack.Navigator>
   );
 };

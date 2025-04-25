@@ -3,6 +3,7 @@ import {
   Alert,
   Dimensions,
   Image,
+  ScrollView,
   Text,
   TouchableOpacity,
   View,
@@ -11,11 +12,7 @@ import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
 import AithInputStandard from '../../Components/Inputs/AithInputStandard';
 import AuthMainButton from '../../Components/Buttons/AuthMainButton';
-import DateSelect from '../../Components/Select/DateSelect';
-import GenderSelector from '../../Components/Select/GenderSelect';
-import LookingFormSelect from '../../Components/Select/LookingFormSelect';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
-import StandardInputBordered from '../../Components/Inputs/StandardInputBordered';
 import RemoteSelect from '../../Components/Select/RemoteSelect';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LongTextInput from '../../Components/Inputs/LongTextInput';
@@ -67,7 +64,7 @@ const CareerScreen = () => {
   };
 
   const redirectToPersonalityScreen = () => {
-    if (job != '' && education != '') {
+    if (job != '' && company != '') {
       storeNextScreen();
     } else {
       Alert.alert('Requirements', 'Please fill out all of the fields');
@@ -90,7 +87,7 @@ const CareerScreen = () => {
         tailwind`flex-1 w-full h-full flex items-center`,
         {backgroundColor: themeColors.secondary},
       ]}>
-      <View style={tailwind`w-3/4 flex`}>
+      <View style={tailwind`w-11/12 h-10/12 flex`}>
         <View
           style={[
             tailwind`flex`,
@@ -109,47 +106,49 @@ const CareerScreen = () => {
         <View
           style={[
             tailwind`w-full flex flex-row items-center`,
-            {marginTop: screenHeight * 0.05},
+            {marginTop: screenHeight * 0.02},
           ]}></View>
-        <AithInputStandard
-          fieldName="Education"
-          value={education}
-          changeText={setEducation}
-          valid={true}
-        />
-        <AithInputStandard
-          fieldName="Current job"
-          value={job}
-          changeText={setJob}
-          valid={true}
-        />
-        <AithInputStandard
-          fieldName="Current Company"
-          value={company}
-          changeText={setCompoany}
-          valid={true}
-          optional
-        />
-        <RemoteSelect
-          fieldName="Site"
-          selected={site}
-          onSelect={setSite}
-          optional
-        />
-        <AithInputStandard
-          fieldName="Location"
-          value={location}
-          changeText={setLocation}
-          valid={true}
-          optional
-        />
-        <LongTextInput
-          fieldName="In 5 years..."
-          value={fiveYear}
-          changeText={setFiveYear}
-          optional
-          multiline
-        />
+        <ScrollView style={tailwind`w-full flex-1`}>
+          <AithInputStandard
+            fieldName="Current job"
+            value={job}
+            changeText={setJob}
+            valid={true}
+          />
+          <AithInputStandard
+            fieldName="Current Company"
+            value={company}
+            changeText={setCompoany}
+            valid={true}
+          />
+          <RemoteSelect
+            fieldName="Site"
+            selected={site}
+            onSelect={setSite}
+            optional
+          />
+          <AithInputStandard
+            fieldName="Location"
+            value={location}
+            changeText={setLocation}
+            valid={true}
+            optional
+          />
+          <AithInputStandard
+            fieldName="Education"
+            value={education}
+            changeText={setEducation}
+            valid={true}
+            optional
+          />
+          <LongTextInput
+            fieldName="In 5 years..."
+            value={fiveYear}
+            changeText={setFiveYear}
+            optional
+            multiline
+          />
+        </ScrollView>
       </View>
       <View style={tailwind`absolute w-3/4 bottom-12`}>
         <View style={tailwind` w-full flex flex-row justify-end`}>

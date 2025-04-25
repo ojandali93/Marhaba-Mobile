@@ -1,14 +1,15 @@
 import React from 'react';
-import {Text, TouchableOpacity, View} from 'react-native';
+import {ActivityIndicator, Text, TouchableOpacity, View} from 'react-native';
 import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
 
 interface ButtonProps {
   text: string;
   click?: () => void;
+  loading?: boolean;
 }
 
-const AuthMainButton: React.FC<ButtonProps> = ({text, click}) => {
+const AuthMainButton: React.FC<ButtonProps> = ({text, click, loading}) => {
   return (
     <TouchableOpacity
       onPress={click}
@@ -19,7 +20,11 @@ const AuthMainButton: React.FC<ButtonProps> = ({text, click}) => {
           backgroundColor: themeColors.primary,
         },
       ]}>
-      <Text style={tailwind`font-semibold text-white text-lg`}>{text}</Text>
+      {loading ? (
+        <ActivityIndicator size={'small'} color={'white'} />
+      ) : (
+        <Text style={tailwind`font-semibold text-white text-lg`}>{text}</Text>
+      )}
     </TouchableOpacity>
   );
 };

@@ -3,6 +3,7 @@ import {
   Alert,
   Dimensions,
   Image,
+  ScrollView,
   Text,
   TouchableOpacity,
   View,
@@ -18,6 +19,7 @@ import HeightSelect from '../../Components/Select/HeightSelect';
 import SmokeSelect from '../../Components/Select/SmokeSelect';
 import DrinkSelect from '../../Components/Select/DrinkSelect';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import KidsSelect from '../../Components/Select/KidsSelect';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -33,6 +35,7 @@ const IdentityScreen = () => {
   const [height, setHeight] = useState<string>('');
   const [smoke, setSmoke] = useState<string>('');
   const [drink, setDrink] = useState<string>('');
+  const [kids, setKids] = useState<string>('');
 
   useFocusEffect(
     useCallback(() => {
@@ -47,6 +50,7 @@ const IdentityScreen = () => {
     const storeHeight = await AsyncStorage.getItem('height');
     const storedSmoke = await AsyncStorage.getItem('smoke');
     const storedDrink = await AsyncStorage.getItem('drink');
+    const storeKids = await AsyncStorage.getItem('hasKids');
 
     if (storedName) {
       setName(storedName);
@@ -75,10 +79,13 @@ const IdentityScreen = () => {
     if (storedDrink) {
       setDrink(storedDrink);
     }
+    if (storeKids) {
+      setKids(storeKids);
+    }
   };
 
   const redirectToPersonalityScreen = () => {
-    if (name != '' && dob != null && gender != '') {
+    if (name != '' && dob != null && gender != '' && kids != '') {
       storeNextScreen();
     } else {
       Alert.alert('Requirements', 'Please fill out all of the fields');
@@ -92,6 +99,7 @@ const IdentityScreen = () => {
     await AsyncStorage.setItem('height', height);
     await AsyncStorage.setItem('smoke', smoke);
     await AsyncStorage.setItem('drink', drink);
+    await AsyncStorage.setItem('hasKids', kids);
     navigation.navigate('IdentitySecond');
   };
 
@@ -101,7 +109,7 @@ const IdentityScreen = () => {
         tailwind`flex-1 w-full h-full flex items-center`,
         {backgroundColor: themeColors.secondary},
       ]}>
-      <View style={tailwind`w-3/4 flex`}>
+      <View style={tailwind`w-11/12 h-10/12 flex`}>
         <View
           style={[
             tailwind`flex`,
@@ -120,8 +128,11 @@ const IdentityScreen = () => {
         <View
           style={[
             tailwind`w-full flex flex-row items-center`,
-            {marginTop: screenHeight * 0.05},
+            {marginTop: screenHeight * 0.02},
           ]}>
+          <></>
+        </View>
+        <ScrollView style={tailwind`w-full flex-1`}>
           <View style={tailwind`w-full pr-1`}>
             <AithInputStandard
               fieldName="Name"
@@ -130,31 +141,36 @@ const IdentityScreen = () => {
               valid
             />
           </View>
-        </View>
-        <DateSelect fieldName="Date of Birth" dob={dob} setDate={setDob} />
-        <GenderSelector
-          fieldName="Gender"
-          selected={gender}
-          onSelect={setGender}
-        />
-        <HeightSelect
-          fieldName="Height"
-          selected={height}
-          onSelect={setHeight}
-          optional
-        />
-        <SmokeSelect
-          fieldName="Smoke"
-          selected={smoke}
-          onSelect={setSmoke}
-          optional
-        />
-        <DrinkSelect
-          fieldName="Drink"
-          selected={drink}
-          onSelect={setDrink}
-          optional
-        />
+          <DateSelect fieldName="Date of Birth" dob={dob} setDate={setDob} />
+          <GenderSelector
+            fieldName="Gender"
+            selected={gender}
+            onSelect={setGender}
+          />
+          <HeightSelect
+            fieldName="Height"
+            selected={height}
+            onSelect={setHeight}
+            optional
+          />
+          <SmokeSelect
+            fieldName="Smoke"
+            selected={smoke}
+            onSelect={setSmoke}
+            optional
+          />
+          <DrinkSelect
+            fieldName="Drink"
+            selected={drink}
+            onSelect={setDrink}
+            optional
+          />
+          <KidsSelect
+            fieldName="Have Kids"
+            selected={kids}
+            onSelect={setKids}
+          />
+        </ScrollView>
       </View>
       <View style={tailwind`absolute w-3/4 bottom-12`}>
         <View style={tailwind` w-full flex flex-row justify-end`}>

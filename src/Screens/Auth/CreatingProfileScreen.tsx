@@ -97,6 +97,11 @@ const CreatingProfileScreen = () => {
     const smoke = await AsyncStorage.getItem('smoke');
     const drink = await AsyncStorage.getItem('drink');
 
+    const hasKids = await AsyncStorage.getItem('hasKids');
+    const wantsKids = await AsyncStorage.getItem('futureKids');
+    const timeline = await AsyncStorage.getItem('timeline');
+    const travel = await AsyncStorage.getItem('travel');
+
     axios
       .post('https://marhaba-server.onrender.com/api/account/createAbout', {
         userId,
@@ -107,6 +112,10 @@ const CreatingProfileScreen = () => {
         views,
         smoke,
         drink,
+        hasKids,
+        wantsKids,
+        timeline,
+        travel,
       })
       .then(response => {
         console.log('about response: ', response);
@@ -211,6 +220,81 @@ const CreatingProfileScreen = () => {
       })
       .then(response => {
         console.log('about response: ', response);
+        createCommunicationStyles(userId);
+      })
+      .catch(error => {
+        if (error) {
+          console.log('❌ Server responded with status:', error.error);
+        }
+      });
+  };
+
+  const createCommunicationStyles = async (userId: string) => {
+    const commStyle = await AsyncStorage.getItem('commStyle');
+    axios
+      .post(
+        'https://marhaba-server.onrender.com/api/account/createCommunication',
+        {
+          userId,
+          commStyle,
+        },
+      )
+      .then(response => {
+        console.log('communication response: ', response);
+        createLoveLanguage(userId);
+      })
+      .catch(error => {
+        if (error) {
+          console.log('❌ Server responded with status:', error.error);
+        }
+      });
+  };
+
+  const createLoveLanguage = async (userId: string) => {
+    const loveLanguage = await AsyncStorage.getItem('loveLanguage');
+    axios
+      .post('https://marhaba-server.onrender.com/api/account/createLove', {
+        userId,
+        loveLanguage,
+      })
+      .then(response => {
+        console.log('love languages response: ', response);
+        createCore(userId);
+      })
+      .catch(error => {
+        if (error) {
+          console.log('❌ Server responded with status:', error.error);
+        }
+      });
+  };
+
+  const createCore = async (userId: string) => {
+    const coreValues = await AsyncStorage.getItem('coreValues');
+    axios
+      .post('https://marhaba-server.onrender.com/api/account/createValues', {
+        userId,
+        coreValues,
+      })
+      .then(response => {
+        console.log('core values response: ', response);
+        createTime(userId);
+      })
+      .catch(error => {
+        if (error) {
+          console.log('❌ Server responded with status:', error.error);
+        }
+      });
+  };
+
+  const createTime = async (userId: string) => {
+    const timePriority = await AsyncStorage.getItem('timePriority');
+    axios
+      .post('https://marhaba-server.onrender.com/api/account/createTime', {
+        userId,
+        timePriority,
+      })
+      .then(response => {
+        console.log('time response: ', response);
         createPhotos(userId);
       })
       .catch(error => {
@@ -228,7 +312,7 @@ const CreatingProfileScreen = () => {
         photos,
       })
       .then(response => {
-        console.log('about response: ', response);
+        console.log('photos response: ', response);
         createSurvey(userId);
       })
       .catch(error => {
