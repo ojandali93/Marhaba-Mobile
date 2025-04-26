@@ -26,7 +26,7 @@ const CreatingProfileScreen = () => {
         await AsyncStorage.clear();
         navigation.navigate('Login');
       })();
-    }, 20000); // 20 seconds
+    }, 12000); // 20 seconds
 
     return () => clearTimeout(timer);
   }, [navigation]);
@@ -89,7 +89,7 @@ const CreatingProfileScreen = () => {
   };
 
   const createAbout = async (userId: string) => {
-    const lookingFor = await AsyncStorage.getItem('lookingMe');
+    const lookingFor = await AsyncStorage.getItem('lookingFor');
     const background = await AsyncStorage.getItem('background');
     const religion = await AsyncStorage.getItem('religion');
     const sect = await AsyncStorage.getItem('sect');

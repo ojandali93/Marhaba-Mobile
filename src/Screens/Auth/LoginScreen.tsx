@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {
   Alert,
   Dimensions,
@@ -13,10 +13,9 @@ import AithInputStandard from '../../Components/Inputs/AithInputStandard';
 import AuthMainButton from '../../Components/Buttons/AuthMainButton';
 import {useNavigation} from '@react-navigation/native';
 import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import {setSession, setUserId} from '../../Services/AuthStoreage';
 import Icon from '../../Assets/marhaba-icon-full-beige.png';
 import Logo from '../../Assets/marhaba-name-only-green.png';
-import {supabase} from '../../Services/Supabase';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -25,7 +24,6 @@ const LoginScreen = () => {
 
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-
   const [loading, setLoading] = useState<boolean>(false);
 
   const handleUpdateEmail = (data: string) => {
@@ -42,11 +40,13 @@ const LoginScreen = () => {
 
       const {session, userId} = response.data;
 
-      await AsyncStorage.setItem('session', JSON.stringify(session));
-      await AsyncStorage.setItem('userId', userId);
+      await setSession(JSON.stringify(session)); // Store in authStore + AsyncStorage
+      await setUserId(userId); // Store in authStore + AsyncStorage
       setLoading(false);
     } catch (error) {
+      console.error('Login failed:', error);
       Alert.alert('Login Failed', 'Email / Password do not match our records.');
+      setLoading(false);
     }
   };
 
@@ -60,7 +60,7 @@ const LoginScreen = () => {
         <View
           style={[
             tailwind`flex items-center justify-center`,
-            {marginTop: screenHeight * 0.1}, // 20% of screen height
+            {marginTop: screenHeight * 0.1},
           ]}>
           <Image style={tailwind`w-22 h-22`} source={Icon} />
           <View style={tailwind`mt-2 items-center`}>
@@ -98,19 +98,6 @@ const LoginScreen = () => {
             <View style={tailwind`w-full flex flex-row justify-end`}>
               <AuthMainButton text={'Login'} click={login} loading={loading} />
             </View>
-            {/* <View style={tailwind`w-full flex flex-row justify-between`}>
-              <View
-                style={tailwind`${
-                  Platform.OS === 'ios' ? 'w-1/2 pr-1' : 'w-full'
-                }`}>
-                <GoogleButton text="Login" />
-              </View>
-              {Platform.OS === 'ios' && (
-                <View style={tailwind`w-1/2 pl-1`}>
-                  <AppleButton text="Login" />
-                </View>
-              )}
-            </View> */}
           </View>
         </View>
       </View>
@@ -120,7 +107,7 @@ const LoginScreen = () => {
           onPress={() => {
             navigation.navigate('Signup');
           }}>
-          <View style={tailwind``}>
+          <View>
             <Text
               style={[
                 tailwind`text-base font-bold`,

@@ -7,6 +7,8 @@ import {Heart, Home, MessageSquare, Search, User} from 'react-native-feather';
 import HomeScreen from '../Screens/HomeScreen';
 import tailwind from 'twrnc';
 import themeColors from '../Utils/custonColors';
+import FeedStackNavigation from './FeedStackNavigation';
+import ProfileScreen from '../Screens/ProfileScreens/ProfileScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -40,7 +42,7 @@ const BottomTabNavigation = () => {
         }}>
         <Tab.Screen
           name="Feed"
-          component={HomeScreen}
+          component={FeedStackNavigation}
           options={{
             tabBarShowLabel: false,
             tabBarIcon: ({focused}) => (
@@ -108,7 +110,7 @@ const BottomTabNavigation = () => {
         />
         <Tab.Screen
           name="Profile"
-          component={HomeScreen}
+          component={ProfileScreen}
           options={{
             tabBarShowLabel: false,
             tabBarIcon: ({focused}) => (

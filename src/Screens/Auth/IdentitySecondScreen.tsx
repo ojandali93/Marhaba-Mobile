@@ -42,7 +42,7 @@ const IdentitySecondScreen = () => {
   );
 
   const loadPreferences = async () => {
-    const storedLookingFor = await AsyncStorage.getItem('lookingMe');
+    const storedLookingFor = await AsyncStorage.getItem('lookingFor');
     const storedBackground = await AsyncStorage.getItem('background');
     const storedReligion = await AsyncStorage.getItem('religion');
     const storedSec = await AsyncStorage.getItem('sect');
@@ -92,7 +92,7 @@ const IdentitySecondScreen = () => {
   };
 
   const storeNextScreen = async () => {
-    await AsyncStorage.setItem('lookingMe', lookingFor);
+    await AsyncStorage.setItem('lookingFor', lookingFor);
     await AsyncStorage.setItem('background', background);
     await AsyncStorage.setItem('religion', religion);
     await AsyncStorage.setItem('sect', sect);
@@ -131,8 +131,13 @@ const IdentitySecondScreen = () => {
             {marginTop: screenHeight * 0.02},
           ]}></View>
         <ScrollView style={tailwind`w-full flex-1`}>
+          <LookingFormSelect
+            fieldName="Intentions"
+            selected={lookingFor}
+            onSelect={setLookingFor}
+          />
           <TimelineSelect
-            fieldName="Timeline (Marriage)"
+            fieldName="Timeline"
             selected={timeline}
             onSelect={setTimeline}
           />
@@ -140,11 +145,6 @@ const IdentitySecondScreen = () => {
             fieldName="Willing to travel"
             selected={travel}
             onSelect={setTravel}
-          />
-          <LookingFormSelect
-            fieldName="Intentions"
-            selected={lookingFor}
-            onSelect={setLookingFor}
           />
           <BackgroundSelect
             fieldName="Background"

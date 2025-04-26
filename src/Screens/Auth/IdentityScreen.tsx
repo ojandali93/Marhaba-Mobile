@@ -85,7 +85,13 @@ const IdentityScreen = () => {
   };
 
   const redirectToPersonalityScreen = () => {
-    if (name != '' && dob != null && gender != '' && kids != '') {
+    if (
+      name != '' &&
+      dob != null &&
+      gender != '' &&
+      kids != '' &&
+      height != ''
+    ) {
       storeNextScreen();
     } else {
       Alert.alert('Requirements', 'Please fill out all of the fields');
@@ -151,7 +157,6 @@ const IdentityScreen = () => {
             fieldName="Height"
             selected={height}
             onSelect={setHeight}
-            optional
           />
           <SmokeSelect
             fieldName="Smoke"

@@ -13,15 +13,15 @@ import themeColors from '../../Utils/custonColors';
 import AuthMainButton from '../../Components/Buttons/AuthMainButton';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {Camera} from 'react-native-feather';
-import {pickImageFromGallery} from '../../Utils/Functions/ImageFunctions';
 import {
-  getDownloadURL,
-  ref,
-  uploadBytes,
-  uploadBytesResumable,
-} from 'firebase/storage';
-import {storage, storageRef} from '../../Services/FirebaseConfig';
+  cropCenterImageForPhone,
+  pickImageFromGallery,
+} from '../../Utils/Functions/ImageFunctions';
+import {getDownloadURL, ref, uploadBytesResumable} from 'firebase/storage';
+import {storage} from '../../Services/FirebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import RNFS from 'react-native-fs';
+import axios from 'axios';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -72,12 +72,30 @@ const PhotosScreen = () => {
     try {
       const image = await pickImageFromGallery();
       if (!image || !image.uri) return;
+
+      const croppedImage = await cropCenterImageForPhone(
+        image.uri,
+        image.width,
+        image.height,
+        image.fileName,
+      );
+
+      if (!croppedImage?.uri) {
+        console.error('Cropping failed');
+        return;
+      }
+
       setLoadingStates(prev => {
         const updated = [...prev];
         updated[index] = true;
         return updated;
       });
-      const uploadedUrl = await uploadImageToDatabase(image);
+
+      const uploadedUrl = await uploadImageToServer(
+        croppedImage.uri,
+        croppedImage.fileName,
+      );
+
       if (uploadedUrl) {
         setUploadedImageUrls(prev => {
           const updated = [...prev];
@@ -88,7 +106,6 @@ const PhotosScreen = () => {
     } catch (error) {
       console.error('Image pick error:', error);
     } finally {
-      await AsyncStorage.setItem('images', JSON.stringify(uploadedImageUrls));
       setLoadingStates(prev => {
         const updated = [...prev];
         updated[index] = false;
@@ -97,23 +114,42 @@ const PhotosScreen = () => {
     }
   };
 
-  // make sure to update this it use the server rather than direct
-  const uploadImageToDatabase = async (image: ImageInterface) => {
+  // ✅ Upload cropped image directly
+  const uploadImageToServer = async (
+    localUri: string,
+    originalFileName: string,
+  ) => {
     try {
-      const response = await fetch(image.uri);
-      const blob = await response.blob();
-      // if (blob.size > 5 * 1024 * 1024) {
-      //   // 5MB
-      //   Alert.alert('Image too large', 'Please select a smaller image.');
-      //   return;
-      // }
-      const uniqueName = `${Date.now()}_${image.fileName}`;
-      const storageImageRef = ref(storageRef, `UserImages/${uniqueName}`);
-      const snapshot = await uploadBytesResumable(storageImageRef, blob);
-      const downloadURL = await getDownloadURL(snapshot.ref);
-      return downloadURL;
-    } catch (err) {
-      console.error('❌ Upload failed due to issue:', err);
+      const filePath = localUri.replace('file://', '');
+
+      const formData = new FormData();
+      formData.append('file', {
+        uri: localUri,
+        name: originalFileName || 'photo.jpg',
+        type: 'image/jpeg',
+      } as any); // 👈 Important for RN
+
+      const response = await axios.post(
+        'https://marhaba-server.onrender.com/api/account/upoadImage',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+          maxContentLength: Infinity,
+          maxBodyLength: Infinity,
+        },
+      );
+
+      if (response.data.success) {
+        console.log('✅ Uploaded image URL:', response.data.url);
+        return response.data.url;
+      } else {
+        console.error('❌ Upload server error:', response.data.error);
+        return null;
+      }
+    } catch (error) {
+      console.error('❌ Upload failed:', error);
       return null;
     }
   };
