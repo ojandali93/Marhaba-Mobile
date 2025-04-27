@@ -17,15 +17,22 @@ import {countryFlagMap} from '../../Utils/FlagMaps';
 
 interface FeedSummaryProps {
   profile: any;
-  likesLeft?: number; // 👈 Optional prop for number of likes remaining
+  likesLeft?: number; 
+  dislikeProfile: (profileId: string) => void;
+  likeProfile: (profileId: string) => void;
+  superlikeProfile: (profileId: string) => void;
 }
 
 const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
-  profile, // 👈 Default value if not passed
+  profile,
+  dislikeProfile,
+  likeProfile,
+  superlikeProfile,
 }) => {
-  if (!profile?.data) return null;
+  console.log('profile', profile)
+  if (!profile) return null;
 
-  const user = profile.data;
+  const user = profile;
   const about = user.About?.[0];
   const career = user.Career?.[0];
   const photoUrl = user.Photos?.[0]?.photoUrl;
@@ -121,7 +128,7 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
           <Text style={tailwind`text-lg italic`}>{`${prompt?.prompt}`}</Text>
         </View>
         <View style={tailwind``}>
-          <Text style={tailwind`font-semibold text-lg`}>
+          <Text numberOfLines={3} style={tailwind`font-semibold text-lg`}>
             {`"${prompt?.response}"`}
           </Text>
         </View>
@@ -165,19 +172,16 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
             </View>
           </View>
           <View style={tailwind`flex flex-row items-center`}>
-            <View style={tailwind`p-3 rounded-full bg-red-400`}>
+            <TouchableOpacity onPress={() => dislikeProfile(user.userId)} style={tailwind`p-3 rounded-full bg-red-400`}>
               <X height={22} width={22} color={'white'} strokeWidth={3} />
-            </View>
-            <View style={tailwind`p-3 rounded-full bg-emerald-400 ml-3`}>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => likeProfile(user.userId)} style={tailwind`p-3 rounded-full bg-emerald-400 ml-3`}>
               <Check height={22} width={22} color={'white'} strokeWidth={3} />
-            </View>
-            <View
-              style={[
-                tailwind`p-4 rounded-full ml-3`,
-                {backgroundColor: themeColors.primary},
-              ]}>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => superlikeProfile(user.userId)} style={[tailwind`p-4 rounded-full ml-3`, {backgroundColor: themeColors.primary}]}>
+
               <Heart height={28} width={28} color={'white'} strokeWidth={3} />
-            </View>
+            </TouchableOpacity>
           </View>
         </View>
       </View>

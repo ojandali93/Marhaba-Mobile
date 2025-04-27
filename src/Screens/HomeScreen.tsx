@@ -6,9 +6,11 @@ import {Text, TouchableOpacity, View} from 'react-native';
 import tailwind from 'twrnc';
 import themeColors from '../Utils/custonColors';
 import {clearSession, clearUserId, getUserId} from '../Services/AuthStoreage';
+import { useProfile } from '../Context/ProfileContext';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
+  const {setAllProfiles} = useProfile()
 
   const logout = async () => {
     try {
