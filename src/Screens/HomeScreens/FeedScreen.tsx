@@ -18,11 +18,11 @@ import {ArrowLeft, Heart} from 'react-native-feather';
 const FeedScreen = () => {
   const {setUserProfile, userProfile} = useProfile();
   const [totalLikes, setTotalLikes] = useState<number>(10);
-  const [selectedProfile, setSelectedProfile] = useState<any>(null)
-  const [selectedProfileIndex, setSelectedProfileIndex] = useState<number>(0)
-  const [matches, setMatches] = useState<any[]>([])
-  const [loading, setLoading] = useState<boolean>(true)
-  const [likes, setLikes] = useState<number>(10)
+  const [selectedProfile, setSelectedProfile] = useState<any>(null);
+  const [selectedProfileIndex, setSelectedProfileIndex] = useState<number>(0);
+  const [matches, setMatches] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [likes, setLikes] = useState<number>(10);
 
   useLayoutEffect(() => {
     grabAllUserProfiles();
@@ -30,16 +30,16 @@ const FeedScreen = () => {
   }, []);
 
   const grabAllUserProfiles = async () => {
-    console.log('about to grab all users')
+    console.log('about to grab all users');
     try {
       const response = await axios.get(
         `https://marhaba-server.onrender.com/api/user/allUsers`,
       );
       if (response.data) {
-        setMatches(response.data.data);  // ✅ access .data inside the object
+        setMatches(response.data.data); // ✅ access .data inside the object
         console.log('firstUser', response.data.data[0]); // ✅ first user
         setSelectedProfile(response.data.data[0]);
-        setLoading(false)
+        setLoading(false);
       }
     } catch (error) {
       console.log('error', error);
@@ -82,14 +82,23 @@ const FeedScreen = () => {
     try {
       const response = await axios.post(
         `https://marhaba-server.onrender.com/api/user/interaction`,
-        { userId: getUserId(), targetUserId: profileId, interaction: 'disliked', viewed: false, approved: false },
+        {
+          userId: getUserId(),
+          targetUserId: profileId,
+          interaction: 'disliked',
+          viewed: false,
+          approved: false,
+        },
       );
       if (response.data?.success) {
         console.log(`✅ Successfully disliked profile: ${profileId}`);
         removeTopProfile();
-        setLikes(prev => prev - 1); 
+        setLikes(prev => prev - 1);
       } else {
-        console.error(`⚠️ Server responded but like was not successful for ${profileId}:`, response.data);
+        console.error(
+          `⚠️ Server responded but like was not successful for ${profileId}:`,
+          response.data,
+        );
       }
     } catch (error) {
       console.error(`❌ Error liking profile ${profileId}:`, error);
@@ -101,14 +110,22 @@ const FeedScreen = () => {
     try {
       const response = await axios.post(
         `https://marhaba-server.onrender.com/api/user/interaction`,
-        { userId: getUserId(), targetUserId: profileId, interaction: 'liked', viewed: false, approved: false },
+        {
+          userId: getUserId(),
+          targetUserId: profileId,
+          interaction: 'liked',
+          viewed: false,
+          approved: false,
+        },
       );
       if (response.data?.success) {
         console.log(`✅ Successfully liked profile: ${profileId}`);
         removeTopProfile();
-        setLikes(prev => prev - 1); 
       } else {
-        console.error(`⚠️ Server responded but like was not successful for ${profileId}:`, response.data);
+        console.error(
+          `⚠️ Server responded but like was not successful for ${profileId}:`,
+          response.data,
+        );
       }
     } catch (error) {
       console.error(`❌ Error liking profile ${profileId}:`, error);
@@ -120,14 +137,24 @@ const FeedScreen = () => {
     try {
       const response = await axios.post(
         `https://marhaba-server.onrender.com/api/user/interaction`,
-        { userId: getUserId(), targetUserId: profileId, interaction: 'super', viewed: false, approved: false, message: message },
+        {
+          userId: getUserId(),
+          targetUserId: profileId,
+          interaction: 'super',
+          viewed: false,
+          approved: false,
+          message: message,
+        },
       );
       if (response.data?.success) {
         console.log(`✅ Successfully liked profile: ${profileId}`);
         removeTopProfile();
-        setLikes(prev => prev - 1); 
+        setLikes(prev => prev - 1);
       } else {
-        console.error(`⚠️ Server responded but like was not successful for ${profileId}:`, response.data);
+        console.error(
+          `⚠️ Server responded but like was not successful for ${profileId}:`,
+          response.data,
+        );
       }
     } catch (error) {
       console.error(`❌ Error liking profile ${profileId}:`, error);
@@ -137,11 +164,10 @@ const FeedScreen = () => {
   const removeTopProfile = () => {
     setMatches(prevMatches => {
       const newMatches = prevMatches?.length ? prevMatches.slice(1) : [];
-      setSelectedProfile(newMatches[0] || null);  // ✅ Update the selected profile
+      setSelectedProfile(newMatches[0] || null); // ✅ Update the selected profile
       return newMatches;
     });
   };
-
 
   return (
     <View
@@ -183,7 +209,12 @@ const FeedScreen = () => {
           </Text>
         </View>
       </View>
-      <FeedProfileComponent profile={selectedProfile} dislikeProfile={dislikeProfile} likeProfile={likeProfile} superlikeProfile={superLikeProfile} />
+      <FeedProfileComponent
+        profile={selectedProfile}
+        dislikeProfile={dislikeProfile}
+        likeProfile={likeProfile}
+        superlikeProfile={superLikeProfile}
+      />
     </View>
   );
 };

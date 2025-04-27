@@ -122,7 +122,16 @@ const IdentityThirdScreen = () => {
   };
 
   const redirectToPersonalityScreen = () => {
-    storeNextScreen();
+    if (
+      commStyle.length === 2 &&
+      loveLanguage.length === 2 &&
+      coreValues.length === 4 &&
+      timePriority.length === 2
+    ) {
+      storeNextScreen();
+    } else {
+      Alert.alert('Requirements', 'Please fill out missing information');
+    }
   };
 
   const storeNextScreen = async () => {
@@ -163,7 +172,7 @@ const IdentityThirdScreen = () => {
         <ScrollView style={tailwind`w-full flex-1`}>
           <View style={tailwind`mt-2`}>
             <Text style={tailwind`text-lg font-semibold mb-2`}>
-              Communication Style (Max 2)
+              Communication Style (Select 2)
             </Text>
 
             <ScrollView
@@ -200,7 +209,7 @@ const IdentityThirdScreen = () => {
           </View>
           <View style={tailwind`mt-2`}>
             <Text style={tailwind`text-lg font-semibold mb-2`}>
-              Love Language (Max 2)
+              Love Language (Select 2)
             </Text>
 
             <ScrollView
@@ -238,7 +247,7 @@ const IdentityThirdScreen = () => {
           </View>
           <View style={tailwind`mt-4`}>
             <Text style={tailwind`text-lg font-semibold mb-2`}>
-              Core Values (Max 3)
+              Core Values (Select 4)
             </Text>
 
             <ScrollView
@@ -274,7 +283,7 @@ const IdentityThirdScreen = () => {
           </View>
           <View style={tailwind`mt-4`}>
             <Text style={tailwind`text-lg font-semibold mb-2`}>
-              Time Priorities (Max 2)
+              Time Priorities (Select 2)
             </Text>
 
             <ScrollView
