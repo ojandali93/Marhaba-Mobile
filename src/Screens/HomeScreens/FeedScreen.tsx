@@ -115,12 +115,12 @@ const FeedScreen = () => {
     }
   };
 
-  const superLikeProfile = async (profileId: string) => {
+  const superLikeProfile = async (profileId: string, message?: string) => {
     console.log(`Liking profile: ${profileId}`);
     try {
       const response = await axios.post(
         `https://marhaba-server.onrender.com/api/user/interaction`,
-        { userId: getUserId(), targetUserId: profileId, interaction: 'super', viewed: false, approved: false, message: 'super' },
+        { userId: getUserId(), targetUserId: profileId, interaction: 'super', viewed: false, approved: false, message: message },
       );
       if (response.data?.success) {
         console.log(`✅ Successfully liked profile: ${profileId}`);
