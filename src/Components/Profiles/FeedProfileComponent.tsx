@@ -86,13 +86,28 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
   if (!profile) return null;
 
   const user = profile;
-  const about = user?.About?.[0] ?? {};
+  const about =   user?.About?.[0] ?? {};
+  const anger = user?.Anger ?? {};
+  const attachment = user?.Attachment ?? {};
   const career = user?.Career?.[0] ?? {};
-  const photos: Photo[] = user?.Photos ?? [];
-  const photoUrl = photos?.[0]?.photoUrl;
-  const name = user?.name ?? 'N/A';
+  const communicationStyles = user?.Communication ?? [];
+  const core = user?.Core[0] ?? [];
+  const emotions = user?.Emotions[0] ?? [];
+  const future  = user?.Future[0] ?? [];
+  const lifestyle = user?.Lifestyle[0] ?? [];
+  const loveLanguages = user?.Love ?? [];
+  const photos = user?.Photos ?? [];
+  const preferences = user?.Preferences[0] ?? [];
+  const prompts = user?.Prompts ?? [];
+  const survey = user?.Survey[0] ?? [];
+  const time = user?.Time ?? [];
+  const tags = user?.Tags ?? [];
+  const values: Value[] = user?.Values ?? [];
+  const prompt = prompts?.[0];
   const age = user?.dob ? getAgeFromDOB(user.dob) : '—';
+  const photoUrl = photos?.[0]?.photoUrl;
   const drink = about?.drink;
+  const name = user?.name ?? 'N/A';
   const smoke = about?.smoke;
   const hasKids = about?.hasKids;
   const background = about?.background;
@@ -103,13 +118,7 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
   const lookingFor = about?.lookingFor;
   const timeline = about?.timeline;
   const sect = about?.sect;
-  const prompts: Prompt[] = user?.Prompts ?? [];
-  const prompt = prompts?.[0];
-  const tags: string[] = user?.Tags?.map((t: Tag) => t.tag) || [];
   const profileId = user?._id ?? user?.userId;
-  const communicationStyles: Communication[] = user?.Communication ?? [];
-  const loveLanguages: LoveLanguage[] = user?.Love ?? [];
-  const values: Value[] = user?.Values ?? [];
 
   const handleOpenSuperlikeModal = () => {
     if (isInteracting) return;
@@ -462,8 +471,123 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                   ) : null}
                 </View>
 
+                {prompts.filter((p: Prompt) => p.response)?.length > 0 && (
+                  <View style={tailwind`mt-4`}>
+                    <Text
+                      style={tailwind`text-3xl font-bold text-green-900 mb-1`}>
+                      Prompts
+                    </Text>
+                    {prompts.map(
+                      (item: Prompt, index) =>
+                        item.response && (
+                          <View style={tailwind`w-full mt-3`} key={index}>
+                            <SingleInfoFull
+                              label={item.prompt} // ✅ Use item.prompt
+                              value={item.response} // ✅ Use item.response
+                            />
+                          </View>
+                        ),
+                    )}
+                  </View>
+                )}
+
+                <View style={tailwind`mt-4`}>
+                  <Text
+                    style={tailwind`text-3xl font-bold text-green-900 mb-4`}>
+                    Core Values
+                  </Text>
+                  <View style={tailwind`flex flex-col`}>
+                    <View style={tailwind`flex flex-row items-center`}>
+                      <View style={tailwind`pr-2 w-1/2`}>
+                        <SingleInfoFull label="Faith" value={core.faith} />
+                      </View>
+                      <View style={tailwind`w-1/2`}>
+                        <SingleInfoFull label="Family" value={core.family} />
+                      </View>
+                    </View>
+                    <View style={tailwind`flex flex-row items-center mt-2`}>
+                      <View style={tailwind`pr-2 w-1/2`}>
+                        <SingleInfoFull label="Career" value={core.career} />
+                      </View>
+                      <View style={tailwind`w-1/2`}>
+                        <SingleInfoFull label="Ambition" value={core.ambition} />
+                      </View>
+                    </View>
+                    <View style={tailwind`flex flex-row items-center mt-2`}>
+                      <View style={tailwind`pr-2 w-1/2`}>
+                        <SingleInfoFull label="Honesty" value={core.honest} />
+                      </View>
+                      <View style={tailwind`w-1/2`}>
+                        <SingleInfoFull label="Trust" value={core.trust} />
+                      </View>
+                    </View>
+                    <View style={tailwind`flex flex-row items-center mt-2`}>
+                      <View style={tailwind`pr-2 w-1/2`}>
+                        <SingleInfoFull label="Transparent" value={core.transparent} />
+                      </View>
+                      <View style={tailwind`w-1/2`}>
+                        <SingleInfoFull label="Social" value={core.social} />
+                      </View>
+                    </View>
+                    <View style={tailwind`flex flex-row items-center mt-2`}>
+                      <View style={tailwind`pr-2 w-1/2`}>
+                        <SingleInfoFull label="Politics" value={core.politics} />
+                      </View>
+                    </View>
+                  </View>
+                </View>
+
+                {values.length > 0 && (
+                  <View style={tailwind`mt-4`}>
+                    <Text
+                      style={tailwind`text-3xl font-bold text-green-900 mb-4`}>
+                      Traits
+                    </Text>
+                    <View style={tailwind`flex flex-row flex-wrap`}>
+                      {values.map((item: Value, index) => (
+                        <View key={index} style={tailwind`pr-2 w-1/2 mb-2`}>
+                          <SingleInfoFull
+                            label={''}
+                            value={item.value.replace(/[\[\]"]/g, '')}
+                          />
+                        </View>
+                      ))}
+                    </View>
+                  </View>
+                )}
+
+                <View style={tailwind`mt-4`}>
+                  <Text
+                    style={tailwind`text-3xl font-bold text-green-900 mb-4`}>
+                    Lifestyle
+                  </Text>
+                  <View style={tailwind`flex flex-col`}>
+                    <View style={tailwind`flex flex-row items-center`}>
+                      <View style={tailwind`pr-2 w-1/2`}>
+                        <SingleInfoFull label="Travelling" value={lifestyle.travel} />
+                      </View>
+                      <View style={tailwind`w-1/2`}>
+                        <SingleInfoFull label="Social" value={lifestyle.social} />
+                      </View>
+                    </View>
+                    <View style={tailwind`flex flex-row items-center mt-2`}>
+                      <View style={tailwind`pr-2 w-1/2`}>
+                        <SingleInfoFull label="Health" value={lifestyle.health} />
+                      </View>
+                      <View style={tailwind`w-1/2`}>
+                        <SingleInfoFull label="Finances" value={lifestyle.finances} />
+                      </View>
+                    </View>
+                    <View style={tailwind`flex flex-row items-center mt-2`}>
+                      <View style={tailwind`pr-2 w-1/2`}>
+                        <SingleInfoFull label="Living" value={lifestyle.living} />
+                      </View>
+                    </View>
+                  </View>
+                </View>
+
                 {communicationStyles.length > 0 && (
-                  <View style={tailwind`mt-12`}>
+                  <View style={tailwind`mt-4`}>
                     <Text
                       style={tailwind`text-3xl font-bold text-green-900 mb-4`}>
                       Communication Style
@@ -498,47 +622,63 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                   </View>
                 )}
 
-                {prompts.filter((p: Prompt) => p.response)?.length > 0 && (
-                  <View style={tailwind`mt-4`}>
-                    <Text
-                      style={tailwind`text-3xl font-bold text-green-900 mb-4`}>
-                      Prompts
-                    </Text>
-                    {prompts.map(
-                      (item: Prompt, index) =>
-                        item.response && (
-                          <View style={tailwind`w-full`} key={index}>
-                            <SingleInfoFull
-                              label={prompt.prompt}
-                              value={prompt.response}
-                            />
-                          </View>
-                        ),
-                    )}
-                  </View>
-                )}
-
-                {values.length > 0 && (
-                  <View style={tailwind`mt-4`}>
-                    <Text
-                      style={tailwind`text-3xl font-bold text-green-900 mb-4`}>
-                      Values
-                    </Text>
-                    <View style={tailwind`flex flex-row flex-wrap`}>
-                      {values.map((item: Value, index) => (
-                        <View key={index} style={tailwind`pr-2 w-1/2 mb-2`}>
-                          <SingleInfoFull
-                            label={''}
-                            value={item.value.replace(/[\[\]"]/g, '')}
-                          />
-                        </View>
-                      ))}
+<View style={tailwind`mt-4`}>
+                  <Text
+                    style={tailwind`text-3xl font-bold text-green-900 mb-4`}>
+                    Attachment
+                  </Text>
+                  <View style={tailwind`flex flex-col`}>
+                    <View style={tailwind`flex flex-row items-center`}>
+                      <View style={tailwind`pr-2 w-1/2`}>
+                        <SingleInfoFull label="Closeness (Relationship)" value={attachment.close} />
+                      </View>
+                      <View style={tailwind`w-1/2`}>
+                        <SingleInfoFull label="Partners Neediness" value={attachment.partner} />
+                      </View>
+                    </View>
+                    <View style={tailwind`flex flex-row items-center mt-2`}>
+                      <View style={tailwind`pr-2 w-1/2`}>
+                        <SingleInfoFull label="Fear of Abandonment" value={attachment.fear} />
+                      </View>
+                      <View style={tailwind`w-1/2`}>
+                        <SingleInfoFull label="Independent vs Togehter" value={attachment.independent} />
+                      </View>
+                    </View>
+                    <View style={tailwind`flex flex-row items-center mt-2`}>
+                      <View style={tailwind`pr-2 w-1/2`}>
+                        <SingleInfoFull label="Response to Conflict" value={attachment.response} />
+                      </View>
                     </View>
                   </View>
-                )}
+                </View>
+
+                <View style={tailwind`mt-4`}>
+                  <Text
+                    style={tailwind`text-3xl font-bold text-green-900 mb-4`}>
+                    Emotions & Maturity
+                  </Text>
+                  <View style={tailwind`flex flex-col`}>
+                    <View style={tailwind`flex flex-row items-center`}>
+                      <View style={tailwind`pr-2 w-1/2`}>
+                        <SingleInfoFull label="Closeness (Relationship)" value={emotions.conflict} />
+                      </View>
+                      <View style={tailwind`w-1/2`}>
+                        <SingleInfoFull label="Fear of Abandonment" value={emotions.stress} />
+                      </View>
+                    </View>
+                    <View style={tailwind`flex flex-row items-center mt-2`}>
+                      <View style={tailwind`pr-2 w-1/2`}>
+                        <SingleInfoFull label="Partners Neediness" value={emotions.apology} />
+                      </View>
+                      <View style={tailwind`w-1/2`}>
+                        <SingleInfoFull label="Independent vs Togehter" value={emotions.emotion} />
+                      </View>
+                    </View>
+                  </View>
+                </View>
 
                 {tags.length > 0 && (
-                  <View style={tailwind`mt-3 mb-6`}>
+                  <View style={tailwind`mt-3`}>
                     <Text
                       style={tailwind`text-3xl font-bold text-green-900 mb-4`}>
                       Interests
@@ -548,13 +688,46 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                       showsHorizontalScrollIndicator={false}
                       contentContainerStyle={tailwind`flex-row mt-1`}>
                       {tags.map((tag, idx) => (
-                        <View key={idx} style={tailwind`pr-2 mb-2`}>
-                          <SingleInfoFull label={''} value={tag} />
-                        </View>
-                      ))}
+  <View key={idx} style={tailwind`pr-2 mb-2`}>
+    <SingleInfoFull label={''} value={tag.tag} /> 
+  </View>
+))}
                     </ScrollView>
                   </View>
                 )}
+
+<View style={tailwind`mt-4`}>
+                  <Text
+                    style={tailwind`text-3xl font-bold text-green-900 mb-4`}>
+                    Future Goals
+                  </Text>
+                  <View style={tailwind`flex flex-col mb-6`}>
+                    <View style={tailwind`flex flex-row items-center`}>
+                      <View style={tailwind`pr-2 w-1/2`}>
+                        <SingleInfoFull label="Desired Marriage" value={future.marriage} />
+                      </View>
+                      <View style={tailwind`w-1/2`}>
+                        <SingleInfoFull label="Children" value={future.children} />
+                      </View>
+                    </View>
+                    <View style={tailwind`flex flex-row items-center mt-2`}>
+                      <View style={tailwind`pr-2 w-1/2`}>
+                        <SingleInfoFull label="Career Ambition" value={future.career} />
+                      </View>
+                      <View style={tailwind`w-1/2`}>
+                        <SingleInfoFull label="Financial Ambition" value={future.finances} />
+                      </View>
+                    </View>
+                    <View style={tailwind`flex flex-row items-center mt-2`}>
+                      <View style={tailwind`pr-2 w-1/2`}>
+                        <SingleInfoFull label="Pace of Life" value={future.pace} />
+                      </View>
+                      <View style={tailwind`w-1/2`}>
+                        <SingleInfoFull label="Long Term Living" value={future.live} />
+                      </View>
+                    </View>
+                  </View>
+                </View>
               </View>
             </ScrollView>
           </View>

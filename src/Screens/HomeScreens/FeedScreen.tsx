@@ -43,7 +43,7 @@ const FeedScreen = () => {
       );
       if (response.data) {
         setMatches(response.data.data); // ✅ access .data inside the object
-        console.log('firstUser', response.data.data[0]); // ✅ first user
+        console.log('firstUser', JSON.stringify(response.data.data[0])); // ✅ first user
         setSelectedProfile(response.data.data[0]);
         setLoading(false);
       }
@@ -185,7 +185,7 @@ const FeedScreen = () => {
         !showFullProfile && (
 
       <View
-        style={tailwind`absolute w-full flex flex-row justify-between z-10 top-20 px-6`}>
+        style={tailwind`absolute w-full flex flex-row justify-end z-10 top-18 px-6`}>
         <View
           style={[
             tailwind`flex-row items-center p-2 rounded-full`,
