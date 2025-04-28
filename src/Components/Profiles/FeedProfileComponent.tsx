@@ -86,14 +86,14 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
   if (!profile) return null;
 
   const user = profile;
-  const about =   user?.About?.[0] ?? {};
+  const about = user?.About?.[0] ?? {};
   const anger = user?.Anger ?? {};
   const attachment = user?.Attachment ?? {};
   const career = user?.Career?.[0] ?? {};
   const communicationStyles = user?.Communication ?? [];
   const core = user?.Core[0] ?? [];
   const emotions = user?.Emotions[0] ?? [];
-  const future  = user?.Future[0] ?? [];
+  const future = user?.Future[0] ?? [];
   const lifestyle = user?.Lifestyle[0] ?? [];
   const loveLanguages = user?.Love ?? [];
   const photos = user?.Photos ?? [];
@@ -510,7 +510,10 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                         <SingleInfoFull label="Career" value={core.career} />
                       </View>
                       <View style={tailwind`w-1/2`}>
-                        <SingleInfoFull label="Ambition" value={core.ambition} />
+                        <SingleInfoFull
+                          label="Ambition"
+                          value={core.ambition}
+                        />
                       </View>
                     </View>
                     <View style={tailwind`flex flex-row items-center mt-2`}>
@@ -523,7 +526,10 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                     </View>
                     <View style={tailwind`flex flex-row items-center mt-2`}>
                       <View style={tailwind`pr-2 w-1/2`}>
-                        <SingleInfoFull label="Transparent" value={core.transparent} />
+                        <SingleInfoFull
+                          label="Transparent"
+                          value={core.transparent}
+                        />
                       </View>
                       <View style={tailwind`w-1/2`}>
                         <SingleInfoFull label="Social" value={core.social} />
@@ -531,7 +537,10 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                     </View>
                     <View style={tailwind`flex flex-row items-center mt-2`}>
                       <View style={tailwind`pr-2 w-1/2`}>
-                        <SingleInfoFull label="Politics" value={core.politics} />
+                        <SingleInfoFull
+                          label="Politics"
+                          value={core.politics}
+                        />
                       </View>
                     </View>
                   </View>
@@ -564,23 +573,38 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                   <View style={tailwind`flex flex-col`}>
                     <View style={tailwind`flex flex-row items-center`}>
                       <View style={tailwind`pr-2 w-1/2`}>
-                        <SingleInfoFull label="Travelling" value={lifestyle.travel} />
+                        <SingleInfoFull
+                          label="Travelling"
+                          value={lifestyle.travel}
+                        />
                       </View>
                       <View style={tailwind`w-1/2`}>
-                        <SingleInfoFull label="Social" value={lifestyle.social} />
+                        <SingleInfoFull
+                          label="Social"
+                          value={lifestyle.social}
+                        />
                       </View>
                     </View>
                     <View style={tailwind`flex flex-row items-center mt-2`}>
                       <View style={tailwind`pr-2 w-1/2`}>
-                        <SingleInfoFull label="Health" value={lifestyle.health} />
+                        <SingleInfoFull
+                          label="Health"
+                          value={lifestyle.health}
+                        />
                       </View>
                       <View style={tailwind`w-1/2`}>
-                        <SingleInfoFull label="Finances" value={lifestyle.finances} />
+                        <SingleInfoFull
+                          label="Finances"
+                          value={lifestyle.finances}
+                        />
                       </View>
                     </View>
                     <View style={tailwind`flex flex-row items-center mt-2`}>
                       <View style={tailwind`pr-2 w-1/2`}>
-                        <SingleInfoFull label="Living" value={lifestyle.living} />
+                        <SingleInfoFull
+                          label="Living"
+                          value={lifestyle.living}
+                        />
                       </View>
                     </View>
                   </View>
@@ -622,7 +646,7 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                   </View>
                 )}
 
-<View style={tailwind`mt-4`}>
+                <View style={tailwind`mt-4`}>
                   <Text
                     style={tailwind`text-3xl font-bold text-green-900 mb-4`}>
                     Attachment
@@ -630,23 +654,38 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                   <View style={tailwind`flex flex-col`}>
                     <View style={tailwind`flex flex-row items-center`}>
                       <View style={tailwind`pr-2 w-1/2`}>
-                        <SingleInfoFull label="Closeness (Relationship)" value={attachment.close} />
+                        <SingleInfoFull
+                          label="Closeness (Relationship)"
+                          value={attachment.close}
+                        />
                       </View>
                       <View style={tailwind`w-1/2`}>
-                        <SingleInfoFull label="Partners Neediness" value={attachment.partner} />
+                        <SingleInfoFull
+                          label="Partners Neediness"
+                          value={attachment.partner}
+                        />
                       </View>
                     </View>
                     <View style={tailwind`flex flex-row items-center mt-2`}>
                       <View style={tailwind`pr-2 w-1/2`}>
-                        <SingleInfoFull label="Fear of Abandonment" value={attachment.fear} />
+                        <SingleInfoFull
+                          label="Fear of Abandonment"
+                          value={attachment.fear}
+                        />
                       </View>
                       <View style={tailwind`w-1/2`}>
-                        <SingleInfoFull label="Independent vs Togehter" value={attachment.independent} />
+                        <SingleInfoFull
+                          label="Independent vs Togehter"
+                          value={attachment.independent}
+                        />
                       </View>
                     </View>
                     <View style={tailwind`flex flex-row items-center mt-2`}>
                       <View style={tailwind`pr-2 w-1/2`}>
-                        <SingleInfoFull label="Response to Conflict" value={attachment.response} />
+                        <SingleInfoFull
+                          label="Response to Conflict"
+                          value={attachment.response}
+                        />
                       </View>
                     </View>
                   </View>
@@ -660,18 +699,30 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                   <View style={tailwind`flex flex-col`}>
                     <View style={tailwind`flex flex-row items-center`}>
                       <View style={tailwind`pr-2 w-1/2`}>
-                        <SingleInfoFull label="Closeness (Relationship)" value={emotions.conflict} />
+                        <SingleInfoFull
+                          label="Closeness (Relationship)"
+                          value={emotions.conflict}
+                        />
                       </View>
                       <View style={tailwind`w-1/2`}>
-                        <SingleInfoFull label="Fear of Abandonment" value={emotions.stress} />
+                        <SingleInfoFull
+                          label="Fear of Abandonment"
+                          value={emotions.stress}
+                        />
                       </View>
                     </View>
                     <View style={tailwind`flex flex-row items-center mt-2`}>
                       <View style={tailwind`pr-2 w-1/2`}>
-                        <SingleInfoFull label="Partners Neediness" value={emotions.apology} />
+                        <SingleInfoFull
+                          label="Partners Neediness"
+                          value={emotions.apology}
+                        />
                       </View>
                       <View style={tailwind`w-1/2`}>
-                        <SingleInfoFull label="Independent vs Togehter" value={emotions.emotion} />
+                        <SingleInfoFull
+                          label="Independent vs Togehter"
+                          value={emotions.emotion}
+                        />
                       </View>
                     </View>
                   </View>
@@ -688,15 +739,15 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                       showsHorizontalScrollIndicator={false}
                       contentContainerStyle={tailwind`flex-row mt-1`}>
                       {tags.map((tag, idx) => (
-  <View key={idx} style={tailwind`pr-2 mb-2`}>
-    <SingleInfoFull label={''} value={tag.tag} /> 
-  </View>
-))}
+                        <View key={idx} style={tailwind`pr-2 mb-2`}>
+                          <SingleInfoFull label={''} value={tag.tag} />
+                        </View>
+                      ))}
                     </ScrollView>
                   </View>
                 )}
 
-<View style={tailwind`mt-4`}>
+                <View style={tailwind`mt-4`}>
                   <Text
                     style={tailwind`text-3xl font-bold text-green-900 mb-4`}>
                     Future Goals
@@ -704,26 +755,44 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                   <View style={tailwind`flex flex-col mb-6`}>
                     <View style={tailwind`flex flex-row items-center`}>
                       <View style={tailwind`pr-2 w-1/2`}>
-                        <SingleInfoFull label="Desired Marriage" value={future.marriage} />
+                        <SingleInfoFull
+                          label="Desired Marriage"
+                          value={future.marriage}
+                        />
                       </View>
                       <View style={tailwind`w-1/2`}>
-                        <SingleInfoFull label="Children" value={future.children} />
+                        <SingleInfoFull
+                          label="Children"
+                          value={future.children}
+                        />
                       </View>
                     </View>
                     <View style={tailwind`flex flex-row items-center mt-2`}>
                       <View style={tailwind`pr-2 w-1/2`}>
-                        <SingleInfoFull label="Career Ambition" value={future.career} />
+                        <SingleInfoFull
+                          label="Career Ambition"
+                          value={future.career}
+                        />
                       </View>
                       <View style={tailwind`w-1/2`}>
-                        <SingleInfoFull label="Financial Ambition" value={future.finances} />
+                        <SingleInfoFull
+                          label="Financial Ambition"
+                          value={future.finances}
+                        />
                       </View>
                     </View>
                     <View style={tailwind`flex flex-row items-center mt-2`}>
                       <View style={tailwind`pr-2 w-1/2`}>
-                        <SingleInfoFull label="Pace of Life" value={future.pace} />
+                        <SingleInfoFull
+                          label="Pace of Life"
+                          value={future.pace}
+                        />
                       </View>
                       <View style={tailwind`w-1/2`}>
-                        <SingleInfoFull label="Long Term Living" value={future.live} />
+                        <SingleInfoFull
+                          label="Long Term Living"
+                          value={future.live}
+                        />
                       </View>
                     </View>
                   </View>

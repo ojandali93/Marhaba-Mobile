@@ -9,6 +9,7 @@ import tailwind from 'twrnc';
 import themeColors from '../Utils/custonColors';
 import FeedStackNavigation from './FeedStackNavigation';
 import ProfileScreen from '../Screens/ProfileScreens/ProfileScreen';
+import LikeStackNavigation from './LikeStackNavigation';
 
 const Tab = createBottomTabNavigator();
 
@@ -59,7 +60,7 @@ const BottomTabNavigation = () => {
         />
         <Tab.Screen
           name="List"
-          component={HomeScreen}
+          component={LikeStackNavigation}
           options={{
             tabBarShowLabel: false,
             tabBarIcon: ({focused}) => (
