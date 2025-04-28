@@ -18,6 +18,7 @@ import { Heart } from 'react-native-feather';
 
 import { getUserId } from '../../Services/AuthStoreage';
 import themeColors from '../../Utils/custonColors';
+import { useFocusEffect } from '@react-navigation/native';
 
 interface Interaction {
   _id: string;
@@ -78,9 +79,11 @@ const LikeScreen = () => {
     }
   }, []);
 
-  useEffect(() => {
-    fetchLikes(false);
-  }, [fetchLikes]);
+  useFocusEffect(
+    useCallback(() => {
+      fetchLikes(false);
+    }, [fetchLikes])
+  );
 
   const onRefresh = useCallback(() => {
     setIsRefreshing(true);

@@ -3,7 +3,7 @@ import {View} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {NavigationContainer} from '@react-navigation/native';
 
-import {Heart, Home, MessageSquare, Search, User} from 'react-native-feather';
+import {Heart, Home, MessageSquare, Search, User, Zap} from 'react-native-feather';
 import HomeScreen from '../Screens/HomeScreen';
 import tailwind from 'twrnc';
 import themeColors from '../Utils/custonColors';
@@ -82,7 +82,7 @@ const BottomTabNavigation = () => {
             tabBarShowLabel: false,
             tabBarIcon: ({focused}) => (
               <View style={tailwind`items-center`}>
-                <MessageSquare
+                <Zap
                   stroke={focused ? themeColors.primary : 'black'}
                   strokeWidth={2}
                   height={26}
@@ -99,7 +99,7 @@ const BottomTabNavigation = () => {
             tabBarShowLabel: false,
             tabBarIcon: ({focused}) => (
               <View style={tailwind`items-center`}>
-                <Search
+                <MessageSquare
                   stroke={focused ? themeColors.primary : 'black'}
                   strokeWidth={2}
                   height={26}
