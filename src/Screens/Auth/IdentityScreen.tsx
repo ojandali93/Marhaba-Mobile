@@ -158,6 +158,11 @@ const IdentityScreen = () => {
             selected={height}
             onSelect={setHeight}
           />
+            <KidsSelect
+              fieldName="Have Kids"
+              selected={kids}
+              onSelect={setKids}
+            />
           <SmokeSelect
             fieldName="Smoke"
             selected={smoke}
@@ -169,11 +174,6 @@ const IdentityScreen = () => {
             selected={drink}
             onSelect={setDrink}
             optional
-          />
-          <KidsSelect
-            fieldName="Have Kids"
-            selected={kids}
-            onSelect={setKids}
           />
         </ScrollView>
       </View>

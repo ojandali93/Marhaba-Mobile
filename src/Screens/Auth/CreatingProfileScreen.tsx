@@ -259,7 +259,7 @@ const CreatingProfileScreen = () => {
       })
       .then(response => {
         console.log('love languages response: ', response);
-        createCore(userId);
+        createCoreValues(userId);
       })
       .catch(error => {
         if (error) {
@@ -268,7 +268,7 @@ const CreatingProfileScreen = () => {
       });
   };
 
-  const createCore = async (userId: string) => {
+  const createCoreValues = async (userId: string) => {
     const coreValues = await AsyncStorage.getItem('coreValues');
     axios
       .post('https://marhaba-server.onrender.com/api/account/createValues', {
@@ -313,7 +313,7 @@ const CreatingProfileScreen = () => {
       })
       .then(response => {
         console.log('photos response: ', response);
-        createSurvey(userId);
+        createCore(userId);
       })
       .catch(error => {
         if (error) {
@@ -321,6 +321,178 @@ const CreatingProfileScreen = () => {
         }
       });
   };
+
+  const createCore = async (userId: string) => {
+    const family = await AsyncStorage.getItem('coreFamily');
+    const faith = await AsyncStorage.getItem('coreFaith');
+    const ambition = await AsyncStorage.getItem('coreAmbition');
+    const career = await AsyncStorage.getItem('coreCareerVsFamily');
+    const honest = await AsyncStorage.getItem('coreHonesty');
+    const transparent = await AsyncStorage.getItem('coreTransparency');
+    const trust = await AsyncStorage.getItem('coreTrust');
+    const politics = await AsyncStorage.getItem('corePolitics');
+    const social = await AsyncStorage.getItem('coreSocial');
+  
+    axios
+      .post('https://marhaba-server.onrender.com/api/account/createCore', {
+        userId,
+        family,
+        faith,
+        ambition,
+        career,
+        honest,
+        transparent,
+        trust,
+        politics,
+        social,
+      })
+      .then(response => {
+        console.log('core response: ', response);
+        createEmotions(userId);
+      })
+      .catch(error => {
+        if (error) {
+          console.log('❌ Server responded with status:', error.error);
+        }
+      });
+  };
+
+  const createEmotions = async (userId: string) => {
+    const conflict = await AsyncStorage.getItem('emotionConflict');
+    const apology = await AsyncStorage.getItem('emotionApology');
+    const stress = await AsyncStorage.getItem('emotionStress');
+    const emotion = await AsyncStorage.getItem('emotionEmotion');
+    console.log('conflict: ', conflict);
+    console.log('apology: ', apology);
+    console.log('stress: ', stress);
+    console.log('emotion: ', emotion);
+  
+    axios
+      .post('https://marhaba-server.onrender.com/api/account/createEmotions', {
+        userId,
+        conflict,
+        apology,
+        stress,
+        emotion,
+      })
+      .then(response => {
+        console.log('emotions response: ', response);
+        createAttachment(userId);
+      })
+      .catch(error => {
+        if (error) {
+          console.log('❌ Server responded with status:', error.error);
+        }
+      });
+  };
+
+  const createAttachment = async (userId: string) => {
+    const close = await AsyncStorage.getItem('attachmentCloseness');
+    const partner = await AsyncStorage.getItem('attachmentPartnerNeed');
+    const fear = await AsyncStorage.getItem('attachmentFear');
+    const independent = await AsyncStorage.getItem('attachmentIndependence');
+    const response = await AsyncStorage.getItem('attachmentResponseConfict');
+  
+    axios
+      .post('https://marhaba-server.onrender.com/api/account/createAttachment', {
+        userId,
+        close,
+        partner,
+        fear,
+        independent,
+        response,
+      })
+      .then(response => {
+        console.log('emotions response: ', response);
+        createLifestyle(userId);
+      })
+      .catch(error => {
+        if (error) {
+          console.log('❌ Server responded with status:', error.error);
+        }
+      });
+  };
+
+  const createLifestyle = async (userId: string) => {
+    const travel = await AsyncStorage.getItem('lifestyleTravelling');
+    const social = await AsyncStorage.getItem('lifestyleSocialLife');
+    const health = await AsyncStorage.getItem('lifestyleHealth');
+    const finances = await AsyncStorage.getItem('lifestyleFinances');
+    const living = await AsyncStorage.getItem('lifestyleLiving');
+  
+    axios
+      .post('https://marhaba-server.onrender.com/api/account/createLifestyle', {
+        userId,
+        travel,
+        social,
+        health,
+        finances,
+        living,
+      })
+      .then(response => {
+        console.log('emotions response: ', response);
+        createFuture(userId);
+      })
+      .catch(error => {
+        if (error) {
+          console.log('❌ Server responded with status:', error.error);
+        }
+      });
+  };
+
+  const createFuture = async (userId: string) => {
+    const marriage = await AsyncStorage.getItem('futureMarriage');
+    const children = await AsyncStorage.getItem('futureChildren');
+    const career = await AsyncStorage.getItem('futureCareer');
+    const finances = await AsyncStorage.getItem('futureFinances');
+    const pace = await AsyncStorage.getItem('futurePace');
+    const location = await AsyncStorage.getItem('futureLocation');
+  
+    axios
+      .post('https://marhaba-server.onrender.com/api/account/createFuture', {
+        userId,
+        marriage,
+        children,
+        career,
+        finances,
+        pace,
+        location,
+      })
+      .then(response => {
+        console.log('emotions response: ', response);
+        createAnger(userId);
+      })
+      .catch(error => {
+        if (error) {
+          console.log('❌ Server responded with status:', error.error);
+        }
+      });
+  };
+
+  const createAnger = async (userId: string) => {
+    const triggerString = await AsyncStorage.getItem('emotionAnger');
+  
+    if (!triggerString) {
+      console.log('No anger triggers found.');
+      return;
+    }
+  
+    const triggers = JSON.parse(triggerString); // ✅ Now an array
+  
+    axios
+      .post('https://marhaba-server.onrender.com/api/account/createAnger', {
+        userId,
+        triggers, // ✅ Notice: triggers (plural)
+      })
+      .then(response => {
+        console.log('anger response: ', response);
+        createSurvey(userId);
+      })
+      .catch(error => {
+        console.error('❌ Server responded with error:', error.response?.data || error.message);
+      });
+  };
+  
 
   const createSurvey = async (userId: string) => {
     try {
@@ -379,6 +551,7 @@ const CreatingProfileScreen = () => {
       );
 
       console.log('✅ Survey response:', response.data);
+
     } catch (error) {
       console.log(
         '❌ Survey creation error:',

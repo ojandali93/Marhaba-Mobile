@@ -13,6 +13,12 @@ import HobbiesAndTraitsScreen from '../Screens/Auth/HobbiesAndTraitsScreen';
 import CreatingProfileScreen from '../Screens/Auth/CreatingProfileScreen';
 import QuestionsScreen from '../Screens/Auth/QuestionsScreen';
 import IdentityThirdScreen from '../Screens/Auth/IdentityThirdScreen';
+import CoreScreen from '../Screens/Auth/CoreScreen';
+import ConflictScreen from '../Screens/Auth/ConflictScreen';
+import AttachmentScreen from '../Screens/Auth/AttachmentScreen';
+import CommunicationScreen from '../Screens/Auth/LifestyleScreen';
+import LifestyleScreen from '../Screens/Auth/LifestyleScreen';
+import FutureScreen from '../Screens/Auth/FutureScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -32,6 +38,11 @@ const AuthStack = () => {
       <Stack.Screen name="CreatingProfile" component={CreatingProfileScreen} />
       <Stack.Screen name="Questions" component={QuestionsScreen} />
       <Stack.Screen name="IdentityThird" component={IdentityThirdScreen} />
+      <Stack.Screen name="Core" component={CoreScreen} />
+      <Stack.Screen name="Conflict" component={ConflictScreen} />
+      <Stack.Screen name="Attachment" component={AttachmentScreen} />
+      <Stack.Screen name="Lifestyle" component={LifestyleScreen} />
+      <Stack.Screen name="Future" component={FutureScreen} />
     </Stack.Navigator>
   );
 };

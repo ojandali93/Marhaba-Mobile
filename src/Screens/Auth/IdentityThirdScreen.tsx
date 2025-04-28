@@ -82,7 +82,7 @@ const IdentityThirdScreen = () => {
   const toggleCoreValue = (value: string) => {
     if (coreValues.includes(value)) {
       setCoreValues(prev => prev.filter(item => item !== value));
-    } else if (coreValues.length < 3) {
+    } else if (coreValues.length < 4) {
       setCoreValues(prev => [...prev, value]);
     }
   };
@@ -139,7 +139,7 @@ const IdentityThirdScreen = () => {
     await AsyncStorage.setItem('loveLanguage', JSON.stringify(loveLanguage));
     await AsyncStorage.setItem('coreValues', JSON.stringify(coreValues));
     await AsyncStorage.setItem('timePriority', JSON.stringify(timePriority));
-    navigation.navigate('Career');
+    navigation.navigate('Core');
   };
 
   return (
