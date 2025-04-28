@@ -24,10 +24,16 @@ const FeedScreen = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [likes, setLikes] = useState<number>(10);
 
+  const [showFullProfile, setShowFullProfile] = useState<boolean>(false);
+
   useLayoutEffect(() => {
     grabAllUserProfiles();
     grabuserProfile();
   }, []);
+
+  const handleToggleFullProfile = () => {
+    setShowFullProfile(!showFullProfile);
+  };
 
   const grabAllUserProfiles = async () => {
     console.log('about to grab all users');
@@ -175,19 +181,11 @@ const FeedScreen = () => {
         tailwind`w-full h-full`,
         {backgroundColor: themeColors.secondary},
       ]}>
+      {
+        !showFullProfile && (
+
       <View
         style={tailwind`absolute w-full flex flex-row justify-between z-10 top-20 px-6`}>
-        <TouchableOpacity
-          style={[
-            tailwind`p-2 rounded-full`,
-            {
-              backgroundColor: 'rgba(255,255,255,0.9)',
-              borderWidth: 1,
-              borderColor: themeColors.primary,
-            },
-          ]}>
-          <ArrowLeft height={22} width={22} color="black" strokeWidth={3} />
-        </TouchableOpacity>
         <View
           style={[
             tailwind`flex-row items-center p-2 rounded-full`,
@@ -209,11 +207,16 @@ const FeedScreen = () => {
           </Text>
         </View>
       </View>
+        )
+      }
       <FeedProfileComponent
         profile={selectedProfile}
         dislikeProfile={dislikeProfile}
         likeProfile={likeProfile}
         superlikeProfile={superLikeProfile}
+        showFullProfile={showFullProfile}
+        setShowFullProfile={setShowFullProfile}
+        handleToggleFullProfile={handleToggleFullProfile}
       />
     </View>
   );

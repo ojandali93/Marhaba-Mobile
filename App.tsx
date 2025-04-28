@@ -13,6 +13,7 @@ import {
 } from './src/Services/AuthStoreage';
 import themeColors from './src/Utils/custonColors';
 import {ProfileProvider} from './src/Context/ProfileContext';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 function App(): React.JSX.Element {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -49,6 +50,7 @@ function App(): React.JSX.Element {
   }, []);
 
   return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
     <SafeAreaProvider>
       <NavigationContainer>
         <ProfileProvider>
@@ -56,6 +58,7 @@ function App(): React.JSX.Element {
         </ProfileProvider>
       </NavigationContainer>
     </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }
 
