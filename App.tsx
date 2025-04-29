@@ -1,7 +1,7 @@
 import 'react-native-url-polyfill/auto';
 import React, {useEffect, useLayoutEffect, useState} from 'react';
 import BottomTabNavigation from './src/Navigation/BottomTabNavigation';
-import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context'; // 👈 correct import
+import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {NavigationContainer} from '@react-navigation/native';
 import AuthStack from './src/Navigation/AuthStackNavigation';
 import './src/Services/FirebaseConfig';
@@ -14,6 +14,7 @@ import {
 import themeColors from './src/Utils/custonColors';
 import {ProfileProvider} from './src/Context/ProfileContext';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { initializeSocket } from './src/Services/socket';
 
 function App(): React.JSX.Element {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -48,6 +49,13 @@ function App(): React.JSX.Element {
 
     return () => clearInterval(watchSession);
   }, []);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      console.log('🔌 Initializing socket after authentication');
+      initializeSocket();
+    }
+  }, [isAuthenticated]); // 👈 move initializeSocket inside here
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

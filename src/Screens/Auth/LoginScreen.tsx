@@ -13,7 +13,7 @@ import AithInputStandard from '../../Components/Inputs/AithInputStandard';
 import AuthMainButton from '../../Components/Buttons/AuthMainButton';
 import {useNavigation} from '@react-navigation/native';
 import axios from 'axios';
-import {setSession, setUserId} from '../../Services/AuthStoreage';
+import {getSession, setJwtToken, setSession, setUserId} from '../../Services/AuthStoreage';
 import Icon from '../../Assets/marhaba-icon-full-beige.png';
 import Logo from '../../Assets/marhaba-name-only-green.png';
 
@@ -33,19 +33,28 @@ const LoginScreen = () => {
   const login = async () => {
     setLoading(true);
     try {
+      console.log('login');
       const response = await axios.post(
         'https://marhaba-server.onrender.com/api/auth/loginUser',
         {email, password},
       );
+      console.log('response', response.data);
+      if(response.data) {
 
-      const {session, userId} = response.data;
+        const {session, userId, token} = response.data;
+  
+        await setSession(JSON.stringify(session)); // Store in authStore + AsyncStorage
+        await setUserId(userId); // Store in authStore + AsyncStorage
+        await setJwtToken(token); // Store in authStore + AsyncStorage
+      } else {
+        Alert.alert('Login Failed', 'Email / Password do not match our records.');
+        setLoading(false);
+      }
 
-      await setSession(JSON.stringify(session)); // Store in authStore + AsyncStorage
-      await setUserId(userId); // Store in authStore + AsyncStorage
       setLoading(false);
     } catch (error) {
       console.error('Login failed:', error);
-      Alert.alert('Login Failed', 'Email / Password do not match our records.');
+      Alert.alert('Login Failed', error?.message || 'Please check your network or try again later.');
       setLoading(false);
     }
   };

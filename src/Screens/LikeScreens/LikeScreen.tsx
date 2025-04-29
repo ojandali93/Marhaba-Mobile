@@ -19,6 +19,7 @@ import { Check, Heart, X } from 'react-native-feather';
 import { getUserId } from '../../Services/AuthStoreage';
 import themeColors from '../../Utils/custonColors';
 import { useFocusEffect } from '@react-navigation/native';
+import { useProfile } from '../../Context/ProfileContext';
 
 interface Interaction {
   _id: string;
@@ -40,12 +41,15 @@ const numColumns = 2;
 const imageSize = (width - itemPadding * (numColumns + 1)) / numColumns;
 
 const LikeScreen = () => {
+const {userProfile} = useProfile()
+    
   const [loading, setLoading] = useState<boolean>(true);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [interactions, setInteractions] = useState<ProcessedInteraction[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   const fetchLikes = useCallback(async (refreshing = false) => {
+
     if (!refreshing) {
       setLoading(true);
     }
@@ -64,11 +68,9 @@ const LikeScreen = () => {
       );
 
       if (response.data) {
-        console.log(response.data)
         setInteractions(response.data.data);
       } else {
         setInteractions([]);
-        console.log('No likes found or invalid data format.');
       }
     } catch (err) {
       console.error('❌ Error fetching likes:', err);
@@ -92,7 +94,6 @@ const LikeScreen = () => {
   }, [fetchLikes]);
 
   const handleApproveLike = async (interactionId: string, userId2: string) => {
-    console.log('user id 2:', userId2);
     try {
         const response = await axios.put(
             `https://marhaba-server.onrender.com/api/user/approved`,
@@ -165,7 +166,10 @@ const LikeScreen = () => {
             />
           </View>
         )}
-        <View style={tailwind`absolute bottom-2 left-2 p-2 bg-red-400 rounded-full`}>
+        {
+            userProfile?.tier === 3 && (
+                <View>
+                    <View style={tailwind`absolute bottom-2 left-2 p-2 bg-red-400 rounded-full`}>
             <X
                 height={28}
                 width={28}
@@ -181,6 +185,9 @@ const LikeScreen = () => {
                 strokeWidth={2}
             />
         </TouchableOpacity>
+                </View>
+            )
+        }
       </TouchableOpacity>
     );
   };

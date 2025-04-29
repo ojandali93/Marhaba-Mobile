@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 let currentUserId = null
 let session = null
 let currentProfile = null
-
+let JwtToken = null
 // USERID
 
 export const loadUserId = async () => {
@@ -74,4 +74,28 @@ export const setProfile = async (newProfile) => {
 export const clearProfile = async () => {
   currentProfile = null;
   await AsyncStorage.removeItem('currentProfile');
+};
+
+// JWT Token
+
+export const loadJwtToken = async () => {
+  if (!JwtToken) {
+    JwtToken = await AsyncStorage.getItem('JwtToken');
+  }
+  return JwtToken;
+};
+
+export const getJwtToken = () => {
+  return JwtToken;
+};
+
+export const setJwtToken = async (newProfile) => {
+  JwtToken = newProfile;
+  await AsyncStorage.setItem('JwtToken', JwtToken);
+};
+
+// Function to clear userId (when you log out)
+export const clearJwtToken = async () => {
+  JwtToken = null;
+  await AsyncStorage.removeItem('JwtToken');
 };

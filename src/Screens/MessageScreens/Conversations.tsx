@@ -17,7 +17,7 @@ import tailwind from 'twrnc';
 import { getUserId } from '../../Services/AuthStoreage';
 import themeColors from '../../Utils/custonColors';
 import { useFocusEffect } from '@react-navigation/native';
-
+import { useNavigation } from '@react-navigation/native';
 interface Profile {
   _id: string;
   name?: string;
@@ -36,6 +36,7 @@ interface Conversation {
 const { width } = Dimensions.get('window');
 
 const Conversations = () => {
+    const navigation = useNavigation();
   const [loading, setLoading] = useState<boolean>(true);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
@@ -119,6 +120,7 @@ const Conversations = () => {
         style={[tailwind`flex-row items-center px-4 py-3 border-b border-gray-400`, {backgroundColor: themeColors.secondary}]}
         onPress={() => {
             console.log("Navigate to chat:", item.id);
+            navigation.navigate('Chat', { conversation: item });
         }}>
         <Image
            source={{ uri: photoUrl }}
@@ -137,7 +139,7 @@ const Conversations = () => {
 
   return (
     <SafeAreaView style={[tailwind`flex-1`, {backgroundColor: themeColors.secondary}]}>
-      <View style={[tailwind`px-4 py-3 border-b border-gray-700`, {backgroundColor: themeColors.secondary}]}>
+      <View style={[tailwind`px-4 py-3 border-b border-gray-700`, {backgroundColor: themeColors.darkSecondary}]}>
         <Text style={tailwind`text-2xl font-bold text-gray-800`}>Conversations</Text>
       </View>
       <View style={tailwind`flex-1`}>
