@@ -73,7 +73,7 @@ const LoginScreen = () => {
           ]}>
           <Image style={tailwind`w-22 h-22`} source={Icon} />
           <View style={tailwind`mt-2 items-center`}>
-            <Image style={tailwind`w-56 h-12`} source={Logo} />
+            <Image style={tailwind`w-62 h-12`} source={Logo} />
             <Text style={tailwind`mt-2 text-lg font-semibold text-gray-800`}>
               Where love begins with hello!
             </Text>
