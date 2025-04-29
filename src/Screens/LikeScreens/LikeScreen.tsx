@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import tailwind from 'twrnc';
-import { Heart } from 'react-native-feather';
+import { Check, Heart, X } from 'react-native-feather';
 
 import { getUserId } from '../../Services/AuthStoreage';
 import themeColors from '../../Utils/custonColors';
@@ -36,7 +36,7 @@ interface ProcessedInteraction extends Interaction {
 
 const { width } = Dimensions.get('window');
 const itemPadding = 8;
-const numColumns = 3;
+const numColumns = 2;
 const imageSize = (width - itemPadding * (numColumns + 1)) / numColumns;
 
 const LikeScreen = () => {
@@ -64,6 +64,7 @@ const LikeScreen = () => {
       );
 
       if (response.data) {
+        console.log(response.data)
         setInteractions(response.data.data);
       } else {
         setInteractions([]);
@@ -90,6 +91,56 @@ const LikeScreen = () => {
     fetchLikes(true);
   }, [fetchLikes]);
 
+  const handleApproveLike = async (interactionId: string, userId2: string) => {
+    console.log('user id 2:', userId2);
+    try {
+        const response = await axios.put(
+            `https://marhaba-server.onrender.com/api/user/approved`,
+            {
+                id: interactionId
+            }
+          );
+    
+          if (response.data) {
+            fetchLikes(false)
+            createConversation(userId2)
+          } else {
+            console.log('No likes found or invalid data format.');
+          }
+    } catch (error) {
+        console.error('❌ Error approving likes:', error);
+      setError('Failed to load likes. Please try again later.');
+    }
+  };
+
+  const createConversation = async (userId2: string) => {
+    try {
+        const response = await axios.post(
+            `https://marhaba-server.onrender.com/api/conversation/create`,
+            {
+                userId: getUserId(), 
+                userId2: userId2, 
+                lastMessage: '', 
+                updatedAt: new Date().toISOString(),
+
+            }
+          );
+    
+          if (response.data) {
+            fetchLikes(false)
+          } else {
+            console.log('No likes found or invalid data format.');
+          }
+    } catch (error) {
+        console.error('❌ Error approving likes:', error);
+      setError('Failed to load likes. Please try again later.');
+    }
+  };
+
+  const handleRejectLike = (interactionId: string) => {
+    console.log('Rejected like:', interactionId);
+  };
+
   const renderGridItem = ({ item }: { item: ProcessedInteraction }) => {
     const profilePicUrl = item.likerProfile.Photos![0].photoUrl;
 
@@ -104,7 +155,7 @@ const LikeScreen = () => {
           blurRadius={15}
         />
         {item.interaction === 'super' && (
-          <View style={tailwind`absolute bottom-2 right-2`}>
+          <View style={tailwind`absolute top-2 left-2`}>
             <Heart
               height={28}
               width={28}
@@ -114,6 +165,22 @@ const LikeScreen = () => {
             />
           </View>
         )}
+        <View style={tailwind`absolute bottom-2 left-2 p-2 bg-red-400 rounded-full`}>
+            <X
+                height={28}
+                width={28}
+                color={'white'}
+                strokeWidth={2}
+            />
+        </View>
+        <TouchableOpacity onPress={() => handleApproveLike(item.id, item.likerProfile.userId)} style={tailwind`absolute bottom-2 right-2 p-2 bg-green-400 rounded-full`}>
+            <Check
+                height={28}
+                width={28}
+                color={'white'}
+                strokeWidth={2}
+            />
+        </TouchableOpacity>
       </TouchableOpacity>
     );
   };

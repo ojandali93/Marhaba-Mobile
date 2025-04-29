@@ -10,6 +10,7 @@ import themeColors from '../Utils/custonColors';
 import FeedStackNavigation from './FeedStackNavigation';
 import ProfileScreen from '../Screens/ProfileScreens/ProfileScreen';
 import LikeStackNavigation from './LikeStackNavigation';
+import ConversationStackNavigation from './ConversationStackNavigation';
 
 const Tab = createBottomTabNavigator();
 
@@ -93,8 +94,8 @@ const BottomTabNavigation = () => {
           }}
         />
         <Tab.Screen
-          name="Explore"
-          component={HomeScreen}
+          name="Conversation"
+          component={ConversationStackNavigation}
           options={{
             tabBarShowLabel: false,
             tabBarIcon: ({focused}) => (
