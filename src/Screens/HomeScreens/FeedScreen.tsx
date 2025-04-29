@@ -1,7 +1,7 @@
 import {useNavigation} from '@react-navigation/native';
 import axios from 'axios';
 import React, {useLayoutEffect, useState} from 'react';
-import {Text, TouchableOpacity, View} from 'react-native';
+import {Image, Modal, Text, TouchableOpacity, View} from 'react-native';
 import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
 import {
@@ -16,6 +16,7 @@ import FeedProfileComponent from '../../Components/Profiles/FeedProfileComponent
 import {ArrowLeft, Heart} from 'react-native-feather';
 
 const FeedScreen = () => {
+  const navigation = useNavigation();
   const {setUserProfile, userProfile} = useProfile();
   const [totalLikes, setTotalLikes] = useState<number>(10);
   const [selectedProfile, setSelectedProfile] = useState<any>(null);
@@ -25,6 +26,8 @@ const FeedScreen = () => {
   const [likes, setLikes] = useState<number>(10);
 
   const [showFullProfile, setShowFullProfile] = useState<boolean>(false);
+  const [matchedProfile, setMatchedProfile] = useState<any>(null);
+const [showMatchModal, setShowMatchModal] = useState(false);
 
   useLayoutEffect(() => {
     grabAllUserProfiles();
@@ -43,7 +46,6 @@ const FeedScreen = () => {
       );
       if (response.data) {
         setMatches(response.data.data); // ✅ access .data inside the object
-        console.log('firstUser', JSON.stringify(response.data.data[0])); // ✅ first user
         setSelectedProfile(response.data.data[0]);
         setLoading(false);
       }
@@ -83,37 +85,54 @@ const FeedScreen = () => {
     }
   };
 
-  const dislikeProfile = async (profileId: string) => {
-    console.log(`disliked profile: ${profileId}`);
+  const updateMatchStatus = async (interactionId: number) => {
     try {
-      const response = await axios.post(
-        `https://marhaba-server.onrender.com/api/user/interaction`,
-        {
-          userId: getUserId(),
-          targetUserId: profileId,
-          interaction: 'disliked',
-          viewed: false,
-          approved: false,
-        },
-      );
-      if (response.data?.success) {
-        console.log(`✅ Successfully disliked profile: ${profileId}`);
-        removeTopProfile();
-        setLikes(prev => prev - 1);
-      } else {
-        console.error(
-          `⚠️ Server responded but like was not successful for ${profileId}:`,
-          response.data,
-        );
-      }
+      await axios.put(`https://marhaba-server.onrender.com/api/user/approved`, {
+        id:interactionId
+      });
+      console.log(`✅ Approved match`);
     } catch (error) {
-      console.error(`❌ Error liking profile ${profileId}:`, error);
+      console.error(`❌ Error approving match:`, error);
     }
   };
 
-  const likeProfile = async (profileId: string) => {
-    console.log(`Liking profile: ${profileId}`);
+  const createConversation = async (profileId: string) => {
     try {
+      await axios.post(`https://marhaba-server.onrender.com/api/conversation/create`, {
+        userId: getUserId(), 
+        userId2: profileId, 
+        lastMessage: '', 
+        updatedAt: new Date().toISOString(),
+      });
+      console.log(`✅ Created conversation with ${profileId}`);
+    } catch (error) {
+      console.error(`❌ Error creating conversation with ${profileId}:`, error);
+    }
+  };
+
+  const dislikeProfile = async (profileId: string) => {
+    console.log(`disliked profile: ${profileId}`);
+    removeTopProfile();
+  };
+
+  const likeProfile = async (profileId: string, profile: any) => {
+    try {
+      // Check if already liked
+      const checkRes = await axios.get(
+        `https://marhaba-server.onrender.com/api/user/matchStatus/${getUserId()}/${profileId}`,
+      );
+  
+      console.log('checkRes', checkRes.data);
+      if (checkRes.data) {
+        console.log(`🟢 Already interacted with profile: ${profileId}`);
+        updateMatchStatus(checkRes.data.data[0].id);
+        createConversation(profileId);
+        setMatchedProfile(profile);
+        setShowMatchModal(true);
+        return;
+      }
+  
+      // Proceed to like
       const response = await axios.post(
         `https://marhaba-server.onrender.com/api/user/interaction`,
         {
@@ -122,25 +141,38 @@ const FeedScreen = () => {
           interaction: 'liked',
           viewed: false,
           approved: false,
-        },
+        }
       );
+  
       if (response.data?.success) {
-        console.log(`✅ Successfully liked profile: ${profileId}`);
+        console.log(`✅ Successfully disliked profile: ${profileId}`);
         removeTopProfile();
-      } else {
-        console.error(
-          `⚠️ Server responded but like was not successful for ${profileId}:`,
-          response.data,
-        );
+
+        // Check for match
       }
     } catch (error) {
       console.error(`❌ Error liking profile ${profileId}:`, error);
     }
   };
 
-  const superLikeProfile = async (profileId: string, message?: string) => {
+  const superLikeProfile = async (profileId: string, message?: string, profile: any) => {
     console.log(`Liking profile: ${profileId}`);
+    
     try {
+
+      const checkRes = await axios.get(
+        `https://marhaba-server.onrender.com/api/user/matchStatus/${getUserId()}/${profileId}`,
+      );
+  
+      if (checkRes.data?.data.legnth > 0) {
+        console.log(`🟢 Already interacted with profile: ${profileId}`);
+        updateMatchStatus(checkRes.data.data[0].id);
+        createConversation(profileId);
+        setMatchedProfile(profile);
+        setShowMatchModal(true);
+        return;
+      }
+
       const response = await axios.post(
         `https://marhaba-server.onrender.com/api/user/interaction`,
         {
@@ -166,6 +198,7 @@ const FeedScreen = () => {
       console.error(`❌ Error liking profile ${profileId}:`, error);
     }
   };
+
 
   const removeTopProfile = () => {
     setMatches(prevMatches => {
@@ -218,6 +251,54 @@ const FeedScreen = () => {
         setShowFullProfile={setShowFullProfile}
         handleToggleFullProfile={handleToggleFullProfile}
       />
+      <Modal
+  transparent
+  visible={showMatchModal}
+  animationType="fade"
+  onRequestClose={() => setShowMatchModal(false)}
+>
+  <View style={tailwind`flex-1 bg-black bg-opacity-60 justify-center items-center px-6`}>
+    <View style={[tailwind`rounded-lg p-5 items-center justify-center h-9/12 w-full`, {backgroundColor: themeColors.secondary}]}>
+      <Text style={tailwind`text-4xl font-bold text-green-800 mb-2`}>
+        You & {matchedProfile?.name}
+      </Text>
+      <Text style={tailwind`text-3xl font-bold text-green-800 mb-2`}>
+        Connected!
+      </Text>
+      {matchedProfile?.Photos?.[0]?.photoUrl && (
+        <Image
+          source={{ uri: matchedProfile.Photos[0].photoUrl }}
+          style={tailwind`w-11/12 h-7/12 rounded-8 mb-4`}
+        />
+      )}
+      <Text style={tailwind`text-base text-center`}>
+        You and {matchedProfile?.name} have liked each other!
+      </Text>
+      <Text style={tailwind`text-base mb-4 text-center`}>
+        You can now start a conversation!
+      </Text>
+      <View style={tailwind`flex-col justify-between w-full`}>
+        <TouchableOpacity
+          onPress={() => {
+            setShowMatchModal(false);
+            removeTopProfile();
+            navigation.navigate('Conversation'); // <-- Use the name of your Messages tab here
+          }}
+          style={tailwind`bg-green-700 px-4 py-4 rounded-md`}>
+          <Text style={tailwind`text-white text-center font-semibold text-base`}>Message</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            setShowMatchModal(false);
+            removeTopProfile(); // go to next profile
+          }}
+          style={tailwind`p-4 rounded-md`}>
+          <Text style={tailwind`text-black text-center font-semibold text-base`}>Next Profile</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  </View>
+</Modal>
     </View>
   );
 };

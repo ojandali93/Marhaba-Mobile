@@ -58,8 +58,8 @@ interface FeedSummaryProps {
   profile: any;
   likesLeft?: number;
   dislikeProfile: (profileId: string) => void;
-  likeProfile: (profileId: string) => void;
-  superlikeProfile: (profileId: string, message?: string) => void;
+  likeProfile: (profileId: string, profile: any) => void;
+  superlikeProfile: (profileId: string, message?: string, profile: any) => void;
   isInteracting?: boolean;
   onExpandPress?: () => void;
   showFullProfile: boolean;
@@ -134,7 +134,7 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
       return;
     }
     setIsModalVisible(false);
-    superlikeProfile(profileId, superlikeMessage.trim());
+    superlikeProfile(profileId, superlikeMessage.trim(), profile);
     setSuperlikeMessage('');
   };
 
@@ -146,7 +146,7 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
       return;
     }
     setShowFullProfile(false);
-    likeProfile(profileId);
+    likeProfile(profileId, profile);
   };
 
   const handleDislikeProfile = () => {
