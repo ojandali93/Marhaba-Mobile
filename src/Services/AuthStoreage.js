@@ -58,11 +58,16 @@ export const loadProfile = async () => {
   if (!currentProfile) {
     currentProfile = await AsyncStorage.getItem('currentProfile');
   }
-  return JSON.parse(currentProfile);
+  return JSON.parse(currentProfile); // ✅ Correctly parsing
 };
 
 export const getProfile = () => {
-  return currentProfile;
+  try {
+    return JSON.parse(currentProfile);
+  } catch (err) {
+    console.error('❌ Failed to parse currentProfile:', err);
+    return null;
+  }
 };
 
 export const setProfile = async (newProfile) => {

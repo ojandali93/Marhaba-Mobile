@@ -122,5 +122,48 @@ const eitherOrQuestions = [
   }
 ];
 
+const faqs = [
+  {
+    question: "What is Marhaba?",
+    answer: "Marhaba is a relationship-focused app built for Arabs looking to find meaningful connections, friendships, and marriage."
+  },
+  {
+    question: "Is Marhaba only for Muslims?",
+    answer: "No — while many of our users are Muslim, Marhaba is open to all Arabs who are looking for culturally-aligned relationships."
+  },
+  {
+    question: "How does Marhaba match users?",
+    answer: "We use compatibility-based algorithms that take into account values, intentions, lifestyle, and preferences — not just location or looks."
+  },
+  {
+    question: "Is my profile visible to everyone?",
+    answer: "By default, your profile is visible to others who match your filters. You can control your visibility in your settings."
+  },
+  {
+    question: "Can I hide my profile?",
+    answer: "Yes, you can temporarily hide your profile from the Feed in the Visibility settings."
+  },
+  {
+    question: "What happens when I like someone?",
+    answer: "If they like you back, it becomes a match! You’ll then be able to message each other inside the app."
+  },
+  {
+    question: "Is Marhaba free?",
+    answer: "Yes, Marhaba is free to use. We also offer a Pro version with extra features like more likes, advanced filters, and priority exposure."
+  },
+  {
+    question: "How do I report a user?",
+    answer: "Go to their profile, tap the three dots at the top right, and select 'Report'. You can choose a reason and we’ll take it from there."
+  },
+  {
+    question: "How do I delete my account?",
+    answer: "Go to Settings → Account → Delete Account. Once deleted, your data will be removed permanently."
+  },
+  {
+    question: "What makes Marhaba different from other dating apps?",
+    answer: "We prioritize compatibility, intention, and cultural understanding — not just swiping. We’re here to help you build something real."
+  }
+];
 
-module.exports = {traitsAndHobbies, eitherOrQuestions}
+
+module.exports = {traitsAndHobbies, eitherOrQuestions, faqs}

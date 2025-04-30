@@ -1,23 +1,48 @@
-import React from 'react';
-import {Text, TouchableOpacity, View} from 'react-native';
+import React, {useState} from 'react';
+import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
-import {clearSession, clearUserId, getProfile, getUserId} from '../../Services/AuthStoreage';
+import {
+  clearSession,
+  clearUserId,
+  getProfile,
+  getUserId,
+} from '../../Services/AuthStoreage';
+import {countryFlagMap} from '../../Utils/FlagMaps';
+import {ChevronsLeft, ChevronsRight} from 'react-native-feather';
+import MenuView from '../../Components/Views/MenuView';
+import SettingsView from '../../Components/Views/SettingsView';
+import FAQView from '../../Components/Views/FAQView';
+import ContactUsView from '../../Components/Views/ContactUsView';
+import BugView from '../../Components/Views/BugView';
+import TermsView from '../../Components/Views/TermsView';
+import PrivacyView from '../../Components/Views/PrivacyView';
 
 const ProfileScreen = () => {
-
-  const userProfile = getProfile().data;
+  const userProfile = getProfile();
   const userId = getUserId();
+
+  const [activeTab, setActiveTab] = useState('profile');
+
   console.log('profile', userProfile);
-  console.log('userId', userId);
-  const logout = async () => {
+
+  function getAgeFromDOB(
+    dobString: string | null | undefined,
+  ): string | number {
+    if (!dobString) return '—';
     try {
-      clearSession();
-      clearUserId();
-    } catch (err) {
-      console.error('❌ Logout exception:', err);
+      const birthDate = new Date(dobString);
+      if (isNaN(birthDate.getTime())) return '—';
+      const ageDiff = Date.now() - birthDate.getTime();
+      const calculatedAge = Math.floor(
+        ageDiff / (1000 * 60 * 60 * 24 * 365.25),
+      );
+      return calculatedAge > 0 && calculatedAge < 120 ? calculatedAge : '—';
+    } catch (e) {
+      console.error('Error parsing DOB:', e);
+      return '—';
     }
-  };
+  }
 
   return (
     <View
@@ -25,12 +50,74 @@ const ProfileScreen = () => {
         tailwind`w-full h-full`,
         {backgroundColor: themeColors.secondary},
       ]}>
-      <Text style={tailwind`mt-24`}>{userId}</Text>
-      <TouchableOpacity onPress={logout}>
-        <View style={tailwind`p-2`}>
-          <Text>Logout User</Text>
+      <View style={tailwind`absolute flex-1 w-full h-full`}>
+        <View style={tailwind`flex-1`}>
+          <Image
+            source={{uri: userProfile.data.Photos[0].photoUrl}}
+            style={[
+              tailwind`w-full h-full`,
+              {resizeMode: 'cover', alignSelf: 'flex-start'},
+            ]}
+          />
         </View>
-      </TouchableOpacity>
+      </View>
+      <View
+        style={[
+          tailwind`absolute left-4 right-4 bottom-6 h-7/12 rounded-8`,
+          {backgroundColor: themeColors.secondary},
+        ]}>
+        {activeTab === 'profile' && (
+          <>
+            <View
+              style={tailwind`w-full flex flex-row items-center justify-between px-4 pt-5 pb-3`}>
+              <Text
+                style={[
+                  tailwind`text-3xl font-bold`,
+                  {color: themeColors.primary},
+                ]}>
+                {userProfile.data.name} ({getAgeFromDOB(userProfile.data.dob)})
+              </Text>
+              <Text style={tailwind`text-3xl font-semibold`}>
+                {countryFlagMap[userProfile.data.About[0].background] ?? ''}
+              </Text>
+            </View>
+            <View style={tailwind`px-4`}>
+              <Text style={tailwind`text-base text-gray-800`}>
+                {userProfile.data.height ? `${userProfile.data.height} • ` : ''}
+                {userProfile.data.About[0].religion
+                  ? `${userProfile.data.About[0].religion}${
+                      userProfile.data.About[0].sect
+                        ? ` (${userProfile.data.About[0].sect})`
+                        : ''
+                    } • `
+                  : ''}
+                {userProfile.data.Career[0].job ?? ''}
+              </Text>
+            </View>
+          </>
+        )}
+        <ScrollView style={tailwind`flex-1 mt-3 mb-16 px-4`}>
+          {activeTab === 'profile' && <MenuView updateTab={setActiveTab} />}
+          {activeTab === 'settings' && (
+            <SettingsView updateTab={setActiveTab} />
+          )}
+          {activeTab === 'faq' && (
+            <FAQView updateTab={setActiveTab} />
+          )}  
+          {activeTab === 'contact' && (
+            <ContactUsView updateTab={setActiveTab} />
+          )}
+          {activeTab === 'bug' && (
+            <BugView updateTab={setActiveTab} />
+          )}
+          {activeTab === 'terms' && (
+            <TermsView updateTab={setActiveTab} />
+          )}
+          {activeTab === 'privacy' && (
+            <PrivacyView updateTab={setActiveTab} />
+          )}
+        </ScrollView>
+      </View>
     </View>
   );
 };
