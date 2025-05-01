@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 
 let currentUserId = null
 let session = null
@@ -103,4 +104,20 @@ export const setJwtToken = async (newProfile) => {
 export const clearJwtToken = async () => {
   JwtToken = null;
   await AsyncStorage.removeItem('JwtToken');
+};
+
+export const grabUpdateuserProfile = async () => {
+  try {
+    const response = await axios.get(
+      `https://marhaba-server.onrender.com/api/user/${currentUserId}`,
+    );
+    if(response.data) {
+      console.log('grabUpdateuserProfile', response.data);
+      setProfile(JSON.stringify(response.data.data)); 
+    } else {
+      console.log('Login Failed', 'Email / Password do not match our records.');
+    }
+  } catch (error) {
+    console.error('Login failed:', error);
+  }
 };

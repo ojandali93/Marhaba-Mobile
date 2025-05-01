@@ -29,6 +29,7 @@ const SignupScreen = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [verify, setVerify] = useState<string>('');
+  const [phone, setPhone] = useState<string>('');
 
   const [validEmail, setValidEmail] = useState<boolean>(true);
   const [validPassowrd, setValidPassword] = useState<boolean>(true);
@@ -43,7 +44,7 @@ const SignupScreen = () => {
   const loadPreferences = async () => {
     const storedEmail = await AsyncStorage.getItem('email');
     const storedPassword = await AsyncStorage.getItem('password');
-
+    const storedPhone = await AsyncStorage.getItem('phone');
     if (storedEmail) {
       setEmail(storedEmail);
     }
@@ -51,6 +52,24 @@ const SignupScreen = () => {
       setPassword(storedPassword);
       setVerify(storedPassword);
     }
+    if (storedPhone) {
+      setPhone(storedPhone);
+    }
+  };
+
+  const formatPhoneNumber = (input: string): string => {
+    // Remove any non-digit characters
+    const cleaned = input.replace(/\D/g, '');
+  
+    // Match the cleaned string to format
+    const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+  
+    if (match) {
+      return `${match[1]}-${match[2]}-${match[3]}`;
+    }
+  
+    // Return original if it can't be formatted
+    return input;
   };
 
   const handleEmailUpdate = (data: string) => {
@@ -84,7 +103,8 @@ const SignupScreen = () => {
     verify.length > 0 &&
     validEmail &&
     validPassowrd &&
-    validVerify
+    validVerify &&
+    phone.length > 0
       ? storeNextScreen()
       : Alert.alert(
           'Requirements',
@@ -95,6 +115,7 @@ const SignupScreen = () => {
   const storeNextScreen = async () => {
     await AsyncStorage.setItem('email', email);
     await AsyncStorage.setItem('password', password);
+    await AsyncStorage.setItem('phone', phone);
     navigation.navigate('Identity');
   };
 
@@ -156,22 +177,16 @@ const SignupScreen = () => {
                 Passwords & Verify do not match.
               </Text>
             )}
+            <AithInputStandard
+              fieldName="Phone (###) ###-####"
+              value={phone}
+              changeText={formatPhoneNumber}
+              secure={true}
+              valid={validVerify}
+            />
             <View style={tailwind`w-full flex flex-row justify-end`}>
               <AuthMainButton text={'Signup'} click={redirectToIdentity} />
             </View>
-            {/* <View style={tailwind`w-full flex flex-row justify-between`}>
-              <View
-                style={tailwind`${
-                  Platform.OS === 'ios' ? 'w-1/2 pr-1' : 'w-full'
-                }`}>
-                <GoogleButton text="Signup" />
-              </View>
-              {Platform.OS === 'ios' && (
-                <View style={tailwind`w-1/2 pl-1`}>
-                  <AppleButton text="Signup" />
-                </View>
-              )}
-            </View> */}
           </View>
         </View>
       </View>

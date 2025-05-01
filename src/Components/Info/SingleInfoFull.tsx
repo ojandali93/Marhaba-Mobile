@@ -24,7 +24,7 @@ const SingleInfoFull: React.FC<SingleInfoFullProps> = ({
     <View
       style={[
         tailwind`flex flex-col rounded-md py-2 px-3`,
-        {borderColor: themeColors.primary, backgroundColor: 'rgba(214, 203, 182, .5)'},
+        {borderColor: themeColors.primary, backgroundColor: themeColors.darkSecondaryOpacity},
         containerStyle,
       ]}>
       {label != '' && (

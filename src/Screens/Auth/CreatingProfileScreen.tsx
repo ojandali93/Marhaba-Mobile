@@ -61,6 +61,7 @@ const CreatingProfileScreen = () => {
     const dob = await AsyncStorage.getItem('dob');
     const gender = await AsyncStorage.getItem('gender');
     const height = await AsyncStorage.getItem('height');
+    const phone = await AsyncStorage.getItem('phone');
     console.log('grabbed all asyn info');
 
     axios
@@ -76,6 +77,7 @@ const CreatingProfileScreen = () => {
         tier: 1,
         longitude: null,
         latitude: null,
+        phone,
       })
       .then(response => {
         console.log('profile response: ', response);

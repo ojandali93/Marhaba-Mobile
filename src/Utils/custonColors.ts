@@ -1,7 +1,10 @@
 const themeColors = {
-  primary: '#2e694b',
-  secondary: '#E9DDC7',
-  darkSecondary: '#C4B495',
+  primary: '#008080',
+  primaryOpacity: 'rgba(0, 128, 128, .8)',
+  secondary: '#FAF9F6',
+  secondaryOpacity: 'rgba(250, 249, 246,.8)' ,
+  darkSecondary: '#E3E0D8',
+  darkSecondaryOpacity: 'rgba(227, 224, 216, .8)',
   red: '#EF5350',
   green: '#4ade80',
   blue: '#2196F3',

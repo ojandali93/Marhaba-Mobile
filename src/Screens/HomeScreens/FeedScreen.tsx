@@ -223,7 +223,7 @@ const [showMatchModal, setShowMatchModal] = useState(false);
           style={[
             tailwind`flex-row items-center p-2 rounded-full`,
             {
-              backgroundColor: 'rgba(255,255,255,0.9)',
+              backgroundColor: themeColors.secondary,
               borderWidth: 1,
               borderColor: themeColors.primary, // ✅ green border
             },
@@ -235,7 +235,7 @@ const [showMatchModal, setShowMatchModal] = useState(false);
             color={themeColors.primary}
             strokeWidth={2.5}
           />
-          <Text style={tailwind`ml-2 text-xl font-bold text-green-900`}>
+          <Text style={[tailwind`ml-2 text-xl font-bold`, {color: themeColors.primary}]}>
             {likes}
           </Text>
         </View>

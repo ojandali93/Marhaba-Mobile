@@ -185,21 +185,21 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
         <>
           <View
             style={[
-              tailwind`absolute bottom-41 left-4 right-4 rounded-4`,
-              {backgroundColor: 'rgba(214, 203, 182, .8)'},
+              tailwind`absolute bottom-42 left-4 right-4 rounded-4`,
+              {backgroundColor: themeColors.darkSecondaryOpacity},
             ]}>
-            <View style={tailwind`flex-row justify-between items-center p-4`}>
+            <View style={tailwind`flex-row justify-between items-center p-4 pb-2`}>
               <View style={tailwind`flex-row justify-between w-full items-end`}>
-                <Text style={tailwind`text-3xl font-bold text-green-900`}>
+                <Text style={[tailwind`text-3xl font-bold`, {color: themeColors.primary}]}>
                   {name} {`(${age})`}
                 </Text>
-                <Text style={tailwind`text-3xl font-semibold`}>
+                <Text style={[tailwind`text-3xl font-semibold`, {color: themeColors.primary}]}>
                   {countryFlagMap[background] ?? ''}
                 </Text>
               </View>
             </View>
 
-            <View style={tailwind`mt-1 px-4`}>
+            <View style={tailwind` px-4`}>
               <Text style={tailwind`text-base text-gray-800`}>
                 {height ? `${height} • ` : ''}
                 {religion ? `${religion}${sect ? ` (${sect})` : ''} • ` : ''}
@@ -217,16 +217,16 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
               </View>
             )}
 
-            <View style={tailwind`mt-2 w-full flex flex-row items-center px-4`}>
+            {/* <View style={tailwind`mt-2 w-full flex flex-row items-center px-4`}>
               {drink && (
                 <View style={tailwind`flex flex-row items-center mr-2`}>
-                  <Image style={tailwind`h-6 w-6`} source={cheers} />
+                  <Image style={tailwind`h-4 w-4`} source={cheers} />
                   <Text style={tailwind`text-lg ml-2`}>{drink}</Text>
                 </View>
               )}
               {smoke && (
                 <View style={tailwind`flex flex-row items-center mr-2`}>
-                  <Image style={tailwind`h-6 w-6`} source={ciggy} />
+                  <Image style={tailwind`h-4 w-4`} source={ciggy} />
                   <Text style={tailwind`text-lg ml-2`}>{smoke}</Text>
                 </View>
               )}
@@ -236,7 +236,7 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                   <Text style={tailwind`text-lg ml-2`}>{hasKids}</Text>
                 </View>
               )}
-            </View>
+            </View> */}
 
             {prompt?.prompt && (
               <View style={tailwind`mt-2 px-4`}>
@@ -245,7 +245,7 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
             )}
             {prompt?.response && (
               <View style={tailwind`mt-2 px-4 pb-3`}>
-                <Text numberOfLines={2} style={tailwind`font-semibold text-lg`}>
+                <Text numberOfLines={1} style={tailwind`font-semibold text-lg`}>
                   {`"${prompt.response}"`}
                 </Text>
               </View>
@@ -276,36 +276,33 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
             style={tailwind`absolute z-20 bottom-23 left-4 right-4 rounded-5 flex flex-row items-center justify-center`}>
             <View
               style={[
-                tailwind`w-full flex flex-row items-center justify-end rounded-4 py-2`,
-                {backgroundColor: 'rgba(214, 203, 182, .8)'},
+                tailwind`w-full flex flex-row items-center justify-center rounded-4 py-2`,
+                {backgroundColor: themeColors.darkSecondaryOpacity},
               ]}>
               <TouchableOpacity
                 onPress={handleDislikeProfile}
                 style={[
-                  tailwind`p-3 rounded-full ml-4 shadow-lg`,
+                  tailwind`p-3 rounded-full shadow-lg`,
                   {backgroundColor: isInteracting ? '#fca5a5' : '#f87171'},
                 ]}>
                 <X height={24} width={24} color={'white'} strokeWidth={3} />
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={handleLikeProfile}
-                style={[
-                  tailwind`p-3 rounded-full shadow-lg ml-2`,
-                  {backgroundColor: isInteracting ? '#6ee7b7' : '#34d399'},
-                ]}>
-                <Check height={24} width={24} color={'white'} strokeWidth={3} />
-              </TouchableOpacity>
-              <TouchableOpacity
                 onPress={handleOpenSuperlikeModal}
                 style={[
-                  tailwind`p-3 rounded-full shadow-lg ml-4 mr-2.5`,
+                  tailwind`p-3 rounded-full shadow-lg mx-7`,
                   {
                     backgroundColor: isInteracting
                       ? '#6ee7b7'
                       : themeColors.primary,
                   },
                 ]}>
-                <Heart height={24} width={24} color={'white'} strokeWidth={3} />
+                <Heart height={30} width={30} color={'white'} strokeWidth={3} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleLikeProfile}
+                style={tailwind`p-3 rounded-full shadow-lg bg-emerald-500`}>
+                <Check height={24} width={24} color={'white'} strokeWidth={3} />
               </TouchableOpacity>
             </View>
           </View>
@@ -316,40 +313,37 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
             style={tailwind`absolute z-20 bottom-23 left-4 right-4 rounded-5 flex flex-row items-center justify-center`}>
             <View
               style={[
-                tailwind`w-full flex flex-row items-center justify-end rounded-4 py-2`,
-                {backgroundColor: 'rgba(214, 203, 182, .8)'},
+                tailwind`w-full flex flex-row items-center justify-center rounded-4 py-2`,
+                {backgroundColor: themeColors.darkSecondaryOpacity},
               ]}>
               <TouchableOpacity
                 onPress={handleDislikeProfile}
                 style={[
-                  tailwind`p-3 rounded-full ml-4 shadow-lg`,
+                  tailwind`p-3 rounded-full shadow-lg`,
                   {backgroundColor: isInteracting ? '#fca5a5' : '#f87171'},
                 ]}>
                 <X height={24} width={24} color={'white'} strokeWidth={3} />
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={handleLikeProfile}
-                style={[
-                  tailwind`p-3 rounded-full shadow-lg ml-2`,
-                  {backgroundColor: isInteracting ? '#6ee7b7' : '#34d399'},
-                ]}>
-                <Check height={24} width={24} color={'white'} strokeWidth={3} />
-              </TouchableOpacity>
-              <TouchableOpacity
                 onPress={handleOpenSuperlikeModal}
                 style={[
-                  tailwind`p-3 rounded-full shadow-lg ml-4 mr-2.5`,
+                  tailwind`p-3 rounded-full shadow-lg mx-7`,
                   {
                     backgroundColor: isInteracting
                       ? '#6ee7b7'
                       : themeColors.primary,
                   },
                 ]}>
-                <Heart height={24} width={24} color={'white'} strokeWidth={3} />
+                <Heart height={30} width={30} color={'white'} strokeWidth={3} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleLikeProfile}
+                style={tailwind`p-3 rounded-full shadow-lg bg-emerald-500`}>
+                <Check height={24} width={24} color={'white'} strokeWidth={3} />
               </TouchableOpacity>
             </View>
           </View>
-          <View style={tailwind`absolute z-20 bottom-41 left-4 right-4`}>
+          <View style={tailwind`absolute z-20 bottom-42 left-4 right-4`}>
             <TouchableWithoutFeedback onPress={handleToggleFullProfile}>
               <View
                 style={[
@@ -373,15 +367,15 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
           </View>
           <View
             style={[
-              tailwind`absolute top-16 bottom-41 left-4 right-4 rounded-5`,
-              {backgroundColor: 'rgba(214, 203, 182, .8)'},
+              tailwind`absolute top-16 bottom-42 left-4 right-4 rounded-5`,
+              {backgroundColor: themeColors.darkSecondaryOpacity},
             ]}>
             <ScrollView
               style={tailwind`flex-1 p-4 pt-6`}
               contentContainerStyle={tailwind``}
               showsVerticalScrollIndicator={false}>
               <View style={tailwind`pb-12`}>
-                <Text style={tailwind`text-4xl font-bold text-green-900`}>
+                <Text style={[tailwind`text-4xl font-bold`, {color: themeColors.primary}]}>
                   {name}
                 </Text>
                 <View style={tailwind`mt-8 flex flex-col`}>
@@ -474,7 +468,7 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                 {prompts.filter((p: Prompt) => p.response)?.length > 0 && (
                   <View style={tailwind`mt-4`}>
                     <Text
-                      style={tailwind`text-3xl font-bold text-green-900 mb-1`}>
+                      style={[tailwind`text-3xl font-bold mb-1`, {color: themeColors.primary}]}>
                       Prompts
                     </Text>
                     {prompts.map(
@@ -493,7 +487,7 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
 
                 <View style={tailwind`mt-4`}>
                   <Text
-                    style={tailwind`text-3xl font-bold text-green-900 mb-4`}>
+                      style={[tailwind`text-3xl font-bold mb-4`, {color: themeColors.primary}]}>
                     Core Values
                   </Text>
                   <View style={tailwind`flex flex-col`}>
@@ -546,28 +540,9 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                   </View>
                 </View>
 
-                {values.length > 0 && (
-                  <View style={tailwind`mt-4`}>
-                    <Text
-                      style={tailwind`text-3xl font-bold text-green-900 mb-4`}>
-                      Traits
-                    </Text>
-                    <View style={tailwind`flex flex-row flex-wrap`}>
-                      {values.map((item: Value, index) => (
-                        <View key={index} style={tailwind`pr-2 w-1/2 mb-2`}>
-                          <SingleInfoFull
-                            label={''}
-                            value={item.value.replace(/[\[\]"]/g, '')}
-                          />
-                        </View>
-                      ))}
-                    </View>
-                  </View>
-                )}
-
                 <View style={tailwind`mt-4`}>
-                  <Text
-                    style={tailwind`text-3xl font-bold text-green-900 mb-4`}>
+                <Text
+                      style={[tailwind`text-3xl font-bold mb-4`, {color: themeColors.primary}]}>
                     Lifestyle
                   </Text>
                   <View style={tailwind`flex flex-col`}>
@@ -610,7 +585,7 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                   </View>
                 </View>
 
-                {communicationStyles.length > 0 && (
+                {/* {communicationStyles.length > 0 && (
                   <View style={tailwind`mt-4`}>
                     <Text
                       style={tailwind`text-3xl font-bold text-green-900 mb-4`}>
@@ -627,12 +602,12 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                       ))}
                     </View>
                   </View>
-                )}
+                )} */}
 
                 {loveLanguages.length > 0 && (
                   <View style={tailwind`mt-4`}>
                     <Text
-                      style={tailwind`text-3xl font-bold text-green-900 mb-4`}>
+                      style={[tailwind`text-3xl font-bold mb-4`, {color: themeColors.primary}]}>
                       Love Languages
                     </Text>
                     {loveLanguages.map((item: LoveLanguage, index) => (
@@ -646,7 +621,7 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                   </View>
                 )}
 
-                <View style={tailwind`mt-4`}>
+                {/* <View style={tailwind`mt-4`}>
                   <Text
                     style={tailwind`text-3xl font-bold text-green-900 mb-4`}>
                     Attachment
@@ -689,9 +664,9 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                       </View>
                     </View>
                   </View>
-                </View>
+                </View> */}
 
-                <View style={tailwind`mt-4`}>
+                {/* <View style={tailwind`mt-4`}>
                   <Text
                     style={tailwind`text-3xl font-bold text-green-900 mb-4`}>
                     Emotions & Maturity
@@ -726,12 +701,31 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                       </View>
                     </View>
                   </View>
-                </View>
+                </View> */}
+
+                {values.length > 0 && (
+                  <View style={tailwind`mt-4`}>
+                    <Text
+                      style={[tailwind`text-3xl font-bold mb-4`, {color: themeColors.primary}]}>
+                      Traits
+                    </Text>
+                    <View style={tailwind`flex flex-row flex-wrap`}>
+                      {values.map((item: Value, index) => (
+                        <View key={index} style={tailwind`pr-2 w-1/2 mb-2`}>
+                          <SingleInfoFull
+                            label={''}
+                            value={item.value.replace(/[\[\]"]/g, '')}
+                          />
+                        </View>
+                      ))}
+                    </View>
+                  </View>
+                )}
 
                 {tags.length > 0 && (
                   <View style={tailwind`mt-3`}>
                     <Text
-                      style={tailwind`text-3xl font-bold text-green-900 mb-4`}>
+                      style={[tailwind`text-3xl font-bold mb-4`, {color: themeColors.primary}]}>
                       Interests
                     </Text>
                     <ScrollView
@@ -747,9 +741,11 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                   </View>
                 )}
 
+                
+
                 <View style={tailwind`mt-4`}>
-                  <Text
-                    style={tailwind`text-3xl font-bold text-green-900 mb-4`}>
+                <Text
+                      style={[tailwind`text-3xl font-bold mb-4`, {color: themeColors.primary}]}>
                     Future Goals
                   </Text>
                   <View style={tailwind`flex flex-col mb-6`}>

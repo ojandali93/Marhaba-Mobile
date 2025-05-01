@@ -12,14 +12,8 @@ import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
 import AithInputStandard from '../../Components/Inputs/AithInputStandard';
 import AuthMainButton from '../../Components/Buttons/AuthMainButton';
-import DateSelect from '../../Components/Select/DateSelect';
-import GenderSelector from '../../Components/Select/GenderSelect';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
-import HeightSelect from '../../Components/Select/HeightSelect';
-import SmokeSelect from '../../Components/Select/SmokeSelect';
-import DrinkSelect from '../../Components/Select/DrinkSelect';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import KidsSelect from '../../Components/Select/KidsSelect';
 import StandardSelect from '../../Components/Select/StandardSelect';
 
 const screenHeight = Dimensions.get('window').height;
