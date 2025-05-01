@@ -82,6 +82,7 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [superlikeMessage, setSuperlikeMessage] = useState('');
+  const [photoIndex, setPhotoIndex] = useState(0);
 
   if (!profile) return null;
 
@@ -105,7 +106,6 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
   const values: Value[] = user?.Values ?? [];
   const prompt = prompts?.[0];
   const age = user?.dob ? getAgeFromDOB(user.dob) : '—';
-  const photoUrl = photos?.[0]?.photoUrl;
   const drink = about?.drink;
   const name = user?.name ?? 'N/A';
   const smoke = about?.smoke;
@@ -119,6 +119,13 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
   const timeline = about?.timeline;
   const sect = about?.sect;
   const profileId = user?._id ?? user?.userId;
+
+  const photoUrl = photos?.[photoIndex]?.photoUrl;
+
+  const handleImageTap = () => {
+    if (photos.length <= 1) return;
+    setPhotoIndex(prev => (prev + 1) % photos.length);
+  };
 
   const handleOpenSuperlikeModal = () => {
     if (isInteracting) return;
@@ -171,15 +178,17 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
 
   return (
     <View style={tailwind`flex-1 relative`}>
-      {photoUrl ? (
-        <Image
-          source={{uri: photoUrl}}
-          style={tailwind`absolute w-full h-full`}
-          resizeMode="cover"
-        />
-      ) : (
-        <View style={tailwind`absolute w-full h-full bg-gray-300`} />
-      )}
+      <TouchableWithoutFeedback onPress={handleImageTap}>
+        {photoUrl ? (
+          <Image
+            source={{uri: photoUrl}}
+            style={tailwind`absolute w-full h-full`}
+            resizeMode="cover"
+          />
+        ) : (
+          <View style={tailwind`absolute w-full h-full bg-gray-300`} />
+        )}
+      </TouchableWithoutFeedback>
 
       {!showFullProfile ? (
         <>
