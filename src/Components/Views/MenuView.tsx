@@ -36,12 +36,12 @@ const MenuView = ({updateTab}: MenuViewProps) => {
               </Text>
               <ChevronsRight height={24} width={24} color={themeColors.primary} />
           </TouchableOpacity>
-          <View style={[tailwind`flex-row justify-between items-center p-4 rounded-2 mt-2`, {backgroundColor: themeColors.darkSecondary}]}>
-              <Text style={tailwind`text-base font-semibold text-gray-800`}>
+          <TouchableOpacity onPress={() => updateTab('upgrade')} style={[tailwind`flex-row justify-between items-center p-4 rounded-2 mt-2`, {backgroundColor: themeColors.darkSecondary}]}>
+              <Text style={[tailwind`text-base font-semibold`, {color: themeColors.primary}]}>
                 Upgrade to Pro (50% off)
               </Text>
               <ChevronsRight height={24} width={24} color={themeColors.primary} />
-          </View>
+          </TouchableOpacity>
           <View style={[tailwind`flex-row justify-between items-center p-4 rounded-2 mt-2`, {backgroundColor: themeColors.darkSecondary}]}>
               <Text style={tailwind`text-base font-semibold text-gray-800`}>
                Visibility

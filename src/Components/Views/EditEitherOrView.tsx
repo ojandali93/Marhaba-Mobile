@@ -120,133 +120,131 @@ const EditEitherOrView = () => {
         }
       };
 
-      const updateCommunication = async (newTravel: string) => {
-        if(newTravel !== travel) {
-            setTravel(newTravel)
+      const updatePineapple = async (newTravel: string) => {
+        if(newTravel !== pineapple) {
+            setPineapple(newTravel)
             setChangeDetected(true)
         } else {
-            setTravel(newTravel)
+            setPineapple(newTravel)
+        }
+      };
+
+      const updateGiveUp = async (newValue: string) => {
+        if(newValue !== giveUp) {
+            setGiveUp(newValue)
+            setChangeDetected(true)
+        } else {
+            setGiveUp(newValue)
+        }
+      };
+
+      const updateCommunication = async (newValue: string) => {
+        if(newValue !== communication) {
+            setCommunication(newValue)
+            setChangeDetected(true)
+        } else {
+            setCommunication(newValue)
         }
       };
 
       const updateFirstSight = async (newValue: string) => {
-        if(newValue !== social) {
-            setSocial(newValue)
+        if(newValue !== firstSight) {
+            setFirstSight(newValue)
             setChangeDetected(true)
         } else {
-            setSocial(newValue)
+            setFirstSight(newValue)
         }
       };
 
-      const updateMorning = async (newTravel: string) => {
-        if(newTravel !== travel) {
-            setTravel(newTravel)
+      const updateMorning = async (newValue: string) => {
+        if(newValue !== morning) {
+            setMorning(newValue)
             setChangeDetected(true)
         } else {
-            setTravel(newTravel)
+            setMorning(newValue)
+        }
+      };
+
+      const updateTravel = async (newValue: string) => {
+        if(newValue !== travel) {
+            setTravel(newValue)
+            setChangeDetected(true)
+        } else {
+            setTravel(newValue)
         }
       };
 
       const updateSpicy = async (newValue: string) => {
-        if(newValue !== social) {
-            setSocial(newValue)
+        if(newValue !== spicy) {
+            setSpicy(newValue)
             setChangeDetected(true)
         } else {
-            setSocial(newValue)
+            setSpicy(newValue)
         }
       };
 
-      const updateDecision = async (newTravel: string) => {
-        if(newTravel !== travel) {
-            setTravel(newTravel)
+      const updateDecision = async (newValue: string) => {
+        if(newValue !== decision) {
+            setDecision(newValue)
             setChangeDetected(true)
         } else {
-            setTravel(newTravel)
+            setDecision(newValue)
         }
       };
 
       const updateArrive = async (newValue: string) => {
-        if(newValue !== social) {
-            setSocial(newValue)
+        if(newValue !== arrive) {
+            setArrive(newValue)
             setChangeDetected(true)
         } else {
-            setSocial(newValue)
+            setArrive(newValue)
         }
       };
 
-      const updatePartner = async (newTravel: string) => {
-        if(newTravel !== travel) {
-            setTravel(newTravel)
+      const updatePartner = async (newValue: string) => {
+        if(newValue !== partner) {
+            setPartner(newValue)
             setChangeDetected(true)
         } else {
-            setTravel(newTravel)
+            setPartner(newValue)
         }
       };
 
       const updateMove = async (newValue: string) => {
-        if(newValue !== social) {
-            setSocial(newValue)
+        if(newValue !== move) {
+            setMove(newValue)
             setChangeDetected(true)
         } else {
-            setSocial(newValue)
+            setMove(newValue)
         }
       };
 
-      const updateOpposite = async (newTravel: string) => {
-        if(newTravel !== travel) {
-            setTravel(newTravel)
+      const updateOpposite = async (newValue: string) => {
+        if(newValue !== opposite) {
+            setOpposite(newValue)
             setChangeDetected(true)
         } else {
-            setTravel(newTravel)
+            setOpposite(newValue)
         }
       };
 
       const updateGhost = async (newValue: string) => {
-        if(newValue !== social) {
-            setSocial(newValue)
+        if(newValue !== ghost) {
+            setGhost(newValue)
             setChangeDetected(true)
         } else {
-            setSocial(newValue)
+            setGhost(newValue)
         }
       };
 
-      const updateLongDistance = async (newTravel: string) => {
-        if(newTravel !== travel) {
-            setTravel(newTravel)
+      const updateLongDistance = async (newValue: string) => {
+        if(newValue !== longDistance) {
+            setLongDistance(newValue)
             setChangeDetected(true)
         } else {
-            setTravel(newTravel)
+            setLongDistance(newValue)
         }
       };
-
-      const updateSocial = async (newValue: string) => {
-        if(newValue !== social) {
-            setSocial(newValue)
-            setChangeDetected(true)
-        } else {
-            setSocial(newValue)
-        }
-      };
-
-      const updateTravel = async (newTravel: string) => {
-        if(newTravel !== travel) {
-            setTravel(newTravel)
-            setChangeDetected(true)
-        } else {
-            setTravel(newTravel)
-        }
-      };
-
-      const updateSocial = async (newValue: string) => {
-        if(newValue !== social) {
-            setSocial(newValue)
-            setChangeDetected(true)
-        } else {
-            setSocial(newValue)
-        }
-      };
-
-
 
       const updateUserProfile = async () => {
         try {

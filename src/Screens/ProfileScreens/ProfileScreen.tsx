@@ -18,6 +18,7 @@ import BugView from '../../Components/Views/BugView';
 import TermsView from '../../Components/Views/TermsView';
 import PrivacyView from '../../Components/Views/PrivacyView';
 import EditProfileModalContent from '../../Components/Modals/EditProfileModalContent';
+import UpgradeView from '../../Components/Views/UpgradeView';
 
 const ProfileScreen = () => {
   const userProfile = getProfile();
@@ -64,7 +65,7 @@ const ProfileScreen = () => {
       </View>
       <View
         style={[
-          tailwind`absolute left-4 right-4 bottom-6 ${activeTab === 'editProfile' ? 'h-10/12' : 'h-5/12'} rounded-8`,
+          tailwind`absolute left-4 right-4 bottom-6 ${activeTab === 'editProfile' || activeTab === 'upgrade' ? 'h-10/12' : 'h-5/12'} rounded-8`,
           {backgroundColor: themeColors.secondary},
         ]}>
         {activeTab === 'profile' && (
@@ -117,9 +118,12 @@ const ProfileScreen = () => {
           {activeTab === 'privacy' && (
             <PrivacyView updateTab={setActiveTab} />
           )} 
-          {activeTab === 'editProfile' && (
-            <EditProfileModalContent updateTab={setActiveTab} />
-          )}
+            {activeTab === 'editProfile' && (
+              <EditProfileModalContent updateTab={setActiveTab} />
+            )}
+            {activeTab === 'upgrade' && (
+              <UpgradeView updateTab={setActiveTab} />
+            )}
         </ScrollView>
       </View>
     </View>
