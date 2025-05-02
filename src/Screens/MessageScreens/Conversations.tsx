@@ -70,6 +70,7 @@ const Conversations = () => {
       );
 
       if (response.data?.data.length > 0) {
+        console.log("Conversations:", response.data?.data);
         setConversations(response.data?.data);
       } else {
         console.warn('No conversations found or invalid data format:', response.data);
@@ -138,7 +139,7 @@ const Conversations = () => {
 
   return (
     <SafeAreaView style={[tailwind`flex-1`, {backgroundColor: themeColors.secondary}]}>
-      <View style={[tailwind`px-4 py-3 border-b border-gray-700`, {backgroundColor: themeColors.darkSecondary}]}>
+      <View style={[tailwind`px-4 py-3 border-b border-gray-700`, {backgroundColor: themeColors.secondary}]}>
         <Text style={tailwind`text-2xl font-bold text-gray-800`}>Conversations</Text>
       </View>
       <View style={tailwind`flex-1`}>

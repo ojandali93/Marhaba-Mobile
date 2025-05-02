@@ -11,13 +11,14 @@ import {
   TouchableOpacity,
   RefreshControl,
   ScrollView,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import axios from 'axios';
 import tailwind from 'twrnc';
 import { Check, Heart, X } from 'react-native-feather';
 
 import themeColors from '../../Utils/custonColors';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useProfile } from '../../Context/ProfileContext';
 
 interface Interaction {
@@ -41,6 +42,7 @@ const imageSize = (width - itemPadding * (numColumns + 1)) / numColumns;
 
 const LikeScreen = () => {
   const {profile, userId} = useProfile()
+  const navigation = useNavigation();
     
   const [loading, setLoading] = useState<boolean>(true);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
@@ -140,53 +142,53 @@ const LikeScreen = () => {
     console.log('Rejected like:', interactionId);
   };
 
+  const handleViewProfile = (userProfile: any) => {
+    if (profile?.tier === 3) {
+      navigation.navigate('SingleProfile', { profile: userProfile });
+    } else {
+      null
+    }
+  };
+
   const renderGridItem = ({ item }: { item: ProcessedInteraction }) => {
     const profilePicUrl = item.likerProfile.Photos![0].photoUrl;
+    console.log('liker: ', item.likerProfile)
 
     return (
-      <TouchableOpacity
-        style={styles.gridItem}
-      >
-        <Image
-          source={{ uri: profilePicUrl }}
-          style={styles.profileImage}
-          resizeMode="cover"
-          blurRadius={15}
+      <TouchableWithoutFeedback onPress={() => handleViewProfile(item.likerProfile)}>
+  <View style={styles.gridItem}>
+    <Image
+      source={{ uri: profilePicUrl }}
+      style={styles.profileImage}
+      resizeMode="cover"
+      blurRadius={profile?.tier === 3 ? 0 : 15}
+    />
+    {item.interaction === 'super' && (
+      <View style={tailwind`absolute top-2 left-2`}>
+        <Heart
+          height={28}
+          width={28}
+          fill={themeColors.primary}
+          color={themeColors.primary}
+          strokeWidth={2}
         />
-        {item.interaction === 'super' && (
-          <View style={tailwind`absolute top-2 left-2`}>
-            <Heart
-              height={28}
-              width={28}
-              fill={themeColors.primary}
-              color={themeColors.primary}
-              strokeWidth={2}
-            />
-          </View>
-        )}
-        {
-            profile?.tier === 3 && (
-                <View>
-                    <View style={tailwind`absolute bottom-2 left-2 p-2 bg-red-400 rounded-full`}>
-            <X
-                height={28}
-                width={28}
-                color={'white'}
-                strokeWidth={2}
-            />
+      </View>
+    )}
+    {profile?.tier === 3 && (
+      <>
+        <View style={tailwind`absolute z-20 bottom-2 left-2 p-2 bg-red-400 rounded-full`}>
+          <X height={28} width={28} color={'white'} strokeWidth={2} />
         </View>
-        <TouchableOpacity onPress={() => handleApproveLike(item.id, item.likerProfile.userId)} style={tailwind`absolute bottom-2 right-2 p-2 bg-green-400 rounded-full`}>
-            <Check
-                height={28}
-                width={28}
-                color={'white'}
-                strokeWidth={2}
-            />
+        <TouchableOpacity
+          onPress={() => handleApproveLike(item._id, item.liker._id)}
+          style={tailwind`absolute bottom-2 right-2 p-2 bg-green-400 rounded-full`}
+        >
+          <Check height={28} width={28} color={'white'} strokeWidth={2} />
         </TouchableOpacity>
-                </View>
-            )
-        }
-      </TouchableOpacity>
+      </>
+    )}
+  </View>
+</TouchableWithoutFeedback>
     );
   };
 

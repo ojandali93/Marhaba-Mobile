@@ -15,7 +15,7 @@ import { io } from 'socket.io-client';
 import axios from 'axios';
 import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
-import { ArrowUp, ChevronsLeft } from 'react-native-feather';
+import { ArrowUp, ChevronsLeft, Info } from 'react-native-feather';
 import { useNavigation } from '@react-navigation/native';
 import { useProfile } from '../../Context/ProfileContext';
 
@@ -109,6 +109,19 @@ const ChatScreen = ({ route }) => {
     };
   }, [conversationId]);
 
+  const createViewed = async (profileId: string, otherUser: any) => {
+    try {
+      await axios.post(`https://marhaba-server.onrender.com/api/viewed/create`, {
+        viewer: userId, 
+        viewed: profileId
+      });
+      console.log(`✅ Created viewed with ${profileId}`);
+      navigation.navigate('SingleProfile', { profile: otherUser })
+    } catch (error) {
+      console.error(`❌ Error creating conversation with ${profileId}:`, error);
+    }
+  };
+
   const sendMessage = () => {
     if (!textMessage.trim()) return;
 
@@ -130,61 +143,70 @@ const ChatScreen = ({ route }) => {
   };
 
   return (
-    <SafeAreaView style={[tailwind`flex-1`, { backgroundColor: themeColors.darkSecondary }]}>
-      <View style={[tailwind`p-4 border-b border-gray-700 flex-row items-center`, { backgroundColor: themeColors.darkSecondary }]}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <ChevronsLeft color={themeColors.primary} height={24} width={24} />
-        </TouchableOpacity>
-        <Text style={tailwind`text-2xl font-bold text-gray-800 ml-2`}>
-          {otherUser.name}
-        </Text>
-      </View>
+    <View style={[tailwind`flex-1`, {backgroundColor: themeColors.secondary}]}>
 
-      <ScrollView
-        ref={scrollViewRef}
-        style={[tailwind`flex-1 px-3 py-2`, { backgroundColor: themeColors.secondary }]}
-        contentContainerStyle={tailwind`pb-3`}
-        keyboardShouldPersistTaps="handled"
-        onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })}
-      >
-        {messages.map((msg, idx) => {
-          const isMe = msg.sender === userId; // ✅ CORRECT NOW
-          return (
-            <View
-              key={idx}
-              style={[
-                tailwind`my-2 max-w-[75%] p-3 rounded-lg`,
-                isMe ? tailwind`bg-blue-500 self-end` : tailwind`bg-stone-400 self-start`,
-              ]}
-            >
-              <Text style={tailwind`text-white`}>{msg.content}</Text>
-              <Text style={tailwind`text-xs text-white mt-1 text-right`}>
-                {formatTime(msg.created_at)}
-              </Text>
-            </View>
-          );
-        })}
-      </ScrollView>
-
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={60}
-      >
-        <View style={[tailwind`flex-row items-center border-t border-gray-700 p-3`, { backgroundColor: themeColors.darkSecondary }]}>
-          <TextInput
-            value={textMessage}
-            onChangeText={setTextMessage}
-            placeholder="Type a message..."
-            style={tailwind`flex-1 bg-gray-100 p-3 rounded-2 text-base`}
-            returnKeyType="send"
-            onSubmitEditing={sendMessage}
-          />
-          <TouchableOpacity onPress={sendMessage} style={tailwind`ml-2 bg-blue-500 p-2.3 rounded-2`}>
-            <ArrowUp color={'white'} height={24} width={24} />
+      <SafeAreaView  style={[tailwind`flex-1`, { backgroundColor: themeColors.secondary }]}>
+        <View style={[tailwind`p-4 border-b border-gray-700 flex-row items-center justify-between`, { backgroundColor: themeColors.secondary }]}>
+          <View style={tailwind`flex-row items-center`}>
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <ChevronsLeft color={themeColors.primary} height={24} width={24} />
+            </TouchableOpacity>
+            <Text style={tailwind`text-2xl font-bold text-gray-800 ml-2`}>
+              {otherUser.name}
+            </Text>
+          </View>
+          <TouchableOpacity onPress={() => createViewed(otherUser.userId, otherUser)}>
+            <Info color={themeColors.primary} height={24} width={24} />
           </TouchableOpacity>
         </View>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+
+        <ScrollView
+          ref={scrollViewRef}
+          style={[tailwind`flex-1 px-3 py-2`, { backgroundColor: themeColors.secondary }]}
+          contentContainerStyle={tailwind`pb-3`}
+          keyboardShouldPersistTaps="handled"
+          onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })}
+        >
+          {messages.map((msg, idx) => {
+            const isMe = msg.sender === userId; // ✅ CORRECT NOW
+            return (
+              <View
+                key={idx}
+                style={[
+                  tailwind`my-2 max-w-[75%] p-3 rounded-lg`,
+                  isMe ? tailwind`bg-blue-500 self-end` : tailwind`bg-stone-400 self-start`,
+                ]}
+              >
+                <Text style={tailwind`text-white`}>{msg.content}</Text>
+                <Text style={tailwind`text-xs text-white mt-1 text-right`}>
+                  {formatTime(msg.created_at)}
+                </Text>
+              </View>
+            );
+          })}
+        </ScrollView>
+
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={60}
+        >
+          <View style={[tailwind`flex-row items-center border-t border-gray-700 p-3`, { backgroundColor: themeColors.secondary }]}>
+            <TextInput
+              value={textMessage}
+              onChangeText={setTextMessage}
+              placeholder="Type a message..."
+              placeholderTextColor={'grey'}
+              style={tailwind`flex-1 bg-gray-300 p-3 pb-4 rounded-2 text-base/5`}
+              returnKeyType="send"
+              onSubmitEditing={sendMessage}
+            />
+            <TouchableOpacity onPress={sendMessage} style={tailwind`ml-2 bg-blue-500 p-2.3 rounded-2`}>
+              <ArrowUp color={'white'} height={24} width={24} />
+            </TouchableOpacity>
+          </View>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </View>
   );
 };
 

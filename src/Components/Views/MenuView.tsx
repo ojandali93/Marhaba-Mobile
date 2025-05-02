@@ -9,7 +9,7 @@ interface MenuViewProps {
 }
 
 const MenuView = ({updateTab}: MenuViewProps) => {
-  const {removeJwtToken, removeProfile, removeSession, removeUserId} = useProfile();
+  const {removeJwtToken, removeProfile, removeSession, removeUserId, profile} = useProfile();
 
     const logout = async () => {
         try {
@@ -42,6 +42,16 @@ const MenuView = ({updateTab}: MenuViewProps) => {
               </Text>
               <ChevronsRight height={24} width={24} color={themeColors.primary} />
           </TouchableOpacity>
+          {
+            profile.tier === 1 && (
+              <TouchableOpacity onPress={() => updateTab('Viewed')} style={[tailwind`flex-row justify-between items-center p-4 rounded-2 mt-2`, {backgroundColor: themeColors.darkSecondary}]}>
+                  <Text style={tailwind`text-base font-semibold`}>
+                    Recently Viewed
+                  </Text>
+                  <ChevronsRight height={24} width={24} color={themeColors.primary} />
+              </TouchableOpacity>
+            )
+          }
           <View style={[tailwind`flex-row justify-between items-center p-4 rounded-2 mt-2`, {backgroundColor: themeColors.darkSecondary}]}>
               <Text style={tailwind`text-base font-semibold text-gray-800`}>
                Visibility

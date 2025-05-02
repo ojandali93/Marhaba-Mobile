@@ -11,6 +11,7 @@ import FeedStackNavigation from './FeedStackNavigation';
 import ProfileScreen from '../Screens/ProfileScreens/ProfileScreen';
 import LikeStackNavigation from './LikeStackNavigation';
 import ConversationStackNavigation from './ConversationStackNavigation';
+import ProfileStackNavigation from './ProfileStackNavigation';
 
 const Tab = createBottomTabNavigator();
 
@@ -94,7 +95,7 @@ const BottomTabNavigation = () => {
           }}
         />
         <Tab.Screen
-          name="Conversation"
+          name="Conversations"
           component={ConversationStackNavigation}
           options={{
             tabBarShowLabel: false,
@@ -111,8 +112,8 @@ const BottomTabNavigation = () => {
           }}
         />
         <Tab.Screen
-          name="Profile"
-          component={ProfileScreen}
+          name="Profiles"
+          component={ProfileStackNavigation}
           options={{
             tabBarShowLabel: false,
             tabBarIcon: ({focused}) => (

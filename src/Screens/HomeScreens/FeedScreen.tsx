@@ -75,8 +75,21 @@ const [results, setResults] = useState<any[]>(allProfiles);
     }
   };
 
+  const createViewed = async (profileId: string) => {
+    try {
+      await axios.post(`https://marhaba-server.onrender.com/api/viewed/create`, {
+        viewer: userId, 
+        viewed: profileId
+      });
+      console.log(`✅ Created viewed with ${profileId}`);
+    } catch (error) {
+      console.error(`❌ Error creating conversation with ${profileId}:`, error);
+    }
+  };
+
   const dislikeProfile = async (profileId: string) => {
     console.log(`disliked profile: ${profileId}`);
+    createViewed(profileId);
     removeTopProfile();
   };
 
@@ -88,8 +101,8 @@ const [results, setResults] = useState<any[]>(allProfiles);
       );
   
       console.log('checkRes', checkRes.data);
-      if (checkRes.data) {
-        console.log(`🟢 Already interacted with profile: ${profileId}`);
+      if (checkRes.data.data.length > 0) {
+        console.log(`🟢 Already interacted with profile: ${profileId}`)
         updateMatchStatus(checkRes.data.data[0].id);
         createConversation(profileId);
         setMatchedProfile(profile);
@@ -111,6 +124,7 @@ const [results, setResults] = useState<any[]>(allProfiles);
   
       if (response.data?.success) {
         console.log(`✅ Successfully disliked profile: ${profileId}`);
+        createViewed(profileId);
         removeTopProfile();
 
         // Check for match
@@ -151,6 +165,7 @@ const [results, setResults] = useState<any[]>(allProfiles);
       );
       if (response.data?.success) {
         console.log(`✅ Successfully liked profile: ${profileId}`);
+        createViewed(profileId);
         removeTopProfile();
         setLikes(prev => prev - 1);
       } else {
@@ -247,7 +262,7 @@ const [results, setResults] = useState<any[]>(allProfiles);
           onPress={() => {
             setShowMatchModal(false);
             removeTopProfile();
-            navigation.navigate('Conversation'); // <-- Use the name of your Messages tab here
+            navigation.navigate('Conversations'); // <-- Use the name of your Messages tab here
           }}
           style={tailwind`bg-green-700 px-4 py-4 rounded-md`}>
           <Text style={tailwind`text-white text-center font-semibold text-base`}>Message</Text>
