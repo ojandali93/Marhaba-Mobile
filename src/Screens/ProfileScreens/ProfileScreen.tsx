@@ -19,14 +19,14 @@ import TermsView from '../../Components/Views/TermsView';
 import PrivacyView from '../../Components/Views/PrivacyView';
 import EditProfileModalContent from '../../Components/Modals/EditProfileModalContent';
 import UpgradeView from '../../Components/Views/UpgradeView';
+import { useProfile } from '../../Context/ProfileContext';
 
 const ProfileScreen = () => {
-  const userProfile = getProfile();
-  const userId = getUserId();
+  const {profile} = useProfile();
 
   const [activeTab, setActiveTab] = useState('profile');
   const [activeModal, setActiveModal] = useState<string | null>(null);
-  console.log('profile', userProfile);
+  console.log('profile', profile);
 
   function getAgeFromDOB(
     dobString: string | null | undefined,
@@ -55,7 +55,7 @@ const ProfileScreen = () => {
       <View style={tailwind`absolute flex-1 w-full h-full`}>
         <View style={tailwind`flex-1`}>
           <Image
-            source={{uri: userProfile.data.Photos[0].photoUrl}}
+            source={{uri: profile.data.Photos[0].photoUrl}}
             style={[
               tailwind`w-full h-full`,
               {resizeMode: 'cover', alignSelf: 'flex-start'},
@@ -77,23 +77,23 @@ const ProfileScreen = () => {
                   tailwind`text-3xl font-bold`,
                   {color: themeColors.primary},
                 ]}>
-                {userProfile.data.name} ({getAgeFromDOB(userProfile.data.dob)})
+                {profile.data.name} ({getAgeFromDOB(profile.data.dob)})
               </Text>
               <Text style={tailwind`text-3xl font-semibold`}>
-                {countryFlagMap[userProfile.data.About[0].background] ?? ''}
+                {countryFlagMap[profile.data.About[0].background] ?? ''}
               </Text>
             </View>
             <View style={tailwind`px-4`}>
               <Text style={tailwind`text-base text-gray-800`}>
-                {userProfile.data.height ? `${userProfile.data.height} • ` : ''}
-                {userProfile.data.About[0].religion
-                  ? `${userProfile.data.About[0].religion}${
-                      userProfile.data.About[0].sect
-                        ? ` (${userProfile.data.About[0].sect})`
+                {profile.data.height ? `${profile.data.height} • ` : ''}
+                {profile.data.About[0].religion
+                  ? `${profile.data.About[0].religion}${
+                      profile.data.About[0].sect
+                        ? ` (${profile.data.About[0].sect})`
                         : ''
                     } • `
                   : ''}
-                {userProfile.data.Career[0].job ?? ''}
+                {profile.data.Career[0].job ?? ''}
               </Text>
             </View>
           </>

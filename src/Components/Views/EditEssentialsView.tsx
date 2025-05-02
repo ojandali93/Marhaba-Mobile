@@ -2,16 +2,15 @@ import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useState } from 'react';
 import {ActivityIndicator, Dimensions, Image, Text, TouchableOpacity, View} from 'react-native';
 import tailwind from 'twrnc';
-import { getProfile, getUserId, grabUpdateuserProfile } from '../../Services/AuthStoreage';
 import themeColors from '../../Utils/custonColors';
 import {Camera, ChevronsDown, ChevronsUp, X} from 'react-native-feather';
 import EditSelect from '../Select/EditSelect';
 import EditTextInput from '../Select/EditTextInput';
 import axios from 'axios';
 import { lookingForOptions, timelineOptions, backgroundOptions, religionOptions, religiousSectOptions, religiousViewsOptions } from '../../Utils/SelectOptions';
-
+import { useProfile } from '../../Context/ProfileContext';
 const EditEssentialsView = () => {
-    const usersProfile = getProfile()
+    const {profile} = useProfile();
 
     const [expandedAbout, setExpandedAbout] = useState(false);    
     const [changeDetected, setChangeDetected] = useState(false);  
@@ -32,16 +31,16 @@ const EditEssentialsView = () => {
       );
 
       const loadProfile = () => {
-        console.log(usersProfile?.data)
-        console.log('single name', usersProfile?.data?.About?.smoke)
-        setLookingFor(usersProfile?.data?.About[0].lookingFor)
-        setBackground(usersProfile?.data?.About[0].background)
-        setReligion(usersProfile?.data?.About[0].religion)
-        setSect(usersProfile?.data?.About[0].sect)
-        setView(usersProfile?.data?.About[0].view)
-        setTimeline(usersProfile?.data?.About[0].timeline)
-        setTravel(usersProfile?.data?.About[0].travel)
-        setFuture(usersProfile?.data?.About[0]?.wantsKids)
+        console.log(profile?.data)
+        console.log('single name', profile?.data?.About?.smoke)
+        setLookingFor(profile?.data?.About[0].lookingFor)
+        setBackground(profile?.data?.About[0].background)
+        setReligion(profile?.data?.About[0].religion)
+        setSect(profile?.data?.About[0].sect)
+        setView(profile?.data?.About[0].view)
+        setTimeline(profile?.data?.About[0].timeline)
+        setTravel(profile?.data?.About[0].travel)
+        setFuture(profile?.data?.About[0]?.wantsKids)
       };
 
       const updateLookingFor = async (newLookingFor: string) => {
@@ -122,7 +121,7 @@ const EditEssentialsView = () => {
             const response = await axios.put(
                 'https://marhaba-server.onrender.com/api/account/updateAbout',
                 {
-                    userId: usersProfile?.data?.userId,
+                    userId: profile?.data?.userId,
                     lookingFor: lookingFor,
                     background: background,
                     religion: religion,

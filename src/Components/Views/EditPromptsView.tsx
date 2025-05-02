@@ -2,14 +2,14 @@ import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import tailwind from 'twrnc';
-import { getProfile, getUserId } from '../../Services/AuthStoreage';
 import themeColors from '../../Utils/custonColors';
 import { ChevronsDown, ChevronsUp } from 'react-native-feather';
 import EditTextInput from '../Select/EditTextInput';
 import axios from 'axios';
+import { useProfile } from '../../Context/ProfileContext';
 
 const EditPromptsView = () => {
-  const usersProfile = getProfile();
+  const {profile, userId} = useProfile();
   const [expanded, setExpanded] = useState(false);
   const [changeDetected, setChangeDetected] = useState(false);
 
@@ -23,7 +23,7 @@ const EditPromptsView = () => {
   );
 
   const loadPrompts = () => {
-    const profilePrompts = usersProfile?.data?.Prompts || [];
+    const profilePrompts = profile?.data?.Prompts || [];
     const formatted = profilePrompts.map(p => ({
       id: p.id,
       prompt: p.prompt,
@@ -43,7 +43,6 @@ const EditPromptsView = () => {
 
   const updatePrompts = async () => {
     try {
-      const userId = getUserId();
       const response = await axios.put('https://marhaba-server.onrender.com/api/account/updatePrompts', {
         userId,
         prompts: prompts.map(p => ({

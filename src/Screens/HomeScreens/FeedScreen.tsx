@@ -1,88 +1,31 @@
 import {useNavigation} from '@react-navigation/native';
-import axios from 'axios';
+import axios, { all } from 'axios';
 import React, {useLayoutEffect, useState} from 'react';
 import {Image, Modal, Text, TouchableOpacity, View} from 'react-native';
 import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
-import {
-  clearSession,
-  clearUserId,
-  getUserId,
-  setProfile,
-} from '../../Services/AuthStoreage';
-import FeedSummaryComponent from '../../Components/Profiles/FeedProfileComponent';
-import {useProfile} from '../../Context/ProfileContext';
 import FeedProfileComponent from '../../Components/Profiles/FeedProfileComponent';
-import {ArrowLeft, Heart} from 'react-native-feather';
+import {Heart} from 'react-native-feather';
+import { useProfile } from '../../Context/ProfileContext';
 
 const FeedScreen = () => {
   const navigation = useNavigation();
-  const {setUserProfile, userProfile} = useProfile();
-  const [totalLikes, setTotalLikes] = useState<number>(10);
-  const [selectedProfile, setSelectedProfile] = useState<any>(null);
-  const [selectedProfileIndex, setSelectedProfileIndex] = useState<number>(0);
-  const [matches, setMatches] = useState<any[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [likes, setLikes] = useState<number>(10);
+  const {grabUserMatches, grabUserProfile, userId, allProfiles} = useProfile();
+  const [selectedProfile, setSelectedProfile] = useState<any>(allProfiles[0]);
+  const [results, setResults] = useState<any[]>(allProfiles);
+  const [likes, setLikes] = useState<number>(7);
 
   const [showFullProfile, setShowFullProfile] = useState<boolean>(false);
   const [matchedProfile, setMatchedProfile] = useState<any>(null);
-const [showMatchModal, setShowMatchModal] = useState(false);
+  const [showMatchModal, setShowMatchModal] = useState(false);
 
   useLayoutEffect(() => {
-    grabAllUserProfiles();
-    grabuserProfile();
+    grabUserMatches();
+    grabUserProfile(userId || '');
   }, []);
 
   const handleToggleFullProfile = () => {
     setShowFullProfile(!showFullProfile);
-  };
-
-  const grabAllUserProfiles = async () => {
-    console.log('about to grab all users');
-    try {
-      const response = await axios.get(
-        `https://marhaba-server.onrender.com/api/user/allUsers`,
-      );
-      if (response.data) {
-        setMatches(response.data.data); // ✅ access .data inside the object
-        setSelectedProfile(response.data.data[0]);
-        setLoading(false);
-      }
-    } catch (error) {
-      console.log('error', error);
-    }
-  };
-
-  const grabuserProfile = async () => {
-    try {
-      const response = await axios.get(
-        `https://marhaba-server.onrender.com/api/user/${getUserId()}`,
-      );
-
-      if (response.data) {
-        setProfile(JSON.stringify(response.data));
-        setUserProfile(response.data);
-      }
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response) {
-          // Server responded with a status outside 2xx
-          console.error('❌ API Error Response:', {
-            status: error.response.status,
-            data: error.response.data,
-          });
-        } else if (error.request) {
-          // Request made but no response
-          console.error('❌ No response from server:', error.request);
-        } else {
-          // Something else happened
-          console.error('❌ Axios Error:', error.message);
-        }
-      } else {
-        console.error('❌ Non-Axios Error:', error);
-      }
-    }
   };
 
   const updateMatchStatus = async (interactionId: number) => {
@@ -201,7 +144,7 @@ const [showMatchModal, setShowMatchModal] = useState(false);
 
 
   const removeTopProfile = () => {
-    setMatches(prevMatches => {
+    setResults(prevMatches => {
       const newMatches = prevMatches?.length ? prevMatches.slice(1) : [];
       setSelectedProfile(newMatches[0] || null); // ✅ Update the selected profile
       return newMatches;
@@ -221,7 +164,7 @@ const [showMatchModal, setShowMatchModal] = useState(false);
         style={tailwind`absolute w-full flex flex-row justify-end z-10 top-18 px-6`}>
         <View
           style={[
-            tailwind`flex-row items-center p-2 rounded-full`,
+            tailwind`flex-row items-center p-2.5 py-2 rounded-2`,
             {
               backgroundColor: themeColors.secondary,
               borderWidth: 1,

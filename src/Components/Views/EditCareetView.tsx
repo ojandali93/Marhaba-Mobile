@@ -2,16 +2,15 @@ import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useState } from 'react';
 import {ActivityIndicator, Dimensions, Image, Text, TouchableOpacity, View} from 'react-native';
 import tailwind from 'twrnc';
-import { getProfile, getUserId, grabUpdateuserProfile } from '../../Services/AuthStoreage';
 import themeColors from '../../Utils/custonColors';
 import {Camera, ChevronsDown, ChevronsUp, X} from 'react-native-feather';
 import EditSelect from '../Select/EditSelect';
 import EditTextInput from '../Select/EditTextInput';
 import axios from 'axios';
-import { lookingForOptions, timelineOptions, backgroundOptions, religionOptions, religiousSectOptions, religiousViewsOptions } from '../../Utils/SelectOptions';
+import { useProfile } from '../../Context/ProfileContext';
 
 const EditCareetView = () => {
-    const usersProfile = getProfile()
+    const {profile} = useProfile();
 
     const [expandedAbout, setExpandedAbout] = useState(false);    
     const [changeDetected, setChangeDetected] = useState(false);  
@@ -30,14 +29,14 @@ const EditCareetView = () => {
       );
 
       const loadCoreViews = () => {
-        console.log(usersProfile?.data)
-        console.log('single name', usersProfile?.data?.About?.smoke)
-        setJob(usersProfile?.data?.Career[0].job)
-        setCompany(usersProfile?.data?.Career[0].company)
-        setEducation(usersProfile?.data?.Career[0].education)
-        setSite(usersProfile?.data?.Career[0].site)
-        setLocation(usersProfile?.data?.Career[0].location)
-        setFiveYear(usersProfile?.data?.Career[0].fiveYear)
+        console.log(profile?.data)
+        console.log('single name', profile?.data?.About?.smoke)
+        setJob(profile?.data?.Career[0].job)
+        setCompany(profile?.data?.Career[0].company)
+        setEducation(profile?.data?.Career[0].education)
+        setSite(profile?.data?.Career[0].site)
+        setLocation(profile?.data?.Career[0].location)
+        setFiveYear(profile?.data?.Career[0].fiveYear)
       };
 
       const updateJob = async (newJob: string) => {
@@ -100,7 +99,7 @@ const EditCareetView = () => {
             const response = await axios.put(
                 'https://marhaba-server.onrender.com/api/account/updateCareer',
                 {
-                    userId: usersProfile?.data?.userId,
+                    userId: profile?.data?.userId,
                     job: job,
                     company: company,
                     education: education,

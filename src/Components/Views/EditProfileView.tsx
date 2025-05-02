@@ -2,17 +2,16 @@ import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useState } from 'react';
 import {ActivityIndicator, Dimensions, Image, Text, TouchableOpacity, View} from 'react-native';
 import tailwind from 'twrnc';
-import { getProfile, getUserId, grabUpdateuserProfile } from '../../Services/AuthStoreage';
 import themeColors from '../../Utils/custonColors';
 import {Camera, ChevronsDown, ChevronsUp, X} from 'react-native-feather';
 import EditSelect from '../Select/EditSelect';
 import EditTextInput from '../Select/EditTextInput';
 import { heightsOptions } from '../../Utils/SelectOptions';
 import axios from 'axios';
-
+import { useProfile } from '../../Context/ProfileContext';
 
 const EditProfileView = () => {
-    const usersProfile = getProfile()
+  const {profile} = useProfile();
 
     const [expandProfile, setExpandProfile] = useState(false);    
     const [changeDetected, setChangeDetected] = useState(false);  
@@ -32,15 +31,15 @@ const EditProfileView = () => {
       );
 
       const loadProfile = () => {
-        console.log(usersProfile?.data)
-        console.log('single name', usersProfile?.data?.About?.smoke)
-        setName(usersProfile?.data?.name)
-        setDob(usersProfile?.data?.dob)
-        setGender(usersProfile?.data?.gender)
-        setHeight(usersProfile?.data?.height)
-        setSmoker(usersProfile?.data?.About[0]?.smoke)
-        setDrink(usersProfile?.data?.About[0]?.drink)
-        setHasKids(usersProfile?.data?.About[0]?.hasKids)
+        console.log(profile?.data)
+        console.log('single name', profile?.data?.About?.smoke)
+        setName(profile?.data?.name)
+        setDob(profile?.data?.dob)
+        setGender(profile?.data?.gender)
+        setHeight(profile?.data?.height)
+        setSmoker(profile?.data?.About[0]?.smoke)
+        setDrink(profile?.data?.About[0]?.drink)
+        setHasKids(profile?.data?.About[0]?.hasKids)
       };
 
       const updateName = async (newName: string) => {
@@ -104,7 +103,7 @@ const EditProfileView = () => {
             const response = await axios.put(
                 'https://marhaba-server.onrender.com/api/account/updateProfile',
                 {
-                    userId: usersProfile?.data?.userId,
+                    userId: profile?.data?.userId,
                     name: name,
                     gender: gender,
                     height: height,

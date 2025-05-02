@@ -14,10 +14,10 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import tailwind from 'twrnc';
-import { getUserId } from '../../Services/AuthStoreage';
 import themeColors from '../../Utils/custonColors';
 import { useFocusEffect } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
+import { useProfile } from '../../Context/ProfileContext';
 interface Profile {
   _id: string;
   name?: string;
@@ -36,6 +36,7 @@ interface Conversation {
 const { width } = Dimensions.get('window');
 
 const Conversations = () => {
+  const {userId} = useProfile();
     const navigation = useNavigation();
   const [loading, setLoading] = useState<boolean>(true);
   const [conversations, setConversations] = useState<Conversation[]>([]);
@@ -54,8 +55,7 @@ const Conversations = () => {
   }, []);
 
   const grabConversations = async () => {
-    const currentUserId = getUserId();
-    if (!currentUserId) {
+    if (!userId) {
       setError("User not logged in.");
       setLoading(false);
       if (isRefreshing) setIsRefreshing(false);
@@ -65,7 +65,7 @@ const Conversations = () => {
 
     try {
       const response = await axios.get<{ data: Conversation[] }>(
-        `https://marhaba-server.onrender.com/api/conversation/${currentUserId}`,
+        `https://marhaba-server.onrender.com/api/conversation/${userId}`,
         { headers: { 'Cache-Control': 'no-cache' } }
       );
 
@@ -105,7 +105,6 @@ const Conversations = () => {
   };
 
   const renderConversation = ({ item }: { item: Conversation }) => {
-    const userId = getUserId();
     const otherProfile = item.user1Id === userId ? item.profile2 : item.profile1;
 
     if (!otherProfile) return null;

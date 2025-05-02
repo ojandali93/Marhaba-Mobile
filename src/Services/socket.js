@@ -1,11 +1,12 @@
 // services/socket.js
 import { io } from 'socket.io-client';
-import { getJwtToken } from './AuthStoreage'; // or however you store JWT
+import { useProfile } from '../Context/ProfileContext';
 
 let socket;
 
 export const initializeSocket = async () => {
-  const token = await getJwtToken(); // JWT token from login
+  const {jwtToken} = useProfile();
+  const token = jwjwtToken; // JWT token from login
   socket = io('https://marhaba-server.onrender.com', {
     auth: {
       token,

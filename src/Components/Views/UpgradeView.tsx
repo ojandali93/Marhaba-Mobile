@@ -9,7 +9,7 @@ import {
 import tailwind from 'twrnc';
 import { ChevronsLeft, Check, X } from 'react-native-feather';
 import themeColors from '../../Utils/custonColors';
-import { getProfile } from '../../Services/AuthStoreage';
+import { useProfile } from '../../Context/ProfileContext';
 
 const tiers = [
   {
@@ -57,9 +57,9 @@ const tiers = [
   },
 ];
 
-const UpgradeView = ({ updateTab }) => {
-  const userProfile = getProfile();
-  const currentTier = userProfile?.data?.tier || 1;
+const UpgradeView = ({ updateTab }: { updateTab: (tab: string) => void }) => {
+  const {profile} = useProfile();
+  const currentTier = profile?.data?.tier || 1;
   const [selectedTier, setSelectedTier] = useState<number | null>(null);
 
   const handleUpgradeConfirm = (tierId: number) => {

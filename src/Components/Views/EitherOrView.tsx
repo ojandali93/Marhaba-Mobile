@@ -4,15 +4,14 @@ import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
 import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
-import { getProfile } from '../../Services/AuthStoreage';
 import axios from 'axios';
 import { ChevronsDown, ChevronsUp } from 'react-native-feather';
 import { eitherOrQuestions } from '../../Utils/SelectOptions';
-
+import { useProfile } from '../../Context/ProfileContext';
 const screenHeight = Dimensions.get('window').height;
 
 const EitherOrEditView = () => {
-  const userProfile = getProfile();
+  const {profile} = useProfile();
   const [expanded, setExpanded] = useState(false);
   const [changeDetected, setChangeDetected] = useState(false);
 
@@ -64,7 +63,7 @@ const EitherOrEditView = () => {
 
   useFocusEffect(
     useCallback(() => {
-      const eo = userProfile?.data?.Survey[0] || {};
+      const eo = profile?.data?.Survey[0] || {};
       originalAnswers.current = eo;
       Object.values(questionStateMap).forEach(([_, setFunc, key]) => {
         setFunc(eo[key] || '');

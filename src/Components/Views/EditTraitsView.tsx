@@ -2,14 +2,13 @@ import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useState } from 'react';
 import { Text, TouchableOpacity, View, Alert } from 'react-native';
 import tailwind from 'twrnc';
-import { getProfile, getUserId } from '../../Services/AuthStoreage';
 import themeColors from '../../Utils/custonColors';
 import { ChevronsDown, ChevronsUp } from 'react-native-feather';
 import axios from 'axios';
 import { traitsAndHobbies } from '../../Utils/SelectOptions';
-
+import { useProfile } from '../../Context/ProfileContext';
 const EditTraitsView = () => {
-  const usersProfile = getProfile();
+  const {profile, userId} = useProfile();
   const [expandedAbout, setExpandedAbout] = useState(false);
   const [changeDetected, setChangeDetected] = useState(false);
 
@@ -18,7 +17,7 @@ const EditTraitsView = () => {
 
   useFocusEffect(
     useCallback(() => {
-      const dbTraits = (usersProfile?.data?.Tags || []).map((t) => t.tag); // extract tag strings
+      const dbTraits = (profile?.data?.Tags || []).map((t) => t.tag); // extract tag strings
       setTraits(dbTraits);
       setOriginalTraits(dbTraits);
     }, []),
@@ -48,7 +47,6 @@ const EditTraitsView = () => {
     }
 
     try {
-      const userId = getUserId();
       const response = await axios.put(
         'https://marhaba-server.onrender.com/api/account/updateTags',
         {

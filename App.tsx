@@ -5,65 +5,35 @@ import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {NavigationContainer} from '@react-navigation/native';
 import AuthStack from './src/Navigation/AuthStackNavigation';
 import './src/Services/FirebaseConfig';
-import {
-  loadSession,
-  getSession,
-  getUserId,
-  loadUserId,
-} from './src/Services/AuthStoreage';
-import themeColors from './src/Utils/custonColors';
-import {ProfileProvider} from './src/Context/ProfileContext';
+import {useProfile} from './src/Context/ProfileContext';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { initializeSocket } from './src/Services/socket';
 
 function App(): React.JSX.Element {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const {authenticated, setAuthenticated,  checkAuthenticated, requestLocation, loadProfile, loadUserId, loadSession, loadJwtToken} = useProfile();
 
   useLayoutEffect(() => {
-    const initializeApp = async () => {
-      try {
-        await loadSession();
-        await loadUserId();
-        const session = getSession();
-        const userId = getUserId();
-        if (session && userId) {
-          setIsAuthenticated(true);
-        } else {
-          setIsAuthenticated(false);
-        }
-      } catch (e) {
-        console.error('Storage initialization error:', e);
-        setIsAuthenticated(false);
-      }
-    };
-
     initializeApp();
   }, []);
 
-  useEffect(() => {
-    const watchSession = setInterval(() => {
-      const session = getSession();
-      const userId = getUserId();
-      setIsAuthenticated(!!session && !!userId);
-    }, 1000);
-
-    return () => clearInterval(watchSession);
-  }, []);
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      console.log('🔌 Initializing socket after authentication');
-      initializeSocket();
+  const initializeApp = async () => {
+    try {
+      await loadProfile();
+      await loadUserId();
+      await loadSession();
+      await loadJwtToken();
+      await checkAuthenticated();
+      await requestLocation();
+    } catch (e) {
+      console.error('Storage initialization error:', e);
+      setAuthenticated(false);
     }
-  }, [isAuthenticated]); // 👈 move initializeSocket inside here
+  };
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
     <SafeAreaProvider>
       <NavigationContainer>
-        <ProfileProvider>
-          {isAuthenticated ? <BottomTabNavigation /> : <AuthStack />}
-        </ProfileProvider>
+          {authenticated ? <BottomTabNavigation /> : <AuthStack />}
       </NavigationContainer>
     </SafeAreaProvider>
     </GestureHandlerRootView>

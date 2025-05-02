@@ -2,15 +2,14 @@ import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useState } from 'react';
 import {ActivityIndicator, Dimensions, Image, Text, TouchableOpacity, View} from 'react-native';
 import tailwind from 'twrnc';
-import { getProfile, getUserId, grabUpdateuserProfile } from '../../Services/AuthStoreage';
 import themeColors from '../../Utils/custonColors';
 import {Camera, ChevronsDown, ChevronsUp, X} from 'react-native-feather';
 import EditSelect from '../Select/EditSelect';
 import EditTextInput from '../Select/EditTextInput';
 import axios from 'axios';
-
+import { useProfile } from '../../Context/ProfileContext';
 const EditEitherOrView = () => {
-    const usersProfile = getProfile()
+    const {profile} = useProfile();
 
     const [expandedAbout, setExpandedAbout] = useState(false);    
     const [changeDetected, setChangeDetected] = useState(false);  
@@ -43,7 +42,7 @@ const EditEitherOrView = () => {
       );
 
       const loadCoreViews = () => {
-        const eo = usersProfile?.data?.Survey[0] || {};
+        const eo = profile?.data?.Survey[0] || {};
         setFriday(eo.friday || '');
         setEnergy(eo.energy || '');
         setPlanning(eo.planning || '');
@@ -252,7 +251,7 @@ const EditEitherOrView = () => {
             const response = await axios.put(
                 'https://marhaba-server.onrender.com/api/account/updateLifestyle',
                 {
-                    userId: usersProfile?.data?.userId,
+                    userId: profile?.data?.userId,
                     travel: travel,
                     social: social,
                     health: health,

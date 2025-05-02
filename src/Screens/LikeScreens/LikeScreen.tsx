@@ -16,7 +16,6 @@ import axios from 'axios';
 import tailwind from 'twrnc';
 import { Check, Heart, X } from 'react-native-feather';
 
-import { getUserId } from '../../Services/AuthStoreage';
 import themeColors from '../../Utils/custonColors';
 import { useFocusEffect } from '@react-navigation/native';
 import { useProfile } from '../../Context/ProfileContext';
@@ -41,7 +40,7 @@ const numColumns = 2;
 const imageSize = (width - itemPadding * (numColumns + 1)) / numColumns;
 
 const LikeScreen = () => {
-const {userProfile} = useProfile()
+  const {profile, userId} = useProfile()
     
   const [loading, setLoading] = useState<boolean>(true);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
@@ -54,7 +53,6 @@ const {userProfile} = useProfile()
       setLoading(true);
     }
     setError(null);
-    const userId = getUserId();
     if (!userId) {
       setError('User ID not found. Please log in again.');
       setLoading(false);
@@ -119,7 +117,7 @@ const {userProfile} = useProfile()
         const response = await axios.post(
             `https://marhaba-server.onrender.com/api/conversation/create`,
             {
-                userId: getUserId(), 
+                userId, 
                 userId2: userId2, 
                 lastMessage: '', 
                 updatedAt: new Date().toISOString(),
@@ -167,7 +165,7 @@ const {userProfile} = useProfile()
           </View>
         )}
         {
-            userProfile?.tier === 3 && (
+            profile?.tier === 3 && (
                 <View>
                     <View style={tailwind`absolute bottom-2 left-2 p-2 bg-red-400 rounded-full`}>
             <X

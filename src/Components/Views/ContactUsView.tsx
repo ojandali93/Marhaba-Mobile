@@ -4,20 +4,20 @@ import { Picker } from '@react-native-picker/picker';
 import { ChevronsLeft } from 'react-native-feather';
 import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
-import { getProfile } from '../../Services/AuthStoreage';
+import { useProfile } from '../../Context/ProfileContext';
 
 interface MenuViewProps {
   updateTab: (tab: string) => void;
 }
 
 const ContactUsView = ({ updateTab }: MenuViewProps) => {
+  const {profile} = useProfile();
   const [category, setCategory] = useState('');
   const [message, setMessage] = useState('');
   const [name, setName] = useState('—');
   const [email, setEmail] = useState('—');
 
   useEffect(() => {
-    const profile = getProfile();
     if (profile && profile.data) {
       setName(profile.data.name || '—');
       setEmail(profile.data.email || '—');

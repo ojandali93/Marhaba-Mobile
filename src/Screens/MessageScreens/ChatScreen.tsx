@@ -13,19 +13,20 @@ import {
 } from 'react-native';
 import { io } from 'socket.io-client';
 import axios from 'axios';
-import { getJwtToken, getUserId } from '../../Services/AuthStoreage';
 import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
-import { ArrowUp } from 'react-native-feather';
+import { ArrowUp, ChevronsLeft } from 'react-native-feather';
 import { useNavigation } from '@react-navigation/native';
+import { useProfile } from '../../Context/ProfileContext';
 
 let socket;
 
 const ChatScreen = ({ route }) => {
+  const {userId, jwtToken} = useProfile();
   const { conversation } = route.params; 
   const navigation  = useNavigation();
   const conversationId = conversation.id;
-  const otherUser = conversation.profile1.userId === getUserId() ? conversation.profile2 : conversation.profile1;
+  const otherUser = conversation.profile1.userId === userId ? conversation.profile2 : conversation.profile1;
 
   const [messages, setMessages] = useState([]);
   const [textMessage, setTextMessage] = useState('');
@@ -79,7 +80,7 @@ const ChatScreen = ({ route }) => {
 
   useEffect(() => {
     const setupSocket = async () => {
-      const token = await getJwtToken();
+      const token = jwtToken;
       socket = io('https://marhaba-server.onrender.com', {
         auth: { token },
       });
@@ -113,7 +114,7 @@ const ChatScreen = ({ route }) => {
 
     const newMessage = {
       conversationId,
-      senderId: getUserId(),
+      senderId: userId(),
       receiverId: otherUser.userId,
       text: textMessage,
       createdAt: new Date().toISOString(),
@@ -130,8 +131,11 @@ const ChatScreen = ({ route }) => {
 
   return (
     <SafeAreaView style={[tailwind`flex-1`, { backgroundColor: themeColors.darkSecondary }]}>
-      <View style={[tailwind`p-4 border-b border-gray-700`, { backgroundColor: themeColors.darkSecondary }]}>
-        <Text style={tailwind`text-2xl font-bold text-gray-800`}>
+      <View style={[tailwind`p-4 border-b border-gray-700 flex-row items-center`, { backgroundColor: themeColors.darkSecondary }]}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <ChevronsLeft color={themeColors.primary} height={24} width={24} />
+        </TouchableOpacity>
+        <Text style={tailwind`text-2xl font-bold text-gray-800 ml-2`}>
           {otherUser.name}
         </Text>
       </View>
@@ -144,7 +148,7 @@ const ChatScreen = ({ route }) => {
         onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })}
       >
         {messages.map((msg, idx) => {
-          const isMe = msg.sender === getUserId(); // ✅ CORRECT NOW
+          const isMe = msg.sender === userId; // ✅ CORRECT NOW
           return (
             <View
               key={idx}

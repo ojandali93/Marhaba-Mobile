@@ -16,11 +16,13 @@ import axios from 'axios';
 import {setProfile, setJwtToken, setSession, setUserId} from '../../Services/AuthStoreage';
 import Icon from '../../Assets/marhaba-icon-full-beige.png';
 import Logo from '../../Assets/marhaba-name-only-green.png';
+import { useProfile } from '../../Context/ProfileContext';
 
 const screenHeight = Dimensions.get('window').height;
 
 const LoginScreen = () => {
   const navigation = useNavigation();
+  const {grabUserProfileData} = useProfile();
 
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -43,35 +45,13 @@ const LoginScreen = () => {
 
         const {session, userId, token} = response.data;
   
-        grabProfile(session, userId, token)
+        grabUserProfileData(session, userId, token)
       } else {
         Alert.alert('Login Failed', 'Email / Password do not match our records.');
         setLoading(false);
       }
 
       setLoading(false);
-    } catch (error) {
-      console.error('Login failed:', error);
-      Alert.alert('Login Failed', error?.message || 'Please check your network or try again later.');
-      setLoading(false);
-    }
-  };
-
-  const grabProfile = async (session: string, userId: string, token: string) => {
-    try {
-      const response = await axios.get(
-        `https://marhaba-server.onrender.com/api/user/${userId}`,
-      );
-      if(response.data) {
-  
-        await setProfile(JSON.stringify(response.data.data)); 
-        await setSession(JSON.stringify(session)); 
-        await setUserId(userId);
-        await setJwtToken(token); 
-      } else {
-        Alert.alert('Login Failed', 'Email / Password do not match our records.');
-        setLoading(false);
-      }
     } catch (error) {
       console.error('Login failed:', error);
       Alert.alert('Login Failed', error?.message || 'Please check your network or try again later.');

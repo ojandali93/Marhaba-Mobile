@@ -3,7 +3,6 @@ import React, { useCallback, useState } from 'react';
 import {ActivityIndicator, Dimensions, Image, Text, TouchableOpacity, View} from 'react-native';
 import tailwind from 'twrnc';
 import { useProfile } from '../../Context/ProfileContext';
-import { getProfile, getUserId, grabUpdateuserProfile } from '../../Services/AuthStoreage';
 import themeColors from '../../Utils/custonColors';
 import {Camera, ChevronsDown, ChevronsUp, X} from 'react-native-feather';
 import {
@@ -13,7 +12,7 @@ import {
 import axios from 'axios';
 
 const EditPhotosView = () => {
-    const usersProfile = getProfile()
+    const {profile, userId, grabUserProfile} = useProfile();
 
     const [originalImageUrls, setOriginalImageUrls] = useState<(string | null)[]>(Array(9).fill(null));
 
@@ -49,7 +48,6 @@ const [uploadedImageUrls, setUploadedImageUrls] = useState<(string | null)[]>(
 
       const updateUserPhotos = async () => {
         try {
-          const userId = getUserId();
       
           if (!userId) {
             throw new Error('User ID is not available.');
@@ -65,7 +63,7 @@ const [uploadedImageUrls, setUploadedImageUrls] = useState<(string | null)[]>(
       
           if (response.data.success) {
             console.log('✅ Photos updated successfully:', response.data.data);
-            grabUpdateuserProfile()
+            grabUserProfile(userId || '');
             setExpandPhotos(false);
             return { success: true, data: response.data.data };
           } else {

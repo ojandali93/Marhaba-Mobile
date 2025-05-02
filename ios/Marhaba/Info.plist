@@ -22,6 +22,12 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+<string>We use your location to show nearby matches.</string>
+<key>NSLocationWhenInUseUsageDescription</key>
+<string>We use your location to show nearby matches.</string>
+<key>NSLocationAlwaysUsageDescription</key>
+<string>We use your location to show nearby matches.</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>

@@ -2,16 +2,14 @@ import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useState } from 'react';
 import {ActivityIndicator, Dimensions, Image, Text, TouchableOpacity, View} from 'react-native';
 import tailwind from 'twrnc';
-import { getProfile, getUserId, grabUpdateuserProfile } from '../../Services/AuthStoreage';
 import themeColors from '../../Utils/custonColors';
 import {Camera, ChevronsDown, ChevronsUp, X} from 'react-native-feather';
 import EditSelect from '../Select/EditSelect';
-import EditTextInput from '../Select/EditTextInput';
 import axios from 'axios';
-import { lookingForOptions, timelineOptions, backgroundOptions, religionOptions, religiousSectOptions, religiousViewsOptions } from '../../Utils/SelectOptions';
+import { useProfile } from '../../Context/ProfileContext';
 
 const EditFutureView = () => {
-    const usersProfile = getProfile()
+    const {profile} = useProfile();
 
     const [expandedAbout, setExpandedAbout] = useState(false);    
     const [changeDetected, setChangeDetected] = useState(false);  
@@ -30,13 +28,13 @@ const EditFutureView = () => {
       );
 
       const loadCoreViews = () => {
-        console.log(usersProfile?.data)
-        console.log('single name', usersProfile?.data?.About?.smoke)
-        setMarriage(usersProfile?.data?.Future[0].marriage)
-        setChildren(usersProfile?.data?.Future[0].children)
-        setCareer(usersProfile?.data?.Future[0].career)
-        setFinances(usersProfile?.data?.Future[0].finances)
-        setPace(usersProfile?.data?.Future[0].pace)
+        console.log(profile?.data)
+        console.log('single name', profile?.data?.About?.smoke)
+        setMarriage(profile?.data?.Future[0].marriage)
+        setChildren(profile?.data?.Future[0].children)
+        setCareer(profile?.data?.Future[0].career)
+        setFinances(profile?.data?.Future[0].finances)
+        setPace(profile?.data?.Future[0].pace)
       };
 
       const updateMarriage = async (newMarriage: string) => {
@@ -99,7 +97,7 @@ const EditFutureView = () => {
             const response = await axios.put(
                 'https://marhaba-server.onrender.com/api/account/updateFuture',
                 {
-                    userId: usersProfile?.data?.userId,
+                    userId: profile?.data?.userId,
                     marriage: marriage,
                     children: children,
                     career: career,

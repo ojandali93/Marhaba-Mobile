@@ -2,17 +2,13 @@ import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useState } from 'react';
 import {ActivityIndicator, Dimensions, Image, Text, TouchableOpacity, View} from 'react-native';
 import tailwind from 'twrnc';
-import { getProfile, getUserId, grabUpdateuserProfile } from '../../Services/AuthStoreage';
 import themeColors from '../../Utils/custonColors';
 import {Camera, ChevronsDown, ChevronsUp, X} from 'react-native-feather';
 import EditSelect from '../Select/EditSelect';
-import EditTextInput from '../Select/EditTextInput';
 import axios from 'axios';
-import { lookingForOptions, timelineOptions, backgroundOptions, religionOptions, religiousSectOptions, religiousViewsOptions } from '../../Utils/SelectOptions';
-
+import { useProfile } from '../../Context/ProfileContext';
 const EditCoreViews = () => {
-    const usersProfile = getProfile()
-
+    const {profile} = useProfile();
     const [expandedAbout, setExpandedAbout] = useState(false);    
     const [changeDetected, setChangeDetected] = useState(false);  
 
@@ -33,17 +29,17 @@ const EditCoreViews = () => {
       );
 
       const loadCoreViews = () => {
-        console.log(usersProfile?.data)
-        console.log('single name', usersProfile?.data?.About?.smoke)
-        setFamily(usersProfile?.data?.Core[0].family)
-        setFaith(usersProfile?.data?.Core[0].faith)
-        setAmbition(usersProfile?.data?.Core[0].ambition)
-        setCareer(usersProfile?.data?.Core[0].career)
-        setHonest(usersProfile?.data?.Core[0].honest)
-        setTransparency(usersProfile?.data?.Core[0].transparent)
-        setTrust(usersProfile?.data?.Core[0].trust)
-        setPolitics(usersProfile?.data?.Core[0].politics)
-        setSocial(usersProfile?.data?.Core[0].social)
+        console.log(profile?.data)
+        console.log('single name', profile?.data?.About?.smoke)
+        setFamily(profile?.data?.Core[0].family)
+        setFaith(profile?.data?.Core[0].faith)
+        setAmbition(profile?.data?.Core[0].ambition)
+        setCareer(profile?.data?.Core[0].career)
+        setHonest(profile?.data?.Core[0].honest)
+        setTransparency(profile?.data?.Core[0].transparent)
+        setTrust(profile?.data?.Core[0].trust)
+        setPolitics(profile?.data?.Core[0].politics)
+        setSocial(profile?.data?.Core[0].social)
       };
 
       const updateFamily = async (newFamily: string) => {
@@ -135,7 +131,7 @@ const EditCoreViews = () => {
             const response = await axios.put(
                 'https://marhaba-server.onrender.com/api/account/updateCore',
                 {
-                    userId: usersProfile?.data?.userId,
+                    userId: profile?.data?.userId,
                     family: family,
                     faith: faith,
                     ambition: ambition,
