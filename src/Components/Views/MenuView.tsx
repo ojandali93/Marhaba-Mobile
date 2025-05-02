@@ -3,20 +3,20 @@ import {Text, TouchableOpacity, View} from 'react-native';
 import { ChevronsRight } from 'react-native-feather';
 import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
-import { clearJwtToken, clearProfile, clearSession, clearUserId } from '../../Services/AuthStoreage';
-
+import { useProfile } from '../../Context/ProfileContext';
 interface MenuViewProps {
     updateTab: (tab: string) => void;
 }
 
 const MenuView = ({updateTab}: MenuViewProps) => {
+  const {removeJwtToken, removeProfile, removeSession, removeUserId} = useProfile();
 
     const logout = async () => {
         try {
-          clearSession();
-          clearUserId();
-          clearProfile();
-          clearJwtToken();
+          removeSession();
+          removeUserId();
+          removeProfile();
+          removeJwtToken();
         } catch (err) {
           console.error('❌ Logout exception:', err);
         }

@@ -1,28 +1,50 @@
 import {useNavigation} from '@react-navigation/native';
 import axios, { all } from 'axios';
-import React, {useLayoutEffect, useState} from 'react';
+import React, {useEffect, useLayoutEffect, useState} from 'react';
 import {Image, Modal, Text, TouchableOpacity, View} from 'react-native';
 import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
 import FeedProfileComponent from '../../Components/Profiles/FeedProfileComponent';
 import {Heart} from 'react-native-feather';
 import { useProfile } from '../../Context/ProfileContext';
+import TutorialModal from '../../Components/Modals/TutorialModal';
 
 const FeedScreen = () => {
   const navigation = useNavigation();
-  const {grabUserMatches, grabUserProfile, userId, allProfiles} = useProfile();
+  const {grabUserMatches, grabUserProfile, userId, allProfiles, profile} = useProfile();
   const [selectedProfile, setSelectedProfile] = useState<any>(allProfiles[0]);
-  const [results, setResults] = useState<any[]>(allProfiles);
+const [results, setResults] = useState<any[]>(allProfiles);
   const [likes, setLikes] = useState<number>(7);
 
   const [showFullProfile, setShowFullProfile] = useState<boolean>(false);
   const [matchedProfile, setMatchedProfile] = useState<any>(null);
   const [showMatchModal, setShowMatchModal] = useState(false);
+  const [showTutorial, setShowTutorial] = useState(false);
 
   useLayoutEffect(() => {
-    grabUserMatches();
     grabUserProfile(userId || '');
+    grabUserMatches();
   }, []);
+
+  useEffect(() => {
+    console.log('profile', profile);
+    if(profile?.tutorial) {
+      setShowTutorial(true);
+    } else {
+      setShowTutorial(false);
+    }
+  }, [profile]);
+
+  useEffect(() => {
+    if (allProfiles && allProfiles.length > 0) {
+      setResults(allProfiles);
+      setSelectedProfile(allProfiles[0]);
+    }
+  }, [allProfiles]);
+
+  const handleToggleTutorial = () => {
+    setShowTutorial(!showTutorial);
+  };
 
   const handleToggleFullProfile = () => {
     setShowFullProfile(!showFullProfile);
@@ -42,7 +64,7 @@ const FeedScreen = () => {
   const createConversation = async (profileId: string) => {
     try {
       await axios.post(`https://marhaba-server.onrender.com/api/conversation/create`, {
-        userId: getUserId(), 
+        userId: userId, 
         userId2: profileId, 
         lastMessage: '', 
         updatedAt: new Date().toISOString(),
@@ -62,7 +84,7 @@ const FeedScreen = () => {
     try {
       // Check if already liked
       const checkRes = await axios.get(
-        `https://marhaba-server.onrender.com/api/user/matchStatus/${getUserId()}/${profileId}`,
+        `https://marhaba-server.onrender.com/api/user/matchStatus/${userId}/${profileId}`,
       );
   
       console.log('checkRes', checkRes.data);
@@ -79,7 +101,7 @@ const FeedScreen = () => {
       const response = await axios.post(
         `https://marhaba-server.onrender.com/api/user/interaction`,
         {
-          userId: getUserId(),
+          userId: userId,
           targetUserId: profileId,
           interaction: 'liked',
           viewed: false,
@@ -104,7 +126,7 @@ const FeedScreen = () => {
     try {
 
       const checkRes = await axios.get(
-        `https://marhaba-server.onrender.com/api/user/matchStatus/${getUserId()}/${profileId}`,
+        `https://marhaba-server.onrender.com/api/user/matchStatus/${userId}/${profileId}`,
       );
   
       if (checkRes.data?.data.legnth > 0) {
@@ -119,7 +141,7 @@ const FeedScreen = () => {
       const response = await axios.post(
         `https://marhaba-server.onrender.com/api/user/interaction`,
         {
-          userId: getUserId(),
+          userId: userId,
           targetUserId: profileId,
           interaction: 'super',
           viewed: false,
@@ -242,6 +264,9 @@ const FeedScreen = () => {
     </View>
   </View>
 </Modal>
+<TutorialModal visible={showTutorial} onClose={() => {
+  handleToggleTutorial()// Save to avoid showing again
+}} />
     </View>
   );
 };

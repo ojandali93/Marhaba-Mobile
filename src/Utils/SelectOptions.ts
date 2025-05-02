@@ -498,5 +498,51 @@ const religiousViewsOptions = [
   'Prefer not to say',
 ];
 
+export const tutorialScreens = [
+  {
+    key: 'welcome',
+    title: 'Welcome to Marhaba',
+    description: 'Quickly view profiles that match your preferences. Like, Superlike, or Dislike to keep swiping.',
+    icon: require('../Assets/marhaba-icon-full-beige.png'), // Or use react-native-vector-icons
+  },
+  {
+    key: 'feed',
+    title: 'Feed',
+    description: 'Quickly view profiles that match your preferences. Like, Superlike, or Dislike to keep swiping.',
+    icon: 'Home', // Or use react-native-vector-icons
+  },
+  {
+    key: 'likes',
+    title: 'Likes',
+    description: 'See who liked or superliked you. Pro+ users can unblur and view profiles directly.',
+    icon: 'Heart',
+  },
+  {
+    key: 'recommended',
+    title: 'Recommended',
+    description: 'Search profiles using filters. Pro users get access to compatibility-based recommendations.',
+    icon: 'Zap',
+  },
+  {
+    key: 'chat',
+    title: 'Chat',
+    description: 'Start conversations with users after you both match. Keep it kind and meaningful.',
+    icon: 'MessageSquare',
+  },
+  {
+    key: 'profile',
+    title: 'Profile',
+    description: 'Manage your profile, photos, visibility, settings, and more.',
+    icon: 'User',
+  },
+  {
+    key: 'enjoy',
+    title: 'Enjoy',
+    description: 'Time for you to enjoy Marhabah and find your perfect match!',
+    icon: 'ThumbsUp',
+  },
+];
 
-module.exports = {traitsAndHobbies, eitherOrQuestions, faqs, heightsOptions, lookingForOptions, timelineOptions, backgroundOptions, religionOptions, religiousSectOptions, religiousViewsOptions }
+
+
+module.exports = {traitsAndHobbies, eitherOrQuestions, faqs, heightsOptions, lookingForOptions, timelineOptions, backgroundOptions, religionOptions, religiousSectOptions, religiousViewsOptions, tutorialScreens }

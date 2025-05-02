@@ -7,9 +7,22 @@ import AuthStack from './src/Navigation/AuthStackNavigation';
 import './src/Services/FirebaseConfig';
 import {useProfile} from './src/Context/ProfileContext';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { ActivityIndicator, View } from 'react-native';
+import themeColors from './src/Utils/custonColors';
 
 function App(): React.JSX.Element {
-  const {authenticated, setAuthenticated,  checkAuthenticated, requestLocation, loadProfile, loadUserId, loadSession, loadJwtToken} = useProfile();
+  const {
+    authenticated,
+    setAuthenticated,
+    checkAuthenticated,
+    requestLocation,
+    loadProfile,
+    loadUserId,
+    loadSession,
+    loadJwtToken,
+  } = useProfile();
+
+  const [loading, setLoading] = useState(true); // ✅ NEW
 
   useLayoutEffect(() => {
     initializeApp();
@@ -26,16 +39,25 @@ function App(): React.JSX.Element {
     } catch (e) {
       console.error('Storage initialization error:', e);
       setAuthenticated(false);
+    } finally {
+      setLoading(false); // ✅ hide splash once done
     }
   };
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-    <SafeAreaProvider>
-      <NavigationContainer>
-          {authenticated ? <BottomTabNavigation /> : <AuthStack />}
-      </NavigationContainer>
-    </SafeAreaProvider>
+      <SafeAreaProvider>
+        <NavigationContainer>
+          {loading ? (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            </View>
+          ) : authenticated ? (
+            <BottomTabNavigation />
+          ) : (
+            <AuthStack />
+          )}
+        </NavigationContainer>
+      </SafeAreaProvider>
     </GestureHandlerRootView>
   );
 }

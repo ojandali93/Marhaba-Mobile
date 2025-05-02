@@ -55,7 +55,7 @@ const ProfileScreen = () => {
       <View style={tailwind`absolute flex-1 w-full h-full`}>
         <View style={tailwind`flex-1`}>
           <Image
-            source={{uri: profile.data.Photos[0].photoUrl}}
+            source={{uri: profile.Photos[0].photoUrl}}
             style={[
               tailwind`w-full h-full`,
               {resizeMode: 'cover', alignSelf: 'flex-start'},
@@ -77,23 +77,23 @@ const ProfileScreen = () => {
                   tailwind`text-3xl font-bold`,
                   {color: themeColors.primary},
                 ]}>
-                {profile.data.name} ({getAgeFromDOB(profile.data.dob)})
+                {profile.name} ({getAgeFromDOB(profile.dob)})
               </Text>
               <Text style={tailwind`text-3xl font-semibold`}>
-                {countryFlagMap[profile.data.About[0].background] ?? ''}
+                {countryFlagMap[profile.About[0].background] ?? ''}
               </Text>
             </View>
             <View style={tailwind`px-4`}>
               <Text style={tailwind`text-base text-gray-800`}>
-                {profile.data.height ? `${profile.data.height} • ` : ''}
-                {profile.data.About[0].religion
-                  ? `${profile.data.About[0].religion}${
-                      profile.data.About[0].sect
-                        ? ` (${profile.data.About[0].sect})`
+                {profile.height ? `${profile.height} • ` : ''}
+                {profile.About[0].religion
+                  ? `${profile.About[0].religion}${
+                      profile.About[0].sect
+                        ? ` (${profile.About[0].sect})`
                         : ''
                     } • `
                   : ''}
-                {profile.data.Career[0].job ?? ''}
+                {profile.Career[0].job ?? ''}
               </Text>
             </View>
           </>

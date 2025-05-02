@@ -51,11 +51,12 @@ export const ProfileProvider = ({ children }: { children: React.ReactNode }) => 
   const [authenticated, setAuthenticated] = useState<boolean>(false);
 
   const grabUserProfile = async (userId: string) => {
+    console.log('grabUserProfile', userId);
     try {
       const response = await axios.get(`https://marhaba-server.onrender.com/api/user/${userId}`);
       if(response.data) {
         setProfile(response.data.data);
-        setUserId(response.data.data.userId);
+        setUserId(userId);
       }
     } catch (error) {
       console.error('No Profile Found:', error);
@@ -68,8 +69,8 @@ export const ProfileProvider = ({ children }: { children: React.ReactNode }) => 
       if(response.data) {
         addProfile(JSON.stringify(response.data.data));
         addSession(JSON.stringify(session));
-        addUserId(response.data.data.userId);
-        addJwtToken(token);
+        addUserId(JSON.stringify(userId));
+        addJwtToken(JSON.stringify(token));
         setAuthenticated(true)
       }
     } catch (error) {
@@ -103,7 +104,7 @@ export const ProfileProvider = ({ children }: { children: React.ReactNode }) => 
     setProfile(profile);
   }
 
-  const removeProfile = async (profileId: string) => {
+  const removeProfile = async () => {
     await AsyncStorage.removeItem('profile');
     setProfile(null);
   }

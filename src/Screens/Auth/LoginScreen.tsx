@@ -42,9 +42,11 @@ const LoginScreen = () => {
       );
       console.log('response', response.data);
       if(response.data) {
-
+        
         const {session, userId, token} = response.data;
-  
+        console.log('session', session);
+        console.log('userId', userId);
+        console.log('token', token);
         grabUserProfileData(session, userId, token)
       } else {
         Alert.alert('Login Failed', 'Email / Password do not match our records.');
