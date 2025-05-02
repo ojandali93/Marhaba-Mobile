@@ -38,7 +38,7 @@ const MenuView = ({updateTab}: MenuViewProps) => {
           </TouchableOpacity>
           <TouchableOpacity onPress={() => updateTab('upgrade')} style={[tailwind`flex-row justify-between items-center p-4 rounded-2 mt-2`, {backgroundColor: themeColors.darkSecondary}]}>
               <Text style={[tailwind`text-base font-semibold`, {color: themeColors.primary}]}>
-                Upgrade to Pro (50% off)
+                Upgrade to Pro (30% off)
               </Text>
               <ChevronsRight height={24} width={24} color={themeColors.primary} />
           </TouchableOpacity>

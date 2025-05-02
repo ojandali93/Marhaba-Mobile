@@ -29,6 +29,7 @@ const tiers = [
     id: 2,
     name: 'Marhabah Pro',
     price: '$9.99/mo',
+    originalPrice: '$14.99/mo',
     features: [
       'Unlimited Likes',
       '15 Super Likes / Week',
@@ -42,7 +43,8 @@ const tiers = [
   {
     id: 3,
     name: 'Marhabah Pro+',
-    price: '$19.99/mo 19.99',
+    price: '$16.99/mo',
+    originalPrice: '$24.99/mo',
     features: [
       'Everything in Pro',
       'Unlimited Super Likes',
@@ -118,7 +120,7 @@ const UpgradeView = ({ updateTab }: { updateTab: (tab: string) => void }) => {
             >
               <View style={tailwind`flex-row justify-between items-center mb-2`}>
                 <Text style={[tailwind`text-xl font-bold`, {color: isCurrent ? themeColors.darkSecondary : themeColors.primary}]}>{tier.name}</Text>
-                <Text style={[tailwind`text-white`, {color: isCurrent ? themeColors.darkSecondary : themeColors.primary}]}>{tier.price}</Text>
+                <Text style={[tailwind`text-white`, {color: isCurrent ? themeColors.darkSecondary : themeColors.primary}]}>{tier.price} <Text style={tailwind`text-gray-400 line-through`}>{tier.originalPrice}</Text></Text>
               </View>
 
               {tier.features.map((feature, index) => (
