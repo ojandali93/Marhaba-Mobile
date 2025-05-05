@@ -13,7 +13,6 @@ import AithInputStandard from '../../Components/Inputs/AithInputStandard';
 import AuthMainButton from '../../Components/Buttons/AuthMainButton';
 import {useNavigation} from '@react-navigation/native';
 import axios from 'axios';
-import {setProfile, setJwtToken, setSession, setUserId} from '../../Services/AuthStoreage';
 import Icon from '../../Assets/marhaba-icon-full-beige.png';
 import Logo from '../../Assets/marhaba-name-only-green.png';
 import { useProfile } from '../../Context/ProfileContext';

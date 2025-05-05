@@ -1,14 +1,13 @@
 import 'react-native-url-polyfill/auto';
-import React, {useEffect, useLayoutEffect, useState} from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import BottomTabNavigation from './src/Navigation/BottomTabNavigation';
-import {SafeAreaProvider} from 'react-native-safe-area-context';
-import {NavigationContainer} from '@react-navigation/native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { NavigationContainer } from '@react-navigation/native';
 import AuthStack from './src/Navigation/AuthStackNavigation';
-import './src/Services/FirebaseConfig';
-import {useProfile} from './src/Context/ProfileContext';
+import { useProfile } from './src/Context/ProfileContext';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { ActivityIndicator, View } from 'react-native';
-import themeColors from './src/Utils/custonColors';
+import { View } from 'react-native';
+// import { requestFCMPermissionsAndGetToken, setupNotificationListeners } from './src/Services/FCMService'; // ✅ make sure spelling is correct!
 
 function App(): React.JSX.Element {
   const {
@@ -22,7 +21,7 @@ function App(): React.JSX.Element {
     loadJwtToken,
   } = useProfile();
 
-  const [loading, setLoading] = useState(true); // ✅ NEW
+  const [loading, setLoading] = useState(true);
 
   useLayoutEffect(() => {
     initializeApp();
@@ -36,11 +35,12 @@ function App(): React.JSX.Element {
       await loadJwtToken();
       await checkAuthenticated();
       await requestLocation();
+
     } catch (e) {
       console.error('Storage initialization error:', e);
       setAuthenticated(false);
     } finally {
-      setLoading(false); // ✅ hide splash once done
+      setLoading(false);
     }
   };
 
@@ -49,8 +49,7 @@ function App(): React.JSX.Element {
       <SafeAreaProvider>
         <NavigationContainer>
           {loading ? (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            </View>
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} />
           ) : authenticated ? (
             <BottomTabNavigation />
           ) : (

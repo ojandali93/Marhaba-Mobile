@@ -105,7 +105,7 @@ const Conversations = () => {
     }
   };
 
-  const renderConversation = ({ item }: { item: Conversation }) => {
+  const renderConversation = ({ item, index }: { item: Conversation, index: number }) => {
     const otherProfile = item.user1Id === userId ? item.profile2 : item.profile1;
 
     if (!otherProfile) return null;
@@ -115,9 +115,12 @@ const Conversations = () => {
     const lastMessage = item.lastMessage;
     const displayTime = formatTimestamp(item.updated_at);
 
+    const backgroundColor = index % 2 === 0 ? themeColors.secondaryOpacity : themeColors.darkSecondaryOpacity;
+
+
     return (
       <TouchableOpacity
-        style={[tailwind`flex-row items-center px-4 py-3 border-b border-gray-400`, {backgroundColor: themeColors.secondary}]}
+        style={[tailwind`flex-row items-center px-4 py-3 border-b border-gray-400`, {backgroundColor: backgroundColor}]}
         onPress={() => {
             console.log("Navigate to chat:", item.id);
             navigation.navigate('Chat', { conversation: item });
@@ -139,8 +142,8 @@ const Conversations = () => {
 
   return (
     <SafeAreaView style={[tailwind`flex-1`, {backgroundColor: themeColors.secondary}]}>
-      <View style={[tailwind`px-4 py-3 border-b border-gray-700`, {backgroundColor: themeColors.secondary}]}>
-        <Text style={tailwind`text-2xl font-bold text-gray-800`}>Conversations</Text>
+      <View style={[tailwind`w-full flex flex-row items-center justify-betweenpx-4 p-4 rounded-2 mb-3`, {backgroundColor: themeColors.darkSecondary}]}>
+      <Text style={tailwind`text-2xl font-bold text-gray-800`}>Conversations</Text>
       </View>
       <View style={tailwind`flex-1`}>
             { loading ? (

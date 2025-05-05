@@ -246,7 +246,7 @@ const LikeScreen = () => {
 
   return (
     <SafeAreaView style={[tailwind`flex-1`, {backgroundColor: themeColors.secondary}]}>
-      <View style={tailwind`px-4 py-3 border-b border-gray-500 mb-3`}>
+      <View style={[tailwind`w-full flex flex-row items-center justify-betweenpx-4 p-4 rounded-2 mb-3`, {backgroundColor: themeColors.darkSecondary}]}>
         <Text style={tailwind`text-2xl font-bold text-gray-800`}>Likes</Text>
       </View>
 

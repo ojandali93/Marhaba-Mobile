@@ -26,9 +26,8 @@
     "@react-navigation/stack": "^7.2.10",
     "@supabase/supabase-js": "^2.49.4",
     "axios": "^1.8.4",
-    "firebase": "^11.6.1",
     "react": "19.0.0",
-    "react-native": "0.79.1",
+    "react-native": "^0.79.2",
     "react-native-config": "^1.5.5",
     "react-native-date-picker": "^5.0.12",
     "react-native-dotenv": "^3.4.11",
@@ -49,7 +48,6 @@
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
-    "@babel/preset-env": "^7.25.3",
     "@babel/runtime": "^7.25.0",
     "@react-native-community/cli": "18.0.0",
     "@react-native-community/cli-platform-android": "18.0.0",

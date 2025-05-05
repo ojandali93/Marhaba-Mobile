@@ -1,5 +1,12 @@
 import React, {useState} from 'react';
-import {Image, Modal, ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {
+  Image,
+  Modal,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
 import {
@@ -19,15 +26,15 @@ import TermsView from '../../Components/Views/TermsView';
 import PrivacyView from '../../Components/Views/PrivacyView';
 import EditProfileModalContent from '../../Components/Modals/EditProfileModalContent';
 import UpgradeView from '../../Components/Views/UpgradeView';
-import { useProfile } from '../../Context/ProfileContext';
+import {useProfile} from '../../Context/ProfileContext';
 import ViewedView from '../../Components/Views/ViewedView';
 
 const ProfileScreen = () => {
   const {profile} = useProfile();
+  console.log('profile screen profiel', profile);
 
   const [activeTab, setActiveTab] = useState('profile');
   const [activeModal, setActiveModal] = useState<string | null>(null);
-  console.log('profile', profile);
 
   function getAgeFromDOB(
     dobString: string | null | undefined,
@@ -56,7 +63,7 @@ const ProfileScreen = () => {
       <View style={tailwind`absolute flex-1 w-full h-full`}>
         <View style={tailwind`flex-1`}>
           <Image
-            source={{uri: profile.Photos[0].photoUrl}}
+            source={{uri: profile?.Photos[0].photoUrl}}
             style={[
               tailwind`w-full h-full`,
               {resizeMode: 'cover', alignSelf: 'flex-start'},
@@ -66,7 +73,13 @@ const ProfileScreen = () => {
       </View>
       <View
         style={[
-          tailwind`absolute left-4 right-4 bottom-6 ${activeTab === 'editProfile' || activeTab === 'upgrade' || activeTab === 'Viewed' ? 'h-10/12' : 'h-5/12'} rounded-8`,
+          tailwind`absolute left-4 right-4 bottom-6 ${
+            activeTab === 'editProfile' ||
+            activeTab === 'upgrade' ||
+            activeTab === 'Viewed'
+              ? 'h-10/12'
+              : 'h-5/12'
+          } rounded-8`,
           {backgroundColor: themeColors.secondary},
         ]}>
         {activeTab === 'profile' && (
@@ -89,9 +102,7 @@ const ProfileScreen = () => {
                 {profile.height ? `${profile.height} • ` : ''}
                 {profile.About[0].religion
                   ? `${profile.About[0].religion}${
-                      profile.About[0].sect
-                        ? ` (${profile.About[0].sect})`
-                        : ''
+                      profile.About[0].sect ? ` (${profile.About[0].sect})` : ''
                     } • `
                   : ''}
                 {profile.Career[0].job ?? ''}
@@ -104,30 +115,18 @@ const ProfileScreen = () => {
           {activeTab === 'settings' && (
             <SettingsView updateTab={setActiveTab} />
           )}
-          {activeTab === 'faq' && (
-            <FAQView updateTab={setActiveTab} />
-          )}  
+          {activeTab === 'faq' && <FAQView updateTab={setActiveTab} />}
           {activeTab === 'contact' && (
             <ContactUsView updateTab={setActiveTab} />
           )}
-          {activeTab === 'bug' && (
-            <BugView updateTab={setActiveTab} />
+          {activeTab === 'bug' && <BugView updateTab={setActiveTab} />}
+          {activeTab === 'terms' && <TermsView updateTab={setActiveTab} />}
+          {activeTab === 'privacy' && <PrivacyView updateTab={setActiveTab} />}
+          {activeTab === 'editProfile' && (
+            <EditProfileModalContent updateTab={setActiveTab} />
           )}
-          {activeTab === 'terms' && (
-            <TermsView updateTab={setActiveTab} />
-          )}
-          {activeTab === 'privacy' && (
-            <PrivacyView updateTab={setActiveTab} />
-          )} 
-            {activeTab === 'editProfile' && (
-              <EditProfileModalContent updateTab={setActiveTab} />
-            )}
-              {activeTab === 'upgrade' && (
-                <UpgradeView updateTab={setActiveTab} />
-              )}
-              {activeTab === 'Viewed' && (
-                <ViewedView updateTab={setActiveTab} />
-              )}
+          {activeTab === 'upgrade' && <UpgradeView updateTab={setActiveTab} />}
+          {activeTab === 'Viewed' && <ViewedView updateTab={setActiveTab} />}
         </ScrollView>
       </View>
     </View>

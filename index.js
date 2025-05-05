@@ -4,6 +4,9 @@ import { name as appName } from './app.json';
 import { ProfileProvider } from './src/Context/ProfileContext';
 
 const Root = () => (
+
+  // let firebasepApp = app;
+
   <ProfileProvider>
     <App />
   </ProfileProvider>

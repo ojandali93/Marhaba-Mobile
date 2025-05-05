@@ -4,6 +4,7 @@ import axios from 'axios';
 import { PermissionsAndroid, Platform } from 'react-native';
 import Geolocation from '@react-native-community/geolocation';
 import { initializeSocket } from '../Services/socket';
+import { Alert } from 'react-native';
 
 interface ProfileContextType {
   profile: any | null;
@@ -17,7 +18,7 @@ interface ProfileContextType {
   setMatchedProfiles: (profiles: any[]) => void;
   grabUserProfile: (userId: string) => Promise<void>;
   addProfile: (profile: any) => Promise<void>;
-  removeProfile: (profileId: string) => Promise<void>;
+  removeProfile: () => Promise<void>;
   addUserId: (userId: string) => Promise<void>;
   removeUserId: () => Promise<void>;
   addSession: (session: string) => Promise<void>;
@@ -51,11 +52,10 @@ export const ProfileProvider = ({ children }: { children: React.ReactNode }) => 
   const [authenticated, setAuthenticated] = useState<boolean>(false);
 
   const grabUserProfile = async (userId: string) => {
-    console.log('grabUserProfile', userId);
     try {
       const response = await axios.get(`https://marhaba-server.onrender.com/api/user/${userId}`);
       if(response.data) {
-        setProfile(response.data.data);
+        setProfile(response.data.data[0]);
         setUserId(userId);
       }
     } catch (error) {
@@ -67,23 +67,11 @@ export const ProfileProvider = ({ children }: { children: React.ReactNode }) => 
     try {
       const response = await axios.get(`https://marhaba-server.onrender.com/api/user/${userId}`);
       if(response.data) {
-        addProfile(JSON.stringify(response.data.data));
+        addProfile(response.data.data[0]);
         addSession(JSON.stringify(session));
-        addUserId(JSON.stringify(userId));
-        addJwtToken(JSON.stringify(token));
+        addUserId(userId);
+        addJwtToken(token);
         setAuthenticated(true)
-      }
-    } catch (error) {
-      console.error('No Profile Found:', error);
-    }
-  }
-
-  const updateProfileLocation = async () => {
-    try {
-      const response = await axios.get(`https://marhaba-server.onrender.com/api/user/${userId}`);
-      if(response.data) {
-        setProfile(response.data.data);
-        setUserId(response.data.data.userId);
       }
     } catch (error) {
       console.error('No Profile Found:', error);
@@ -95,7 +83,7 @@ export const ProfileProvider = ({ children }: { children: React.ReactNode }) => 
     if(storedProfile) {
       setProfile(JSON.parse(storedProfile));
     } else {
-      setSession(null);
+      setProfile(null);
     }
   }
 
@@ -136,7 +124,7 @@ export const ProfileProvider = ({ children }: { children: React.ReactNode }) => 
     }
   }
   const addSession = async (session: string) => {
-    await AsyncStorage.setItem('session', session);
+    await AsyncStorage.setItem('session', JSON.stringify(session));
     setSession(session);
   }
 
@@ -155,7 +143,7 @@ export const ProfileProvider = ({ children }: { children: React.ReactNode }) => 
   }
 
   const addJwtToken = async (token: string) => {
-    await AsyncStorage.setItem('jwtToken', token);
+    await AsyncStorage.setItem('jwtToken', JSON.stringify(token));
     setJwtToken(token);
   }
   

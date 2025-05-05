@@ -1,21 +1,34 @@
 import {useNavigation} from '@react-navigation/native';
 import axios, { all } from 'axios';
 import React, {useEffect, useLayoutEffect, useState} from 'react';
-import {Image, Modal, Text, TouchableOpacity, View} from 'react-native';
+import {Alert, Image, Modal, Text, TouchableOpacity, View} from 'react-native';
 import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
 import FeedProfileComponent from '../../Components/Profiles/FeedProfileComponent';
-import {Heart} from 'react-native-feather';
+import {Check, Heart} from 'react-native-feather';
 import { useProfile } from '../../Context/ProfileContext';
 import TutorialModal from '../../Components/Modals/TutorialModal';
 
 const FeedScreen = () => {
   const navigation = useNavigation();
-  const {grabUserMatches, grabUserProfile, userId, allProfiles, profile} = useProfile();
-  const [selectedProfile, setSelectedProfile] = useState<any>(allProfiles[0]);
-const [results, setResults] = useState<any[]>(allProfiles);
-  const [likes, setLikes] = useState<number>(7);
+  const {
+    checkAuthenticated,
+    grabUserMatches,
+    grabUserProfile,
+    userId,
+    allProfiles,
+    profile,
+    removeJwtToken,
+    removeProfile,
+    removeSession,
+    removeUserId
+  } = useProfile();
 
+  const [selectedProfile, setSelectedProfile] = useState<any>(allProfiles[0]);
+  const [results, setResults] = useState<any[]>(allProfiles);
+  const [tier, setTier] = useState<number | null>(null);
+  const [likes, setLikes] = useState<number>(0);
+  const [superLikes, setSuperLikes] = useState<number>(0);
   const [showFullProfile, setShowFullProfile] = useState<boolean>(false);
   const [matchedProfile, setMatchedProfile] = useState<any>(null);
   const [showMatchModal, setShowMatchModal] = useState(false);
@@ -24,11 +37,11 @@ const [results, setResults] = useState<any[]>(allProfiles);
   useLayoutEffect(() => {
     grabUserProfile(userId || '');
     grabUserMatches();
+    fetchUsage();
   }, []);
 
   useEffect(() => {
-    console.log('profile', profile);
-    if(profile?.tutorial) {
+    if (profile?.tutorial) {
       setShowTutorial(true);
     } else {
       setShowTutorial(false);
@@ -87,6 +100,39 @@ const [results, setResults] = useState<any[]>(allProfiles);
     }
   };
 
+  const fetchUsage = async () => {
+    if (!userId) return;
+    try {
+      const res = await axios.get(`https://marhaba-server.onrender.com/api/user/weeklyStats/${userId}`);
+      const { likesSentThisWeek, superLikesSentThisWeek } = res.data.data;
+
+      if (profile?.tier) {
+        let maxLikes = 10;
+        let maxSuperLikes = 5;
+
+        switch (profile.tier) {
+          case 1:
+            maxLikes = 15;
+            maxSuperLikes = 10;
+            break;
+          case 2:
+            maxLikes = 100; // 100 = ∞
+            maxSuperLikes = 15;
+            break;
+          case 3:
+            maxLikes = 100; // 100 = ∞
+            maxSuperLikes = 20;
+            break;
+        }
+
+        setLikes(maxLikes === 100 ? 100 : Math.max(0, maxLikes - likesSentThisWeek));
+        setSuperLikes(maxSuperLikes === 100 ? 100 : Math.max(0, maxSuperLikes - superLikesSentThisWeek));
+      }
+    } catch (error) {
+      console.error('❌ Failed to fetch usage:', error);
+    }
+  };
+
   const dislikeProfile = async (profileId: string) => {
     console.log(`disliked profile: ${profileId}`);
     createViewed(profileId);
@@ -94,89 +140,158 @@ const [results, setResults] = useState<any[]>(allProfiles);
   };
 
   const likeProfile = async (profileId: string, profile: any) => {
-    try {
-      // Check if already liked
-      const checkRes = await axios.get(
-        `https://marhaba-server.onrender.com/api/user/matchStatus/${userId}/${profileId}`,
+    console.log(`likes: ${likes}`);
+    if (likes === 0) {
+      Alert.alert(
+        'Out of Likes',
+        'Upgrade to Pro to get more!',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          {
+            text: 'Upgrade',
+            onPress: () => navigation.navigate('Profiles'),
+          },
+        ]
       );
-  
-      console.log('checkRes', checkRes.data);
-      if (checkRes.data.data.length > 0) {
-        console.log(`🟢 Already interacted with profile: ${profileId}`)
-        updateMatchStatus(checkRes.data.data[0].id);
-        createConversation(profileId);
-        setMatchedProfile(profile);
-        setShowMatchModal(true);
-        return;
-      }
-  
-      // Proceed to like
-      const response = await axios.post(
-        `https://marhaba-server.onrender.com/api/user/interaction`,
-        {
-          userId: userId,
-          targetUserId: profileId,
-          interaction: 'liked',
-          viewed: false,
-          approved: false,
+      return;
+    } else if (likes && likes > 0) {
+      console.log(`likes: ${likes}`);
+      setLikes(prev => prev ? prev - 1 : null);
+    
+      try {
+        const checkRes = await axios.get(
+          `https://marhaba-server.onrender.com/api/user/matchStatus/${userId}/${profileId}`
+        );
+    
+        const existingInteraction = checkRes.data?.data[0];
+    
+        if (existingInteraction) {
+          const updatedRes = await axios.put(
+            `https://marhaba-server.onrender.com/api/user/updateInteraction`,
+            {
+              id: existingInteraction.id,
+              userId: userId,
+              targetUserId: existingInteraction.targetUserId,
+              userInteraction: existingInteraction.userInteraction,
+              targetInteraction: 'liked',
+              viewed: true,
+              approved: true,
+              viewed_at: new Date().toISOString(),
+              approved_at: new Date().toISOString(), 
+              message: null
+            }
+          );
+    
+          updateMatchStatus(existingInteraction.id);
+          createConversation(profileId);
+          setMatchedProfile(profile);
+          setShowMatchModal(true);
+          return;
         }
-      );
-  
-      if (response.data?.success) {
-        console.log(`✅ Successfully disliked profile: ${profileId}`);
-        createViewed(profileId);
-        removeTopProfile();
-
-        // Check for match
+    
+        const response = await axios.post(
+          `https://marhaba-server.onrender.com/api/user/interaction`,
+          {
+            userId: userId,
+            targetUserId: profileId,
+            userInteraction: 'liked',
+            targetInteraction: null,
+            viewed: false,
+            approved: false,
+            viewed_at: null,
+            approved_at: null, 
+            message: null
+          }
+        );
+    
+        if (response.data?.success) {
+          console.log(`✅ Liked profile: ${profileId}`);
+          createViewed(profileId);
+          fetchUsage();
+          removeTopProfile();
+        }
+      } catch (error) {
+        console.error(`❌ Error liking profile ${profileId}:`, error);
       }
-    } catch (error) {
-      console.error(`❌ Error liking profile ${profileId}:`, error);
     }
-  };
+  
+  }; 
+  
 
   const superLikeProfile = async (profileId: string, message?: string, profile: any) => {
-    console.log(`Liking profile: ${profileId}`);
+    if (superLikes === 0) {
+      Alert.alert(
+        'Out of Super Likes',
+        'Upgrade to Pro to get more!',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          {
+            text: 'Upgrade',
+            onPress: () => navigation.navigate('Profiles'),
+          },
+        ]
+      );
+      return;
+    } else if (superLikes > 0) {
+      setSuperLikes(prev => prev ? prev - 1 : null);
     
-    try {
-
-      const checkRes = await axios.get(
-        `https://marhaba-server.onrender.com/api/user/matchStatus/${userId}/${profileId}`,
-      );
-  
-      if (checkRes.data?.data.legnth > 0) {
-        console.log(`🟢 Already interacted with profile: ${profileId}`);
-        updateMatchStatus(checkRes.data.data[0].id);
-        createConversation(profileId);
-        setMatchedProfile(profile);
-        setShowMatchModal(true);
-        return;
-      }
-
-      const response = await axios.post(
-        `https://marhaba-server.onrender.com/api/user/interaction`,
-        {
-          userId: userId,
-          targetUserId: profileId,
-          interaction: 'super',
-          viewed: false,
-          approved: false,
-          message: message,
-        },
-      );
-      if (response.data?.success) {
-        console.log(`✅ Successfully liked profile: ${profileId}`);
-        createViewed(profileId);
-        removeTopProfile();
-        setLikes(prev => prev - 1);
-      } else {
-        console.error(
-          `⚠️ Server responded but like was not successful for ${profileId}:`,
-          response.data,
+      try {
+        const checkRes = await axios.get(
+          `https://marhaba-server.onrender.com/api/user/matchStatus/${userId}/${profileId}`
         );
+    
+        const existingInteraction = checkRes.data?.data[0];
+    
+        if (existingInteraction) {
+          const updatedRes = await axios.put(
+            `https://marhaba-server.onrender.com/api/user/updateInteraction`,
+            {
+              id: existingInteraction.id,
+              userId: existingInteraction.userId,
+              targetUserId: existingInteraction.targetUserId,
+              userInteraction: existingInteraction.userInteraction,
+              targetInteraction: 'super',
+              viewed: true,
+              approved: true,
+              viewed_at: new Date().toISOString(),
+              approved_at: new Date().toISOString(), 
+              message: message
+            }
+          );
+    
+          updateMatchStatus(existingInteraction.id);
+          createConversation(profileId);
+          setMatchedProfile(profile);
+          setShowMatchModal(true);
+          return;
+        }
+    
+        const response = await axios.post(
+          `https://marhaba-server.onrender.com/api/user/interaction`,
+          {
+            userId: userId,
+            targetUserId: profileId,
+            userInteraction: 'super',
+            targetInteraction: null,
+            viewed: false,
+            approved: false,
+            viewed_at: null,
+            approved_at: null, 
+            message: message
+          }
+        );
+    
+        if (response.data?.success) {
+          console.log(`✅ Super liked profile: ${profileId}`);
+          createViewed(profileId);
+          fetchUsage();
+          removeTopProfile();
+        }
+      } catch (error) {
+        console.error(`❌ Error super liking profile ${profileId}:`, error);
       }
-    } catch (error) {
-      console.error(`❌ Error liking profile ${profileId}:`, error);
     }
+  
   };
 
 
@@ -208,16 +323,33 @@ const [results, setResults] = useState<any[]>(allProfiles);
               borderColor: themeColors.primary, // ✅ green border
             },
           ]}>
-          <Heart
-            height={20}
-            width={20}
-            fill={themeColors.primary}
-            color={themeColors.primary}
-            strokeWidth={2.5}
-          />
-          <Text style={[tailwind`ml-2 text-xl font-bold`, {color: themeColors.primary}]}>
-            {likes}
-          </Text>
+            {superLikes !== null && (
+  <View style={tailwind`flex-row items-center`}>
+    <Heart
+      height={16}
+      width={16}
+      color={themeColors.primary}
+      strokeWidth={3}
+    />
+    <Text style={tailwind`ml-1 text-xl font-bold`}>
+      {superLikes === 100 ? '∞' : superLikes}
+    </Text>
+  </View>
+)}
+            {likes !== null && (
+  <View style={tailwind`flex-row items-center`}>
+    <Check
+      height={18}
+      width={18}
+      color={themeColors.primary}
+      strokeWidth={3}
+      style={tailwind`ml-3`}
+    />
+    <Text style={tailwind`ml-1 text-xl font-bold`}>
+      {likes === 100 ? '∞' : likes}
+    </Text>
+  </View>
+)}
         </View>
       </View>
         )

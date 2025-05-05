@@ -6,13 +6,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 type LocationType = {latitude: number; longitude: number};
 
 export default function useLocation() {
-  const [region, setRegion] = useState<LocationType>(); // null location
+  const [region, setRegion] = useState<LocationType>();
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-
-    requestPermissions();
-  }, []);
 
   const requestPermissions = async () => {
     try {
@@ -26,11 +21,13 @@ export default function useLocation() {
       }
       Geolocation.getCurrentPosition(
         position => {
-          getLocation(position);
+          console.log('position: ', position);
+          storeLocationInStorage(position); // 👈 renamed helper function
           setRegion({
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
           });
+          console.log('region: ', region);
           setLoading(false);
         },
         error => console.log(error),
@@ -41,11 +38,12 @@ export default function useLocation() {
       setLoading(false);
     }
   };
-  return {region, loading};
+
+  return {region, loading, requestPermissions}; // 👈 expose it here
 }
 
-export const getLocation = async (position: LocationType) => {
-  const latitude = await AsyncStorage.setItem('user_lat', position.latitude.toString());
-  const longitude = await AsyncStorage.setItem('user_lng', position.longitude.toString());
-  return {latitude, longitude};
+// 👇 helper function just for storage
+export const storeLocationInStorage = async (position: LocationType) => {
+  await AsyncStorage.setItem('user_lat', position.latitude.toString());
+  await AsyncStorage.setItem('user_lng', position.longitude.toString());
 };

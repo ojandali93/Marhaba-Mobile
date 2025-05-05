@@ -11,7 +11,6 @@ import {
   Platform,
   Keyboard,
   TouchableWithoutFeedback,
-  Dimensions,
 } from 'react-native';
 import tailwind from 'twrnc';
 import {
@@ -21,72 +20,25 @@ import {
   ChevronsDown,
   Send,
   ChevronsUp,
+  ChevronLeft,
+  ChevronsLeft,
 } from 'react-native-feather';
 import themeColors from '../../Utils/custonColors';
-import cheers from '../../Assets/cheers.png';
-import baby from '../../Assets/baby.png';
-import ciggy from '../../Assets/cigarette.png';
 import {countryFlagMap} from '../../Utils/FlagMaps';
-import SingleInfoFull from '../Info/SingleInfoFull';
-import { useNavigation } from '@react-navigation/native';
+import SingleInfoFull from '../../Components/Info/SingleInfoFull';
+import {useRoute, useNavigation} from '@react-navigation/native';
+import axios from 'axios';
 
-interface Photo {
-  photoUrl: string;
-}
+const SingleProfileScreen = () => {
+  const route = useRoute();
+  const navigation = useNavigation();
+  const {profile} = route.params as {profile: any};
 
-interface Tag {
-  tag: string;
-}
-
-interface Communication {
-  style: string;
-}
-
-interface LoveLanguage {
-  language: string;
-}
-
-interface Prompt {
-  prompt: string;
-  response?: string;
-}
-
-interface Value {
-  value: string;
-}
-
-interface FeedSummaryProps {
-  profile: any;
-  likesLeft?: number;
-  dislikeProfile: (profileId: string) => void;
-  likeProfile: (profileId: string, profile: any) => void;
-  superlikeProfile: (profileId: string, message?: string, profile: any) => void;
-  isInteracting?: boolean;
-  onExpandPress?: () => void;
-  showFullProfile: boolean;
-  handleToggleFullProfile: () => void;
-  setShowFullProfile: (showFullProfile: boolean) => void;
-}
-
-const {width: screenWidth} = Dimensions.get('window');
-
-const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
-  profile,
-  dislikeProfile,
-  likeProfile,
-  superlikeProfile,
-  isInteracting = false,
-  onExpandPress,
-  showFullProfile,
-  handleToggleFullProfile,
-  setShowFullProfile,
-}) => {
-  const navigation = useNavigation()
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [superlikeMessage, setSuperlikeMessage] = useState('');
+  const [isInteracting, setIsInteracting] = useState(false);
+  const [showFullProfile, setShowFullProfile] = useState(false);
   const [photoIndex, setPhotoIndex] = useState(0);
-
-  if (!profile) return null;
 
   const user = profile;
   const about = user?.About?.[0] ?? {};
@@ -143,7 +95,7 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
       return;
     }
     setIsModalVisible(false);
-    superlikeProfile(profileId, superlikeMessage.trim(), profile);
+    superLikeProfile(profileId, superlikeMessage.trim(), profile);
     setSuperlikeMessage('');
   };
 
@@ -165,7 +117,7 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
       );
       return;
     }
-    setShowFullProfile(false);
+    navigation.goBack();
     dislikeProfile(profileId);
   };
 
@@ -174,12 +126,105 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
     setSuperlikeMessage('');
   };
 
-  const handleCollapseProfile = () => {
-    setShowFullProfile(false);
+  const dislikeProfile = async (profileId: string) => {
+    console.log(`disliked profile: ${profileId}`);
+    navigation.popToTop();
+  };
+
+  const likeProfile = async (profileId: string, profile: any) => {
+    const userId = profile?.userId;
+    try {
+      // Check if already liked
+      const checkRes = await axios.get(
+        `https://marhaba-server.onrender.com/api/user/matchStatus/${userId}/${profileId}`,
+      );
+
+      console.log('checkRes', checkRes.data);
+      if (checkRes.data) {
+        console.log(`🟢 Already interacted with profile: ${profileId}`);
+        navigation.goBack();
+        return;
+      }
+
+      // Proceed to like
+      const response = await axios.post(
+        `https://marhaba-server.onrender.com/api/user/interaction`,
+        {
+          userId: userId,
+          targetUserId: profileId,
+          interaction: 'liked',
+          viewed: false,
+          approved: false,
+        },
+      );
+
+      if (response.data?.success) {
+        console.log(`✅ Successfully disliked profile: ${profileId}`);
+        navigation.popToTop();
+      }
+    } catch (error) {
+      console.error(`❌ Error liking profile ${profileId}:`, error);
+    }
+  };
+
+  const superLikeProfile = async (
+    profileId: string,
+    message?: string,
+    profile: any,
+  ) => {
+    console.log(`Liking profile: ${profileId}`);
+    const userId = profile?.userId;
+
+    try {
+      const checkRes = await axios.get(
+        `https://marhaba-server.onrender.com/api/user/matchStatus/${userId}/${profileId}`,
+      );
+
+      if (checkRes.data?.data.legnth > 0) {
+        console.log(`🟢 Already interacted with profile: ${profileId}`);
+        navigation.backToTop();
+        return;
+      }
+
+      const response = await axios.post(
+        `https://marhaba-server.onrender.com/api/user/interaction`,
+        {
+          userId: userId,
+          targetUserId: profileId,
+          interaction: 'super',
+          viewed: false,
+          approved: false,
+          message: message,
+        },
+      );
+      if (response.data?.success) {
+        console.log(`✅ Successfully liked profile: ${profileId}`);
+        navigation.popToTop();
+      } else {
+        console.error(
+          `⚠️ Server responded but like was not successful for ${profileId}:`,
+          response.data,
+        );
+      }
+    } catch (error) {
+      console.error(`❌ Error liking profile ${profileId}:`, error);
+    }
+  };
+
+  const handleToggleFullProfile = () => {
+    setShowFullProfile(prev => !prev);
   };
 
   return (
     <View style={tailwind`flex-1 relative`}>
+      <TouchableOpacity
+        onPress={() => navigation.goBack()}
+        style={[
+          tailwind`absolute z-20 top-16 left-4 p-2 rounded-full`,
+          {backgroundColor: themeColors.darkSecondaryOpacity},
+        ]}>
+        <ChevronsLeft height={30} width={30} color={themeColors.primary} />
+      </TouchableOpacity>
       <TouchableWithoutFeedback onPress={handleImageTap}>
         {photoUrl ? (
           <Image
@@ -192,6 +237,41 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
         )}
       </TouchableWithoutFeedback>
 
+      <View
+        style={tailwind`absolute z-20 bottom-23 left-4 right-4 rounded-5 flex flex-row items-center justify-center`}>
+        <View
+          style={[
+            tailwind`w-full flex flex-row items-center justify-center rounded-4 py-2`,
+            {backgroundColor: themeColors.darkSecondaryOpacity},
+          ]}>
+          <TouchableOpacity
+            onPress={handleDislikeProfile}
+            style={[
+              tailwind`p-3 rounded-full shadow-lg`,
+              {backgroundColor: isInteracting ? '#fca5a5' : '#f87171'},
+            ]}>
+            <X height={24} width={24} color={'white'} strokeWidth={3} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={handleOpenSuperlikeModal}
+            style={[
+              tailwind`p-3 rounded-full shadow-lg mx-7`,
+              {
+                backgroundColor: isInteracting
+                  ? '#6ee7b7'
+                  : themeColors.primary,
+              },
+            ]}>
+            <Heart height={30} width={30} color={'white'} strokeWidth={3} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={handleLikeProfile}
+            style={tailwind`p-3 rounded-full shadow-lg bg-emerald-500`}>
+            <Check height={24} width={24} color={'white'} strokeWidth={3} />
+          </TouchableOpacity>
+        </View>
+      </View>
+
       {!showFullProfile ? (
         <>
           <View
@@ -199,12 +279,21 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
               tailwind`absolute bottom-42 left-4 right-4 rounded-4`,
               {backgroundColor: themeColors.darkSecondaryOpacity},
             ]}>
-            <View style={tailwind`flex-row justify-between items-center p-4 pb-2`}>
+            <View
+              style={tailwind`flex-row justify-between items-center p-4 pb-2`}>
               <View style={tailwind`flex-row justify-between w-full items-end`}>
-                <Text style={[tailwind`text-3xl font-bold`, {color: themeColors.primary}]}>
+                <Text
+                  style={[
+                    tailwind`text-3xl font-bold`,
+                    {color: themeColors.primary},
+                  ]}>
                   {name} {`(${age})`}
                 </Text>
-                <Text style={[tailwind`text-3xl font-semibold`, {color: themeColors.primary}]}>
+                <Text
+                  style={[
+                    tailwind`text-3xl font-semibold`,
+                    {color: themeColors.primary},
+                  ]}>
                   {countryFlagMap[background] ?? ''}
                 </Text>
               </View>
@@ -227,27 +316,6 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                 </Text>
               </View>
             )}
-
-            {/* <View style={tailwind`mt-2 w-full flex flex-row items-center px-4`}>
-              {drink && (
-                <View style={tailwind`flex flex-row items-center mr-2`}>
-                  <Image style={tailwind`h-4 w-4`} source={cheers} />
-                  <Text style={tailwind`text-lg ml-2`}>{drink}</Text>
-                </View>
-              )}
-              {smoke && (
-                <View style={tailwind`flex flex-row items-center mr-2`}>
-                  <Image style={tailwind`h-4 w-4`} source={ciggy} />
-                  <Text style={tailwind`text-lg ml-2`}>{smoke}</Text>
-                </View>
-              )}
-              {hasKids === 'Yes' && (
-                <View style={tailwind`flex flex-row items-center`}>
-                  <Image style={tailwind`h-6 w-6`} source={baby} />
-                  <Text style={tailwind`text-lg ml-2`}>{hasKids}</Text>
-                </View>
-              )}
-            </View> */}
 
             {prompt?.prompt && (
               <View style={tailwind`mt-2 px-4`}>
@@ -283,77 +351,9 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
               </View>
             </TouchableWithoutFeedback>
           </View>
-          <View
-            style={tailwind`absolute z-20 bottom-23 left-4 right-4 rounded-5 flex flex-row items-center justify-center`}>
-            <View
-              style={[
-                tailwind`w-full flex flex-row items-center justify-center rounded-4 py-2`,
-                {backgroundColor: themeColors.darkSecondaryOpacity},
-              ]}>
-              <TouchableOpacity
-                onPress={handleDislikeProfile}
-                style={[
-                  tailwind`p-3 rounded-full shadow-lg`,
-                  {backgroundColor: isInteracting ? '#fca5a5' : '#f87171'},
-                ]}>
-                <X height={24} width={24} color={'white'} strokeWidth={3} />
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={handleOpenSuperlikeModal}
-                style={[
-                  tailwind`p-3 rounded-full shadow-lg mx-7`,
-                  {
-                    backgroundColor: isInteracting
-                      ? '#6ee7b7'
-                      : themeColors.primary,
-                  },
-                ]}>
-                <Heart height={30} width={30} color={'white'} strokeWidth={3} />
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={handleLikeProfile}
-                style={tailwind`p-3 rounded-full shadow-lg bg-emerald-500`}>
-                <Check height={24} width={24} color={'white'} strokeWidth={3} />
-              </TouchableOpacity>
-            </View>
-          </View>
         </>
       ) : (
         <>
-          <View
-            style={tailwind`absolute z-20 bottom-23 left-4 right-4 rounded-5 flex flex-row items-center justify-center`}>
-            <View
-              style={[
-                tailwind`w-full flex flex-row items-center justify-center rounded-4 py-2`,
-                {backgroundColor: themeColors.darkSecondaryOpacity},
-              ]}>
-              <TouchableOpacity
-                onPress={handleDislikeProfile}
-                style={[
-                  tailwind`p-3 rounded-full shadow-lg`,
-                  {backgroundColor: isInteracting ? '#fca5a5' : '#f87171'},
-                ]}>
-                <X height={24} width={24} color={'white'} strokeWidth={3} />
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={handleOpenSuperlikeModal}
-                style={[
-                  tailwind`p-3 rounded-full shadow-lg mx-7`,
-                  {
-                    backgroundColor: isInteracting
-                      ? '#6ee7b7'
-                      : themeColors.primary,
-                  },
-                ]}>
-                <Heart height={30} width={30} color={'white'} strokeWidth={3} />
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={handleLikeProfile}
-                style={tailwind`p-3 rounded-full shadow-lg bg-emerald-500`}>
-                <Check height={24} width={24} color={'white'} strokeWidth={3} />
-              </TouchableOpacity>
-            </View>
-          </View>
           <View style={tailwind`absolute z-20 bottom-42 left-4 right-4`}>
             <TouchableWithoutFeedback onPress={handleToggleFullProfile}>
               <View
@@ -378,7 +378,7 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
           </View>
           <View
             style={[
-              tailwind`absolute top-16 bottom-42 left-4 right-4 rounded-5`,
+              tailwind`absolute top-36 bottom-42 left-4 right-4 rounded-5`,
               {backgroundColor: themeColors.darkSecondaryOpacity},
             ]}>
             <ScrollView
@@ -386,7 +386,11 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
               contentContainerStyle={tailwind``}
               showsVerticalScrollIndicator={false}>
               <View style={tailwind`pb-12`}>
-                <Text style={[tailwind`text-4xl font-bold`, {color: themeColors.primary}]}>
+                <Text
+                  style={[
+                    tailwind`text-4xl font-bold`,
+                    {color: themeColors.primary},
+                  ]}>
                   {name}
                 </Text>
                 <View style={tailwind`mt-8 flex flex-col`}>
@@ -479,7 +483,10 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                 {prompts.filter((p: Prompt) => p.response)?.length > 0 && (
                   <View style={tailwind`mt-4`}>
                     <Text
-                      style={[tailwind`text-3xl font-bold mb-1`, {color: themeColors.primary}]}>
+                      style={[
+                        tailwind`text-3xl font-bold mb-1`,
+                        {color: themeColors.primary},
+                      ]}>
                       Prompts
                     </Text>
                     {prompts.map(
@@ -498,7 +505,10 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
 
                 <View style={tailwind`mt-4`}>
                   <Text
-                      style={[tailwind`text-3xl font-bold mb-4`, {color: themeColors.primary}]}>
+                    style={[
+                      tailwind`text-3xl font-bold mb-4`,
+                      {color: themeColors.primary},
+                    ]}>
                     Core Values
                   </Text>
                   <View style={tailwind`flex flex-col`}>
@@ -551,10 +561,103 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                   </View>
                 </View>
 
+                <View style={tailwind`mt-4`}>
+                  <Text
+                    style={[
+                      tailwind`text-3xl font-bold mb-4`,
+                      {color: themeColors.primary},
+                    ]}>
+                    Lifestyle
+                  </Text>
+                  <View style={tailwind`flex flex-col`}>
+                    <View style={tailwind`flex flex-row items-center`}>
+                      <View style={tailwind`pr-2 w-1/2`}>
+                        <SingleInfoFull
+                          label="Travelling"
+                          value={lifestyle.travel}
+                        />
+                      </View>
+                      <View style={tailwind`w-1/2`}>
+                        <SingleInfoFull
+                          label="Social"
+                          value={lifestyle.social}
+                        />
+                      </View>
+                    </View>
+                    <View style={tailwind`flex flex-row items-center mt-2`}>
+                      <View style={tailwind`pr-2 w-1/2`}>
+                        <SingleInfoFull
+                          label="Health"
+                          value={lifestyle.health}
+                        />
+                      </View>
+                      <View style={tailwind`w-1/2`}>
+                        <SingleInfoFull
+                          label="Finances"
+                          value={lifestyle.finances}
+                        />
+                      </View>
+                    </View>
+                    <View style={tailwind`flex flex-row items-center mt-2`}>
+                      <View style={tailwind`pr-2 w-1/2`}>
+                        <SingleInfoFull
+                          label="Living"
+                          value={lifestyle.living}
+                        />
+                      </View>
+                    </View>
+                  </View>
+                </View>
+
+                {loveLanguages.length > 0 && (
+                  <View style={tailwind`mt-4`}>
+                    <Text
+                      style={[
+                        tailwind`text-3xl font-bold mb-4`,
+                        {color: themeColors.primary},
+                      ]}>
+                      Love Languages
+                    </Text>
+                    {loveLanguages.map((item: LoveLanguage, index) => (
+                      <View key={index} style={tailwind`pr-2 w-full mb-2`}>
+                        <SingleInfoFull
+                          label={''}
+                          value={item.language.replace(/[\[\]"]/g, '')}
+                        />
+                      </View>
+                    ))}
+                  </View>
+                )}
+
+                {values.length > 0 && (
+                  <View style={tailwind`mt-4`}>
+                    <Text
+                      style={[
+                        tailwind`text-3xl font-bold mb-4`,
+                        {color: themeColors.primary},
+                      ]}>
+                      Traits
+                    </Text>
+                    <View style={tailwind`flex flex-row flex-wrap`}>
+                      {values.map((item: Value, index) => (
+                        <View key={index} style={tailwind`pr-2 w-1/2 mb-2`}>
+                          <SingleInfoFull
+                            label={''}
+                            value={item.value.replace(/[\[\]"]/g, '')}
+                          />
+                        </View>
+                      ))}
+                    </View>
+                  </View>
+                )}
+
                 {tags.length > 0 && (
                   <View style={tailwind`mt-3`}>
                     <Text
-                      style={[tailwind`text-3xl font-bold mb-4`, {color: themeColors.primary}]}>
+                      style={[
+                        tailwind`text-3xl font-bold mb-4`,
+                        {color: themeColors.primary},
+                      ]}>
                       Interests
                     </Text>
                     <ScrollView
@@ -571,271 +674,13 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                 )}
 
                 <View style={tailwind`mt-4`}>
-                <Text
-                      style={[tailwind`text-3xl font-bold mb-4`, {color: themeColors.primary}]}>
-                    Lifestyle
-                  </Text>
-                  {
-                    profile.tier === 1 ? (
-                      <TouchableOpacity
-                          onPress={() => navigation.navigate('Profiles')}
-                          style={[tailwind`px-5 py-4 rounded-lg`, {
-                            backgroundColor: themeColors.darkSecondary,
-                          }]}>
-                          <Text style={[tailwind`text-lg font-semibold text-center`, {color: themeColors.primary}]}>
-                            This section is locked.
-                          </Text>
-                          <Text style={[tailwind`text-base  text-center mt-1`, {color: themeColors.primary}]}>
-                            Upgrade to Pro to view full profile insights like lifestyle, career, and more.
-                          </Text>
-                          <Text style={[tailwind`text-lg font-bold text-yellow-800 text-center mt-2 underline`, {color: themeColors.primary}]}>
-                            Tap here to upgrade
-                          </Text>
-                        </TouchableOpacity>
-                    ) : (
-
-                      <View style={tailwind`flex flex-col`}>
-                        <View style={tailwind`flex flex-row items-center`}>
-                          <View style={tailwind`pr-2 w-1/2`}>
-                            <SingleInfoFull
-                              label="Travelling"
-                              value={lifestyle.travel}
-                            />
-                          </View>
-                          <View style={tailwind`w-1/2`}>
-                            <SingleInfoFull
-                              label="Social"
-                              value={lifestyle.social}
-                            />
-                          </View>
-                        </View>
-                        <View style={tailwind`flex flex-row items-center mt-2`}>
-                          <View style={tailwind`pr-2 w-1/2`}>
-                            <SingleInfoFull
-                              label="Health"
-                              value={lifestyle.health}
-                            />
-                          </View>
-                          <View style={tailwind`w-1/2`}>
-                            <SingleInfoFull
-                              label="Finances"
-                              value={lifestyle.finances}
-                            />
-                          </View>
-                        </View>
-                        <View style={tailwind`flex flex-row items-center mt-2`}>
-                          <View style={tailwind`pr-2 w-1/2`}>
-                            <SingleInfoFull
-                              label="Living"
-                              value={lifestyle.living}
-                            />
-                          </View>
-                        </View>
-                      </View>
-                    )
-                  }
-                </View>
-
-                {/* {communicationStyles.length > 0 && (
-                  <View style={tailwind`mt-4`}>
-                    <Text
-                      style={tailwind`text-3xl font-bold text-green-900 mb-4`}>
-                      Communication Style
-                    </Text>
-                    <View style={tailwind`flex flex-col flex-wrap`}>
-                      {communicationStyles.map((item: Communication, index) => (
-                        <View key={index} style={tailwind`pr-2 w-full mb-2`}>
-                          <SingleInfoFull
-                            label={''}
-                            value={item.style.replace(/[\[\]"]/g, '')}
-                          />
-                        </View>
-                      ))}
-                    </View>
-                  </View>
-                )} */}
-
-                {loveLanguages.length > 0 && (
-                  <View style={tailwind`mt-4`}>
-                    <Text
-                      style={[tailwind`text-3xl font-bold mb-4`, {color: themeColors.primary}]}>
-                      Love Languages
-                    </Text>
-                    {
-                    profile.tier === 1 ? (
-                      <TouchableOpacity
-                          onPress={() => navigation.navigate('Profiles')}
-                          style={[tailwind`px-5 py-4 rounded-lg`, {
-                            backgroundColor: themeColors.darkSecondary,
-                          }]}>
-                          <Text style={[tailwind`text-lg font-semibold text-center`, {color: themeColors.primary}]}>
-                            This section is locked.
-                          </Text>
-                          <Text style={[tailwind`text-base  text-center mt-1`, {color: themeColors.primary}]}>
-                            Upgrade to Pro to view full profile insights like lifestyle, career, and more.
-                          </Text>
-                          <Text style={[tailwind`text-lg font-bold text-yellow-800 text-center mt-2 underline`, {color: themeColors.primary}]}>
-                            Tap here to upgrade
-                          </Text>
-                        </TouchableOpacity>
-                    ) : (
-                      <>
-                    {loveLanguages.map((item: LoveLanguage, index) => (
-                      <View key={index} style={tailwind`pr-2 w-full mb-2`}>
-                        <SingleInfoFull
-                          label={''}
-                          value={item.language.replace(/[\[\]"]/g, '')}
-                        />
-                      </View>
-                    ))}
-                    </>
-                    )}
-                  </View>
-                )}
-
-                {/* <View style={tailwind`mt-4`}>
                   <Text
-                    style={tailwind`text-3xl font-bold text-green-900 mb-4`}>
-                    Attachment
-                  </Text>
-                  <View style={tailwind`flex flex-col`}>
-                    <View style={tailwind`flex flex-row items-center`}>
-                      <View style={tailwind`pr-2 w-1/2`}>
-                        <SingleInfoFull
-                          label="Closeness (Relationship)"
-                          value={attachment.close}
-                        />
-                      </View>
-                      <View style={tailwind`w-1/2`}>
-                        <SingleInfoFull
-                          label="Partners Neediness"
-                          value={attachment.partner}
-                        />
-                      </View>
-                    </View>
-                    <View style={tailwind`flex flex-row items-center mt-2`}>
-                      <View style={tailwind`pr-2 w-1/2`}>
-                        <SingleInfoFull
-                          label="Fear of Abandonment"
-                          value={attachment.fear}
-                        />
-                      </View>
-                      <View style={tailwind`w-1/2`}>
-                        <SingleInfoFull
-                          label="Independent vs Togehter"
-                          value={attachment.independent}
-                        />
-                      </View>
-                    </View>
-                    <View style={tailwind`flex flex-row items-center mt-2`}>
-                      <View style={tailwind`pr-2 w-1/2`}>
-                        <SingleInfoFull
-                          label="Response to Conflict"
-                          value={attachment.response}
-                        />
-                      </View>
-                    </View>
-                  </View>
-                </View> */}
-
-                {/* <View style={tailwind`mt-4`}>
-                  <Text
-                    style={tailwind`text-3xl font-bold text-green-900 mb-4`}>
-                    Emotions & Maturity
-                  </Text>
-                  <View style={tailwind`flex flex-col`}>
-                    <View style={tailwind`flex flex-row items-center`}>
-                      <View style={tailwind`pr-2 w-1/2`}>
-                        <SingleInfoFull
-                          label="Closeness (Relationship)"
-                          value={emotions.conflict}
-                        />
-                      </View>
-                      <View style={tailwind`w-1/2`}>
-                        <SingleInfoFull
-                          label="Fear of Abandonment"
-                          value={emotions.stress}
-                        />
-                      </View>
-                    </View>
-                    <View style={tailwind`flex flex-row items-center mt-2`}>
-                      <View style={tailwind`pr-2 w-1/2`}>
-                        <SingleInfoFull
-                          label="Partners Neediness"
-                          value={emotions.apology}
-                        />
-                      </View>
-                      <View style={tailwind`w-1/2`}>
-                        <SingleInfoFull
-                          label="Independent vs Togehter"
-                          value={emotions.emotion}
-                        />
-                      </View>
-                    </View>
-                  </View>
-                </View> */}
-
-                {values.length > 0 && (
-                  <View style={tailwind`mt-4`}>
-                    <Text
-                      style={[tailwind`text-3xl font-bold mb-4`, {color: themeColors.primary}]}>
-                      Traits
-                    </Text>
-                    {
-                    profile.tier === 1 ? (
-                      <TouchableOpacity
-                          onPress={() => navigation.navigate('Profiles')}
-                          style={[tailwind`px-5 py-4 rounded-lg`, {
-                            backgroundColor: themeColors.darkSecondary,
-                          }]}>
-                          <Text style={[tailwind`text-lg font-semibold text-center`, {color: themeColors.primary}]}>
-                            This section is locked.
-                          </Text>
-                          <Text style={[tailwind`text-base  text-center mt-1`, {color: themeColors.primary}]}>
-                            Upgrade to Pro to view full profile insights like lifestyle, career, and more.
-                          </Text>
-                          <Text style={[tailwind`text-lg font-bold text-yellow-800 text-center mt-2 underline`, {color: themeColors.primary}]}>
-                            Tap here to upgrade
-                          </Text>
-                        </TouchableOpacity>
-                    ) : (
-                    <View style={tailwind`flex flex-row flex-wrap`}>
-                      {values.map((item: Value, index) => (
-                        <View key={index} style={tailwind`pr-2 w-1/2 mb-2`}>
-                          <SingleInfoFull
-                            label={''}
-                            value={item.value.replace(/[\[\]"]/g, '')}
-                          />
-                        </View>
-                      ))}
-                    </View>)}
-                  </View>
-                )}
-                
-
-                <View style={tailwind`mt-4`}>
-                <Text
-                      style={[tailwind`text-3xl font-bold mb-4`, {color: themeColors.primary}]}>
+                    style={[
+                      tailwind`text-3xl font-bold mb-4`,
+                      {color: themeColors.primary},
+                    ]}>
                     Future Goals
                   </Text>
-                  {
-                    profile.tier === 1 ? (
-                      <TouchableOpacity
-                          onPress={() => navigation.navigate('Profiles')}
-                          style={[tailwind`px-5 py-4 rounded-lg mb-6`, {
-                            backgroundColor: themeColors.darkSecondary,
-                          }]}>
-                          <Text style={[tailwind`text-lg font-semibold text-center`, {color: themeColors.primary}]}>
-                            This section is locked.
-                          </Text>
-                          <Text style={[tailwind`text-base  text-center mt-1`, {color: themeColors.primary}]}>
-                            Upgrade to Pro to view full profile insights like lifestyle, career, and more.
-                          </Text>
-                          <Text style={[tailwind`text-lg font-bold text-yellow-800 text-center mt-2 underline`, {color: themeColors.primary}]}>
-                            Tap here to upgrade
-                          </Text>
-                        </TouchableOpacity>
-                    ) : (
                   <View style={tailwind`flex flex-col mb-6`}>
                     <View style={tailwind`flex flex-row items-center`}>
                       <View style={tailwind`pr-2 w-1/2`}>
@@ -880,7 +725,6 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                       </View>
                     </View>
                   </View>
-                    )}
                 </View>
               </View>
             </ScrollView>
@@ -958,4 +802,4 @@ function getAgeFromDOB(dobString: string | null | undefined): string | number {
   }
 }
 
-export default FeedProfileComponent;
+export default SingleProfileScreen;

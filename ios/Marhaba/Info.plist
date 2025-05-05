@@ -28,6 +28,25 @@
 <string>We use your location to show nearby matches.</string>
 <key>NSLocationAlwaysUsageDescription</key>
 <string>We use your location to show nearby matches.</string>
+<key>UIBackgroundModes</key>
+<array>
+  <string>remote-notification</string>
+</array>
+
+<key>FirebaseAppDelegateProxyEnabled</key>
+<false/>
+
+<key>NSAppTransportSecurity</key>
+<dict>
+  <key>NSAllowsArbitraryLoads</key>
+  <true/>
+</dict>
+
+<key>NSUserTrackingUsageDescription</key>
+<string>This identifier will be used to deliver personalized ads to you.</string>
+
+<key>UIRemoteNotificationTypes</key>
+<string>Alert, Badge, Sound</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
