@@ -78,6 +78,28 @@ const CreatingProfileScreen = () => {
         longitude: null,
         latitude: null,
         phone,
+        visibility: 'Online',
+      })
+      .then(response => {
+        console.log('profile response: ', response);
+        createNotifications(userId);
+      })
+      .catch(error => {
+        if (error) {
+          console.log('❌ Server responded with status:', error.error);
+        }
+      });
+  };
+
+  const createNotifications = async (userId: string) => {
+    axios
+      .post('https://marhaba-server.onrender.com/api/account/createProfile', {
+        userId,
+        messages: true,
+        matches: true,
+        likes: true,
+        weeklyViews: true,
+        miscellanious: true,
       })
       .then(response => {
         console.log('profile response: ', response);
@@ -334,7 +356,7 @@ const CreatingProfileScreen = () => {
     const trust = await AsyncStorage.getItem('coreTrust');
     const politics = await AsyncStorage.getItem('corePolitics');
     const social = await AsyncStorage.getItem('coreSocial');
-  
+
     axios
       .post('https://marhaba-server.onrender.com/api/account/createCore', {
         userId,
@@ -368,7 +390,7 @@ const CreatingProfileScreen = () => {
     console.log('apology: ', apology);
     console.log('stress: ', stress);
     console.log('emotion: ', emotion);
-  
+
     axios
       .post('https://marhaba-server.onrender.com/api/account/createEmotions', {
         userId,
@@ -394,16 +416,19 @@ const CreatingProfileScreen = () => {
     const fear = await AsyncStorage.getItem('attachmentFear');
     const independent = await AsyncStorage.getItem('attachmentIndependence');
     const response = await AsyncStorage.getItem('attachmentResponseConfict');
-  
+
     axios
-      .post('https://marhaba-server.onrender.com/api/account/createAttachment', {
-        userId,
-        close,
-        partner,
-        fear,
-        independent,
-        response,
-      })
+      .post(
+        'https://marhaba-server.onrender.com/api/account/createAttachment',
+        {
+          userId,
+          close,
+          partner,
+          fear,
+          independent,
+          response,
+        },
+      )
       .then(response => {
         console.log('emotions response: ', response);
         createLifestyle(userId);
@@ -421,7 +446,7 @@ const CreatingProfileScreen = () => {
     const health = await AsyncStorage.getItem('lifestyleHealth');
     const finances = await AsyncStorage.getItem('lifestyleFinances');
     const living = await AsyncStorage.getItem('lifestyleLiving');
-  
+
     axios
       .post('https://marhaba-server.onrender.com/api/account/createLifestyle', {
         userId,
@@ -449,7 +474,7 @@ const CreatingProfileScreen = () => {
     const finances = await AsyncStorage.getItem('futureFinances');
     const pace = await AsyncStorage.getItem('futurePace');
     const location = await AsyncStorage.getItem('futureLocation');
-  
+
     axios
       .post('https://marhaba-server.onrender.com/api/account/createFuture', {
         userId,
@@ -473,14 +498,14 @@ const CreatingProfileScreen = () => {
 
   const createAnger = async (userId: string) => {
     const triggerString = await AsyncStorage.getItem('emotionAnger');
-  
+
     if (!triggerString) {
       console.log('No anger triggers found.');
       return;
     }
-  
+
     const triggers = JSON.parse(triggerString); // ✅ Now an array
-  
+
     axios
       .post('https://marhaba-server.onrender.com/api/account/createAnger', {
         userId,
@@ -491,10 +516,12 @@ const CreatingProfileScreen = () => {
         createSurvey(userId);
       })
       .catch(error => {
-        console.error('❌ Server responded with error:', error.response?.data || error.message);
+        console.error(
+          '❌ Server responded with error:',
+          error.response?.data || error.message,
+        );
       });
   };
-  
 
   const createSurvey = async (userId: string) => {
     try {
@@ -553,7 +580,6 @@ const CreatingProfileScreen = () => {
       );
 
       console.log('✅ Survey response:', response.data);
-
     } catch (error) {
       console.log(
         '❌ Survey creation error:',

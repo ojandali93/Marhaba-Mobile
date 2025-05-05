@@ -158,11 +158,11 @@ const IdentityScreen = () => {
             selected={height}
             onSelect={setHeight}
           />
-            <KidsSelect
-              fieldName="Have Kids"
-              selected={kids}
-              onSelect={setKids}
-            />
+          <KidsSelect
+            fieldName="Have Kids"
+            selected={kids}
+            onSelect={setKids}
+          />
           <SmokeSelect
             fieldName="Smoke"
             selected={smoke}
