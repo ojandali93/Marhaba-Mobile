@@ -28,10 +28,19 @@ import EditProfileModalContent from '../../Components/Modals/EditProfileModalCon
 import UpgradeView from '../../Components/Views/UpgradeView';
 import {useProfile} from '../../Context/ProfileContext';
 import ViewedView from '../../Components/Views/ViewedView';
+import NoticiationsView from '../../Components/Views/NoticiationsView';
+import VisbilityViews from '../../Components/Views/VisbilityViews';
 
 const ProfileScreen = () => {
   const {profile} = useProfile();
-  console.log('profile screen profiel', profile);
+  if (!profile) {
+    // 👇 Optional: render nothing or a loading spinner while navigating away
+    return (
+      <View
+        style={[tailwind`flex-1`, {backgroundColor: themeColors.secondary}]}
+      />
+    );
+  }
 
   const [activeTab, setActiveTab] = useState('profile');
   const [activeModal, setActiveModal] = useState<string | null>(null);
@@ -127,6 +136,12 @@ const ProfileScreen = () => {
           )}
           {activeTab === 'upgrade' && <UpgradeView updateTab={setActiveTab} />}
           {activeTab === 'Viewed' && <ViewedView updateTab={setActiveTab} />}
+          {activeTab === 'notifications' && (
+            <NoticiationsView updateTab={setActiveTab} />
+          )}
+          {activeTab === 'visibility' && (
+            <VisbilityViews updateTab={setActiveTab} />
+          )}
         </ScrollView>
       </View>
     </View>

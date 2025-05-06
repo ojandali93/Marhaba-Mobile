@@ -1,9 +1,16 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {View} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {NavigationContainer} from '@react-navigation/native';
 
-import {Heart, Home, MessageSquare, Search, User, Zap} from 'react-native-feather';
+import {
+  Heart,
+  Home,
+  MessageSquare,
+  Search,
+  User,
+  Zap,
+} from 'react-native-feather';
 import HomeScreen from '../Screens/HomeScreen';
 import tailwind from 'twrnc';
 import themeColors from '../Utils/custonColors';
@@ -13,10 +20,17 @@ import LikeStackNavigation from './LikeStackNavigation';
 import ConversationStackNavigation from './ConversationStackNavigation';
 import ProfileStackNavigation from './ProfileStackNavigation';
 import SearchStackNavigation from './SearchStackNavigation';
+import {useProfile} from '../Context/ProfileContext';
 
 const Tab = createBottomTabNavigator();
 
 const BottomTabNavigation = () => {
+  const {unViewedInteractions, hasUnreadMessages} = useProfile();
+
+  useEffect(() => {
+    console.log('🔥 BottomTab updated: hasUnreadMessages =', hasUnreadMessages);
+  }, [hasUnreadMessages]);
+
   return (
     <>
       <Tab.Navigator
@@ -74,6 +88,11 @@ const BottomTabNavigation = () => {
                   height={26}
                   width={26}
                 />
+                {unViewedInteractions && (
+                  <View
+                    style={tailwind`absolute top--.25 right--1 w-2.5 h-2.5 bg-red-500 rounded-full`}
+                  />
+                )}
               </View>
             ),
           }}
@@ -108,6 +127,11 @@ const BottomTabNavigation = () => {
                   height={26}
                   width={26}
                 />
+                {hasUnreadMessages && (
+                  <View
+                    style={tailwind`absolute top--.75 right--1 w-2.5 h-2.5 bg-red-500 rounded-full`}
+                  />
+                )}
               </View>
             ),
           }}

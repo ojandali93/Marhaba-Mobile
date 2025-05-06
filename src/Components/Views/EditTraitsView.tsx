@@ -1,14 +1,14 @@
-import { useFocusEffect } from '@react-navigation/native';
-import React, { useCallback, useState } from 'react';
-import { Text, TouchableOpacity, View, Alert } from 'react-native';
+import {useFocusEffect} from '@react-navigation/native';
+import React, {useCallback, useState} from 'react';
+import {Text, TouchableOpacity, View, Alert} from 'react-native';
 import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
-import { ChevronsDown, ChevronsUp } from 'react-native-feather';
+import {ChevronsDown, ChevronsUp} from 'react-native-feather';
 import axios from 'axios';
-import { traitsAndHobbies } from '../../Utils/SelectOptions';
-import { useProfile } from '../../Context/ProfileContext';
+import {useProfile} from '../../Context/ProfileContext';
+import {traitsAndHobbies} from '../../Utils/SelectOptions';
 const EditTraitsView = () => {
-  const {profile, userId} = useProfile();
+  const {profile, userId, grabUserProfile} = useProfile();
   const [expandedAbout, setExpandedAbout] = useState(false);
   const [changeDetected, setChangeDetected] = useState(false);
 
@@ -17,7 +17,7 @@ const EditTraitsView = () => {
 
   useFocusEffect(
     useCallback(() => {
-      const dbTraits = (profile?.data?.Tags || []).map((t) => t.tag); // extract tag strings
+      const dbTraits = (profile?.Tags || []).map(t => t.tag); // extract tag strings
       setTraits(dbTraits);
       setOriginalTraits(dbTraits);
     }, []),
@@ -26,7 +26,7 @@ const EditTraitsView = () => {
   const toggleTrait = (trait: string) => {
     let updated;
     if (traits.includes(trait)) {
-      updated = traits.filter((t) => t !== trait);
+      updated = traits.filter(t => t !== trait);
     } else {
       if (traits.length >= 8) return; // ✅ Limit to 8
       updated = [...traits, trait];
@@ -36,13 +36,16 @@ const EditTraitsView = () => {
 
     const changed =
       updated.length !== originalTraits.length ||
-      !updated.every((t) => originalTraits.includes(t));
+      !updated.every(t => originalTraits.includes(t));
     setChangeDetected(changed);
   };
 
   const updateUserTraits = async () => {
     if (traits.length < 3) {
-      Alert.alert('Minimum Required', 'Please select at least 3 traits before saving.');
+      Alert.alert(
+        'Minimum Required',
+        'Please select at least 3 traits before saving.',
+      );
       return;
     }
 
@@ -58,6 +61,7 @@ const EditTraitsView = () => {
       if (response.data.success) {
         setOriginalTraits(traits);
         setChangeDetected(false);
+        grabUserProfile(userId);
         setExpandedAbout(false);
       } else {
         console.error('Error updating traits:', response.data.error);
@@ -69,13 +73,25 @@ const EditTraitsView = () => {
 
   return (
     <View>
-      <TouchableOpacity style={tailwind`w-full flex flex-col mt-2`} onPress={() => setExpandedAbout(!expandedAbout)}>
-      <View style={[tailwind`w-full flex flex-row items-center justify-between p-3 rounded-2`, {backgroundColor: themeColors.darkSecondary}]}>
-      <Text style={tailwind`text-base font-semibold text-gray-800`}>Hobbies & Traits</Text>
+      <TouchableOpacity
+        style={tailwind`w-full flex flex-col mt-2`}
+        onPress={() => setExpandedAbout(!expandedAbout)}>
+        <View
+          style={[
+            tailwind`w-full flex flex-row items-center justify-between p-3 rounded-2`,
+            {backgroundColor: themeColors.darkSecondary},
+          ]}>
+          <Text style={tailwind`text-base font-semibold text-gray-800`}>
+            Hobbies & Traits
+          </Text>
           {expandedAbout ? (
             changeDetected ? (
               <TouchableOpacity onPress={updateUserTraits}>
-                <Text style={[tailwind`text-base font-bold px-2 py-1 rounded-md text-white`, { backgroundColor: themeColors.primary }]}>
+                <Text
+                  style={[
+                    tailwind`text-base font-bold px-2 py-1 rounded-md text-white`,
+                    {backgroundColor: themeColors.primary},
+                  ]}>
                   Save
                 </Text>
               </TouchableOpacity>
@@ -96,7 +112,7 @@ const EditTraitsView = () => {
             </Text>
           </View>
           <View style={tailwind`px-4 pb-4 flex flex-wrap flex-row`}>
-            {traitsAndHobbies.map((trait) => {
+            {traitsAndHobbies.map(trait => {
               const isSelected = traits.includes(trait);
               return (
                 <TouchableOpacity
@@ -105,11 +121,16 @@ const EditTraitsView = () => {
                   style={[
                     tailwind`px-3 py-1 m-1 rounded-full border`,
                     isSelected
-                      ? { backgroundColor: themeColors.primary, borderColor: themeColors.primary }
-                      : { borderColor: '#ccc' },
-                  ]}
-                >
-                  <Text style={tailwind`text-base ${isSelected ? 'text-white' : 'text-black'}`}>
+                      ? {
+                          backgroundColor: themeColors.primary,
+                          borderColor: themeColors.primary,
+                        }
+                      : {borderColor: '#ccc'},
+                  ]}>
+                  <Text
+                    style={tailwind`text-base ${
+                      isSelected ? 'text-white' : 'text-black'
+                    }`}>
                     {trait}
                   </Text>
                 </TouchableOpacity>

@@ -43,8 +43,6 @@ const CreatingProfileScreen = () => {
         name,
       })
       .then(response => {
-        console.log('response: ', response.data);
-        console.log('response data: ', response.data.data);
         createProfile(response.data.data);
       })
       .catch(error => {
@@ -55,14 +53,12 @@ const CreatingProfileScreen = () => {
   };
 
   const createProfile = async (userId: string) => {
-    console.log('user id: ', userId);
     const email = await AsyncStorage.getItem('email');
     const name = await AsyncStorage.getItem('name');
     const dob = await AsyncStorage.getItem('dob');
     const gender = await AsyncStorage.getItem('gender');
     const height = await AsyncStorage.getItem('height');
     const phone = await AsyncStorage.getItem('phone');
-    console.log('grabbed all asyn info');
 
     axios
       .post('https://marhaba-server.onrender.com/api/account/createProfile', {
@@ -81,7 +77,6 @@ const CreatingProfileScreen = () => {
         visibility: 'Online',
       })
       .then(response => {
-        console.log('profile response: ', response);
         createNotifications(userId);
       })
       .catch(error => {
@@ -102,7 +97,6 @@ const CreatingProfileScreen = () => {
         miscellanious: true,
       })
       .then(response => {
-        console.log('profile response: ', response);
         createAbout(userId);
       })
       .catch(error => {
@@ -142,7 +136,6 @@ const CreatingProfileScreen = () => {
         travel,
       })
       .then(response => {
-        console.log('about response: ', response);
         createCareer(userId);
       })
       .catch(error => {
@@ -171,7 +164,6 @@ const CreatingProfileScreen = () => {
         fiveYear,
       })
       .then(response => {
-        console.log('about response: ', response);
         createTraits(userId);
       })
       .catch(error => {
@@ -183,15 +175,12 @@ const CreatingProfileScreen = () => {
 
   const createTraits = async (userId: string) => {
     const traits = await AsyncStorage.getItem('traits');
-    console.log('traits: ', traits);
-    console.log('type of traits', typeof traits);
     axios
       .post('https://marhaba-server.onrender.com/api/account/createTraits', {
         userId,
         traits,
       })
       .then(response => {
-        console.log('about response: ', response);
         createPreferences(userId);
       })
       .catch(error => {
@@ -209,7 +198,6 @@ const CreatingProfileScreen = () => {
     const religion = await AsyncStorage.getItem('prefReligion');
     const ageMin = await AsyncStorage.getItem('preAgeMin');
     const ageMax = await AsyncStorage.getItem('prefAgeMax');
-    console.log('age max: ', ageMax);
     axios
       .post(
         'https://marhaba-server.onrender.com/api/account/createPreferences',
@@ -225,7 +213,6 @@ const CreatingProfileScreen = () => {
         },
       )
       .then(response => {
-        console.log('about response: ', response);
         createPropmts(userId);
       })
       .catch(error => {
@@ -243,7 +230,6 @@ const CreatingProfileScreen = () => {
         prompts,
       })
       .then(response => {
-        console.log('about response: ', response);
         createCommunicationStyles(userId);
       })
       .catch(error => {
@@ -264,7 +250,6 @@ const CreatingProfileScreen = () => {
         },
       )
       .then(response => {
-        console.log('communication response: ', response);
         createLoveLanguage(userId);
       })
       .catch(error => {
@@ -282,7 +267,6 @@ const CreatingProfileScreen = () => {
         loveLanguage,
       })
       .then(response => {
-        console.log('love languages response: ', response);
         createCoreValues(userId);
       })
       .catch(error => {
@@ -300,7 +284,6 @@ const CreatingProfileScreen = () => {
         coreValues,
       })
       .then(response => {
-        console.log('core values response: ', response);
         createTime(userId);
       })
       .catch(error => {
@@ -318,7 +301,6 @@ const CreatingProfileScreen = () => {
         timePriority,
       })
       .then(response => {
-        console.log('time response: ', response);
         createPhotos(userId);
       })
       .catch(error => {
@@ -336,7 +318,6 @@ const CreatingProfileScreen = () => {
         photos,
       })
       .then(response => {
-        console.log('photos response: ', response);
         createCore(userId);
       })
       .catch(error => {
@@ -371,7 +352,6 @@ const CreatingProfileScreen = () => {
         social,
       })
       .then(response => {
-        console.log('core response: ', response);
         createEmotions(userId);
       })
       .catch(error => {
@@ -386,10 +366,6 @@ const CreatingProfileScreen = () => {
     const apology = await AsyncStorage.getItem('emotionApology');
     const stress = await AsyncStorage.getItem('emotionStress');
     const emotion = await AsyncStorage.getItem('emotionEmotion');
-    console.log('conflict: ', conflict);
-    console.log('apology: ', apology);
-    console.log('stress: ', stress);
-    console.log('emotion: ', emotion);
 
     axios
       .post('https://marhaba-server.onrender.com/api/account/createEmotions', {
@@ -400,7 +376,6 @@ const CreatingProfileScreen = () => {
         emotion,
       })
       .then(response => {
-        console.log('emotions response: ', response);
         createAttachment(userId);
       })
       .catch(error => {
@@ -430,7 +405,6 @@ const CreatingProfileScreen = () => {
         },
       )
       .then(response => {
-        console.log('emotions response: ', response);
         createLifestyle(userId);
       })
       .catch(error => {
@@ -457,7 +431,6 @@ const CreatingProfileScreen = () => {
         living,
       })
       .then(response => {
-        console.log('emotions response: ', response);
         createFuture(userId);
       })
       .catch(error => {
@@ -486,7 +459,6 @@ const CreatingProfileScreen = () => {
         location,
       })
       .then(response => {
-        console.log('emotions response: ', response);
         createAnger(userId);
       })
       .catch(error => {
@@ -500,7 +472,6 @@ const CreatingProfileScreen = () => {
     const triggerString = await AsyncStorage.getItem('emotionAnger');
 
     if (!triggerString) {
-      console.log('No anger triggers found.');
       return;
     }
 
@@ -512,7 +483,6 @@ const CreatingProfileScreen = () => {
         triggers, // ✅ Notice: triggers (plural)
       })
       .then(response => {
-        console.log('anger response: ', response);
         createSurvey(userId);
       })
       .catch(error => {
@@ -578,8 +548,6 @@ const CreatingProfileScreen = () => {
         'https://marhaba-server.onrender.com/api/account/createSurvey',
         surveyPayload,
       );
-
-      console.log('✅ Survey response:', response.data);
     } catch (error) {
       console.log(
         '❌ Survey creation error:',

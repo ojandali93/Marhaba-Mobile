@@ -26,14 +26,13 @@ import {
 import themeColors from '../../Utils/custonColors';
 import {countryFlagMap} from '../../Utils/FlagMaps';
 import SingleInfoFull from '../../Components/Info/SingleInfoFull';
-import { useRoute, useNavigation } from '@react-navigation/native';
+import {useRoute, useNavigation} from '@react-navigation/native';
 import axios from 'axios';
 
 const SingleProfileScreen = () => {
-
-    const route = useRoute();
-    const navigation = useNavigation();
-  const { profile } = route.params as { profile: any };
+  const route = useRoute();
+  const navigation = useNavigation();
+  const {profile} = route.params as {profile: any};
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [superlikeMessage, setSuperlikeMessage] = useState('');
@@ -128,8 +127,7 @@ const SingleProfileScreen = () => {
   };
 
   const dislikeProfile = async (profileId: string) => {
-    console.log(`disliked profile: ${profileId}`);
-    navigation.goBack()
+    navigation.goBack();
   };
 
   const likeProfile = async (profileId: string, profile: any) => {
@@ -138,14 +136,13 @@ const SingleProfileScreen = () => {
       const checkRes = await axios.get(
         `https://marhaba-server.onrender.com/api/user/matchStatus/${userId}/${profileId}`,
       );
-  
-      console.log('checkRes', checkRes.data);
+
       if (checkRes.data) {
         console.log(`🟢 Already interacted with profile: ${profileId}`);
-        navigation.goBack()
+        navigation.goBack();
         return;
       }
-  
+
       // Proceed to like
       const response = await axios.post(
         `https://marhaba-server.onrender.com/api/user/interaction`,
@@ -155,30 +152,29 @@ const SingleProfileScreen = () => {
           interaction: 'liked',
           viewed: false,
           approved: false,
-        }
+        },
       );
-  
+
       if (response.data?.success) {
-        console.log(`✅ Successfully disliked profile: ${profileId}`);
-        navigation.goBack()
+        navigation.goBack();
       }
     } catch (error) {
       console.error(`❌ Error liking profile ${profileId}:`, error);
     }
   };
 
-  const superLikeProfile = async (profileId: string, message?: string, profile: any) => {
-    console.log(`Liking profile: ${profileId}`);
-    
+  const superLikeProfile = async (
+    profileId: string,
+    message?: string,
+    profile: any,
+  ) => {
     try {
-
       const checkRes = await axios.get(
         `https://marhaba-server.onrender.com/api/user/matchStatus/${userId}/${profileId}`,
       );
-  
+
       if (checkRes.data?.data.legnth > 0) {
-        console.log(`🟢 Already interacted with profile: ${profileId}`);
-        navigation.goBack()
+        navigation.goBack();
         return;
       }
 
@@ -194,8 +190,7 @@ const SingleProfileScreen = () => {
         },
       );
       if (response.data?.success) {
-        console.log(`✅ Successfully liked profile: ${profileId}`);
-        navigation.goBack()
+        navigation.goBack();
       } else {
         console.error(
           `⚠️ Server responded but like was not successful for ${profileId}:`,
@@ -213,9 +208,14 @@ const SingleProfileScreen = () => {
 
   return (
     <View style={tailwind`flex-1 relative`}>
-    <TouchableOpacity onPress={() => navigation.goBack()} style={[tailwind`absolute z-20 top-16 left-4 p-2 rounded-full`, {backgroundColor: themeColors.darkSecondaryOpacity}]}>
+      <TouchableOpacity
+        onPress={() => navigation.goBack()}
+        style={[
+          tailwind`absolute z-20 top-16 left-4 p-2 rounded-full`,
+          {backgroundColor: themeColors.darkSecondaryOpacity},
+        ]}>
         <ChevronsLeft height={30} width={30} color={themeColors.primary} />
-    </TouchableOpacity>
+      </TouchableOpacity>
       <TouchableWithoutFeedback onPress={handleImageTap}>
         {photoUrl ? (
           <Image
@@ -235,12 +235,21 @@ const SingleProfileScreen = () => {
               tailwind`absolute bottom-24 left-4 right-4 rounded-4`,
               {backgroundColor: themeColors.darkSecondaryOpacity},
             ]}>
-            <View style={tailwind`flex-row justify-between items-center p-4 pb-2`}>
+            <View
+              style={tailwind`flex-row justify-between items-center p-4 pb-2`}>
               <View style={tailwind`flex-row justify-between w-full items-end`}>
-                <Text style={[tailwind`text-3xl font-bold`, {color: themeColors.primary}]}>
+                <Text
+                  style={[
+                    tailwind`text-3xl font-bold`,
+                    {color: themeColors.primary},
+                  ]}>
                   {name} {`(${age})`}
                 </Text>
-                <Text style={[tailwind`text-3xl font-semibold`, {color: themeColors.primary}]}>
+                <Text
+                  style={[
+                    tailwind`text-3xl font-semibold`,
+                    {color: themeColors.primary},
+                  ]}>
                   {countryFlagMap[background] ?? ''}
                 </Text>
               </View>
@@ -333,7 +342,11 @@ const SingleProfileScreen = () => {
               contentContainerStyle={tailwind``}
               showsVerticalScrollIndicator={false}>
               <View style={tailwind`pb-12`}>
-                <Text style={[tailwind`text-4xl font-bold`, {color: themeColors.primary}]}>
+                <Text
+                  style={[
+                    tailwind`text-4xl font-bold`,
+                    {color: themeColors.primary},
+                  ]}>
                   {name}
                 </Text>
                 <View style={tailwind`mt-8 flex flex-col`}>
@@ -426,7 +439,10 @@ const SingleProfileScreen = () => {
                 {prompts.filter((p: Prompt) => p.response)?.length > 0 && (
                   <View style={tailwind`mt-4`}>
                     <Text
-                      style={[tailwind`text-3xl font-bold mb-1`, {color: themeColors.primary}]}>
+                      style={[
+                        tailwind`text-3xl font-bold mb-1`,
+                        {color: themeColors.primary},
+                      ]}>
                       Prompts
                     </Text>
                     {prompts.map(
@@ -445,7 +461,10 @@ const SingleProfileScreen = () => {
 
                 <View style={tailwind`mt-4`}>
                   <Text
-                      style={[tailwind`text-3xl font-bold mb-4`, {color: themeColors.primary}]}>
+                    style={[
+                      tailwind`text-3xl font-bold mb-4`,
+                      {color: themeColors.primary},
+                    ]}>
                     Core Values
                   </Text>
                   <View style={tailwind`flex flex-col`}>
@@ -499,8 +518,11 @@ const SingleProfileScreen = () => {
                 </View>
 
                 <View style={tailwind`mt-4`}>
-                <Text
-                      style={[tailwind`text-3xl font-bold mb-4`, {color: themeColors.primary}]}>
+                  <Text
+                    style={[
+                      tailwind`text-3xl font-bold mb-4`,
+                      {color: themeColors.primary},
+                    ]}>
                     Lifestyle
                   </Text>
                   <View style={tailwind`flex flex-col`}>
@@ -565,7 +587,10 @@ const SingleProfileScreen = () => {
                 {loveLanguages.length > 0 && (
                   <View style={tailwind`mt-4`}>
                     <Text
-                      style={[tailwind`text-3xl font-bold mb-4`, {color: themeColors.primary}]}>
+                      style={[
+                        tailwind`text-3xl font-bold mb-4`,
+                        {color: themeColors.primary},
+                      ]}>
                       Love Languages
                     </Text>
                     {loveLanguages.map((item: LoveLanguage, index) => (
@@ -664,7 +689,10 @@ const SingleProfileScreen = () => {
                 {values.length > 0 && (
                   <View style={tailwind`mt-4`}>
                     <Text
-                      style={[tailwind`text-3xl font-bold mb-4`, {color: themeColors.primary}]}>
+                      style={[
+                        tailwind`text-3xl font-bold mb-4`,
+                        {color: themeColors.primary},
+                      ]}>
                       Traits
                     </Text>
                     <View style={tailwind`flex flex-row flex-wrap`}>
@@ -683,7 +711,10 @@ const SingleProfileScreen = () => {
                 {tags.length > 0 && (
                   <View style={tailwind`mt-3`}>
                     <Text
-                      style={[tailwind`text-3xl font-bold mb-4`, {color: themeColors.primary}]}>
+                      style={[
+                        tailwind`text-3xl font-bold mb-4`,
+                        {color: themeColors.primary},
+                      ]}>
                       Interests
                     </Text>
                     <ScrollView
@@ -699,11 +730,12 @@ const SingleProfileScreen = () => {
                   </View>
                 )}
 
-                
-
                 <View style={tailwind`mt-4`}>
-                <Text
-                      style={[tailwind`text-3xl font-bold mb-4`, {color: themeColors.primary}]}>
+                  <Text
+                    style={[
+                      tailwind`text-3xl font-bold mb-4`,
+                      {color: themeColors.primary},
+                    ]}>
                     Future Goals
                   </Text>
                   <View style={tailwind`flex flex-col mb-6`}>

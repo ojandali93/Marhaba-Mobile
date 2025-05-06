@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {
   SafeAreaView,
   View,
@@ -15,18 +15,18 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import tailwind from 'twrnc';
-import { Check, Heart, X } from 'react-native-feather';
+import {Check, Heart, X} from 'react-native-feather';
 
 import themeColors from '../../Utils/custonColors';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { useProfile } from '../../Context/ProfileContext';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import {useProfile} from '../../Context/ProfileContext';
 
 interface Interaction {
   _id: string;
   liker: {
     _id: string;
     name?: string;
-    Photos?: { photoUrl: string }[];
+    Photos?: {photoUrl: string}[];
   };
   interaction: 'liked' | 'superliked';
 }
@@ -35,22 +35,21 @@ interface ProcessedInteraction extends Interaction {
   isSuperLike: boolean;
 }
 
-const { width } = Dimensions.get('window');
+const {width} = Dimensions.get('window');
 const itemPadding = 8;
 const numColumns = 2;
 const imageSize = (width - itemPadding * (numColumns + 1)) / numColumns;
 
 const LikeScreen = () => {
-  const {profile, userId} = useProfile()
+  const {profile, userId, markLikesAsViewed} = useProfile();
   const navigation = useNavigation();
-    
+
   const [loading, setLoading] = useState<boolean>(true);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [interactions, setInteractions] = useState<ProcessedInteraction[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   const fetchLikes = useCallback(async (refreshing = false) => {
-
     if (!refreshing) {
       setLoading(true);
     }
@@ -64,7 +63,7 @@ const LikeScreen = () => {
 
     try {
       const response = await axios.get<Interaction[]>(
-        `https://marhaba-server.onrender.com/api/user/liked/${userId}`
+        `https://marhaba-server.onrender.com/api/user/liked/${userId}`,
       );
 
       if (response.data) {
@@ -84,8 +83,9 @@ const LikeScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
+      markLikesAsViewed(userId);
       fetchLikes(false);
-    }, [fetchLikes])
+    }, [fetchLikes]),
   );
 
   const onRefresh = useCallback(() => {
@@ -95,45 +95,44 @@ const LikeScreen = () => {
 
   const handleApproveLike = async (interactionId: string, userId2: string) => {
     try {
-        const response = await axios.put(
-            `https://marhaba-server.onrender.com/api/user/approved`,
-            {
-                id: interactionId
-            }
-          );
-    
-          if (response.data) {
-            fetchLikes(false)
-            createConversation(userId2)
-          } else {
-            console.log('No likes found or invalid data format.');
-          }
+      const response = await axios.put(
+        `https://marhaba-server.onrender.com/api/user/approved`,
+        {
+          id: interactionId,
+        },
+      );
+
+      if (response.data) {
+        fetchLikes(false);
+        createConversation(userId2);
+      } else {
+        console.log('No likes found or invalid data format.');
+      }
     } catch (error) {
-        console.error('❌ Error approving likes:', error);
+      console.error('❌ Error approving likes:', error);
       setError('Failed to load likes. Please try again later.');
     }
   };
 
   const createConversation = async (userId2: string) => {
     try {
-        const response = await axios.post(
-            `https://marhaba-server.onrender.com/api/conversation/create`,
-            {
-                userId, 
-                userId2: userId2, 
-                lastMessage: '', 
-                updatedAt: new Date().toISOString(),
+      const response = await axios.post(
+        `https://marhaba-server.onrender.com/api/conversation/create`,
+        {
+          userId,
+          userId2: userId2,
+          lastMessage: '',
+          updatedAt: new Date().toISOString(),
+        },
+      );
 
-            }
-          );
-    
-          if (response.data) {
-            fetchLikes(false)
-          } else {
-            console.log('No likes found or invalid data format.');
-          }
+      if (response.data) {
+        fetchLikes(false);
+      } else {
+        console.log('No likes found or invalid data format.');
+      }
     } catch (error) {
-        console.error('❌ Error approving likes:', error);
+      console.error('❌ Error approving likes:', error);
       setError('Failed to load likes. Please try again later.');
     }
   };
@@ -144,51 +143,51 @@ const LikeScreen = () => {
 
   const handleViewProfile = (userProfile: any) => {
     if (profile?.tier === 3) {
-      navigation.navigate('SingleProfile', { profile: userProfile });
+      navigation.navigate('SingleProfile', {profile: userProfile});
     } else {
-      null
+      null;
     }
   };
 
-  const renderGridItem = ({ item }: { item: ProcessedInteraction }) => {
+  const renderGridItem = ({item}: {item: ProcessedInteraction}) => {
     const profilePicUrl = item.likerProfile.Photos![0].photoUrl;
-    console.log('liker: ', item.likerProfile)
 
     return (
-      <TouchableWithoutFeedback onPress={() => handleViewProfile(item.likerProfile)}>
-  <View style={styles.gridItem}>
-    <Image
-      source={{ uri: profilePicUrl }}
-      style={styles.profileImage}
-      resizeMode="cover"
-      blurRadius={profile?.tier === 3 ? 0 : 15}
-    />
-    {item.interaction === 'super' && (
-      <View style={tailwind`absolute top-2 left-2`}>
-        <Heart
-          height={28}
-          width={28}
-          fill={themeColors.primary}
-          color={themeColors.primary}
-          strokeWidth={2}
-        />
-      </View>
-    )}
-    {profile?.tier === 3 && (
-      <>
-        <View style={tailwind`absolute z-20 bottom-2 left-2 p-2 bg-red-400 rounded-full`}>
-          <X height={28} width={28} color={'white'} strokeWidth={2} />
+      <TouchableWithoutFeedback
+        onPress={() => handleViewProfile(item.likerProfile)}>
+        <View style={styles.gridItem}>
+          <Image
+            source={{uri: profilePicUrl}}
+            style={styles.profileImage}
+            resizeMode="cover"
+            blurRadius={profile?.tier === 3 ? 0 : 15}
+          />
+          {item.interaction === 'super' && (
+            <View style={tailwind`absolute top-2 left-2`}>
+              <Heart
+                height={28}
+                width={28}
+                fill={themeColors.primary}
+                color={themeColors.primary}
+                strokeWidth={2}
+              />
+            </View>
+          )}
+          {profile?.tier === 3 && (
+            <>
+              <View
+                style={tailwind`absolute z-20 bottom-2 left-2 p-2 bg-red-400 rounded-full`}>
+                <X height={28} width={28} color={'white'} strokeWidth={2} />
+              </View>
+              <TouchableOpacity
+                onPress={() => handleApproveLike(item._id, item.liker._id)}
+                style={tailwind`absolute bottom-2 right-2 p-2 bg-green-400 rounded-full`}>
+                <Check height={28} width={28} color={'white'} strokeWidth={2} />
+              </TouchableOpacity>
+            </>
+          )}
         </View>
-        <TouchableOpacity
-          onPress={() => handleApproveLike(item._id, item.liker._id)}
-          style={tailwind`absolute bottom-2 right-2 p-2 bg-green-400 rounded-full`}
-        >
-          <Check height={28} width={28} color={'white'} strokeWidth={2} />
-        </TouchableOpacity>
-      </>
-    )}
-  </View>
-</TouchableWithoutFeedback>
+      </TouchableWithoutFeedback>
     );
   };
 
@@ -204,8 +203,10 @@ const LikeScreen = () => {
       return (
         <View style={tailwind`flex-1 justify-center items-center p-5`}>
           <Text style={tailwind`text-red-500 text-center`}>{error}</Text>
-          <TouchableOpacity onPress={() => fetchLikes(false)} style={tailwind`mt-4 p-2 bg-gray-200 rounded`}>
-             <Text>Retry</Text>
+          <TouchableOpacity
+            onPress={() => fetchLikes(false)}
+            style={tailwind`mt-4 p-2 bg-gray-200 rounded`}>
+            <Text>Retry</Text>
           </TouchableOpacity>
         </View>
       );
@@ -215,11 +216,18 @@ const LikeScreen = () => {
         <ScrollView
           contentContainerStyle={tailwind`flex-1 justify-center items-center p-5`}
           refreshControl={
-            <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} tintColor={themeColors.primary}/>
-          }
-        >
-          <Text style={tailwind`text-lg text-gray-500 text-center`}>No one has liked you yet.</Text>
-          <Text style={tailwind`text-gray-400 text-center mt-1`}>Check back later!</Text>
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={onRefresh}
+              tintColor={themeColors.primary}
+            />
+          }>
+          <Text style={tailwind`text-lg text-gray-500 text-center`}>
+            No one has liked you yet.
+          </Text>
+          <Text style={tailwind`text-gray-400 text-center mt-1`}>
+            Check back later!
+          </Text>
         </ScrollView>
       );
     }
@@ -228,7 +236,7 @@ const LikeScreen = () => {
       <FlatList
         data={interactions}
         renderItem={renderGridItem}
-        keyExtractor={(item) => item._id}
+        keyExtractor={item => item._id}
         numColumns={numColumns}
         contentContainerStyle={styles.listContainer}
         showsVerticalScrollIndicator={false}
@@ -245,13 +253,17 @@ const LikeScreen = () => {
   };
 
   return (
-    <SafeAreaView style={[tailwind`flex-1`, {backgroundColor: themeColors.secondary}]}>
-      <View style={[tailwind`w-full flex flex-row items-center justify-betweenpx-4 p-4 rounded-2 mb-3`, {backgroundColor: themeColors.darkSecondary}]}>
+    <SafeAreaView
+      style={[tailwind`flex-1`, {backgroundColor: themeColors.secondary}]}>
+      <View
+        style={[
+          tailwind`w-full flex flex-row items-center justify-between p-4 rounded-2 mb-3`,
+          {backgroundColor: themeColors.darkSecondary},
+        ]}>
         <Text style={tailwind`text-2xl font-bold text-gray-800`}>Likes</Text>
       </View>
 
       {renderContent()}
-
     </SafeAreaView>
   );
 };
@@ -259,7 +271,7 @@ const LikeScreen = () => {
 const styles = StyleSheet.create({
   listContainer: {
     paddingHorizontal: itemPadding / 2,
-    paddingBottom: itemPadding /2,
+    paddingBottom: itemPadding / 2,
     flexGrow: 1,
   },
   gridItem: {
@@ -293,7 +305,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 12,
     textShadowColor: 'rgba(0, 0, 0, 0.75)',
-    textShadowOffset: { width: 0, height: 1 },
+    textShadowOffset: {width: 0, height: 1},
     textShadowRadius: 2,
   },
 });

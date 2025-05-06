@@ -6,11 +6,11 @@ import {Text, TouchableOpacity, View} from 'react-native';
 import tailwind from 'twrnc';
 import themeColors from '../Utils/custonColors';
 import {clearSession, clearUserId, getUserId} from '../Services/AuthStoreage';
-import { useProfile } from '../Context/ProfileContext';
+import {useProfile} from '../Context/ProfileContext';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
-  const {setAllProfiles} = useProfile()
+  const {setAllProfiles} = useProfile();
 
   const logout = async () => {
     try {
@@ -32,7 +32,6 @@ const HomeScreen = () => {
       );
 
       if (response.data) {
-        console.log('✅ Grabbed user profile:', JSON.stringify(response.data));
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {

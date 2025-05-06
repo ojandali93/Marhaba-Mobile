@@ -52,7 +52,6 @@ const PhotosScreen = () => {
   const loadPreferences = async () => {
     try {
       const storedImages = await AsyncStorage.getItem('images');
-      console.log('storedImages');
       if (storedImages) {
         const rawArray: (string | null)[] = JSON.parse(storedImages);
 
@@ -142,7 +141,6 @@ const PhotosScreen = () => {
       );
 
       if (response.data.success) {
-        console.log('✅ Uploaded image URL:', response.data.url);
         return response.data.url;
       } else {
         console.error('❌ Upload server error:', response.data.error);
@@ -168,7 +166,6 @@ const PhotosScreen = () => {
 
   const storeNextScreen = async () => {
     try {
-      console.log('stringified images; ', JSON.stringify(uploadedImageUrls));
       await AsyncStorage.setItem('images', JSON.stringify(uploadedImageUrls));
       navigation.navigate('CreatingProfile');
     } catch (err) {

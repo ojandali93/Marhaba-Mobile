@@ -9,7 +9,7 @@ const Stack = createNativeStackNavigator();
 const ConversationStackNavigation = () => {
   return (
     <Stack.Navigator screenOptions={{headerShown: false}}>
-      <Stack.Screen name="Conversations" component={Conversations} />
+      <Stack.Screen name="Conversation" component={Conversations} />
       <Stack.Screen name="Chat" component={ChatScreen} />
       <Stack.Screen name="SingleProfile" component={SingleProfileScreen} />
     </Stack.Navigator>

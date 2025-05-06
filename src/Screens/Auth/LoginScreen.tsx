@@ -15,7 +15,7 @@ import {useNavigation} from '@react-navigation/native';
 import axios from 'axios';
 import Icon from '../../Assets/marhaba-icon-full-beige.png';
 import Logo from '../../Assets/marhaba-name-only-green.png';
-import { useProfile } from '../../Context/ProfileContext';
+import {useProfile} from '../../Context/ProfileContext';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -34,28 +34,28 @@ const LoginScreen = () => {
   const login = async () => {
     setLoading(true);
     try {
-      console.log('login');
       const response = await axios.post(
         'https://marhaba-server.onrender.com/api/auth/loginUser',
         {email, password},
       );
-      console.log('response', response.data);
-      if(response.data) {
-        
-        const {session, userId, token} = response.data;
-        console.log('session', session);
-        console.log('userId', userId);
-        console.log('token', token);
-        grabUserProfileData(session, userId, token)
+      if (response.data) {
+        const {session, userId} = response.data;
+        grabUserProfileData(session, userId);
       } else {
-        Alert.alert('Login Failed', 'Email / Password do not match our records.');
+        Alert.alert(
+          'Login Failed',
+          'Email / Password do not match our records.',
+        );
         setLoading(false);
       }
 
       setLoading(false);
     } catch (error) {
       console.error('Login failed:', error);
-      Alert.alert('Login Failed', error?.message || 'Please check your network or try again later.');
+      Alert.alert(
+        'Login Failed',
+        error?.message || 'Please check your network or try again later.',
+      );
       setLoading(false);
     }
   };

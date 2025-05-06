@@ -139,9 +139,7 @@ const SingleProfileScreen = () => {
         `https://marhaba-server.onrender.com/api/user/matchStatus/${userId}/${profileId}`,
       );
 
-      console.log('checkRes', checkRes.data);
       if (checkRes.data) {
-        console.log(`🟢 Already interacted with profile: ${profileId}`);
         navigation.goBack();
         return;
       }
@@ -159,7 +157,6 @@ const SingleProfileScreen = () => {
       );
 
       if (response.data?.success) {
-        console.log(`✅ Successfully disliked profile: ${profileId}`);
         navigation.popToTop();
       }
     } catch (error) {
@@ -172,7 +169,6 @@ const SingleProfileScreen = () => {
     message?: string,
     profile: any,
   ) => {
-    console.log(`Liking profile: ${profileId}`);
     const userId = profile?.userId;
 
     try {
@@ -181,7 +177,6 @@ const SingleProfileScreen = () => {
       );
 
       if (checkRes.data?.data.legnth > 0) {
-        console.log(`🟢 Already interacted with profile: ${profileId}`);
         navigation.backToTop();
         return;
       }
@@ -198,7 +193,6 @@ const SingleProfileScreen = () => {
         },
       );
       if (response.data?.success) {
-        console.log(`✅ Successfully liked profile: ${profileId}`);
         navigation.popToTop();
       } else {
         console.error(

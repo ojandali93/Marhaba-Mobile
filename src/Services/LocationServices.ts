@@ -21,13 +21,11 @@ export default function useLocation() {
       }
       Geolocation.getCurrentPosition(
         position => {
-          console.log('position: ', position);
           storeLocationInStorage(position); // 👈 renamed helper function
           setRegion({
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
           });
-          console.log('region: ', region);
           setLoading(false);
         },
         error => console.log(error),

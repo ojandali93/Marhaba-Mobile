@@ -84,7 +84,6 @@ const SearchScreent = () => {
   }, [profile]);
 
   const onRefresh = useCallback(() => {
-    console.log('onRefresh');
     fetchUsers();
   }, [isRefreshing]);
 
@@ -99,10 +98,6 @@ const SearchScreent = () => {
     setAgeMin(ageRange[0]);
     setAgeMax(ageRange[1]);
   }, [ageRange]);
-
-  useEffect(() => {
-    console.log('background: ', background);
-  }, [background]);
 
   const initializeFilters = () => {
     const preferences = profile.Preferences?.[0];
@@ -138,7 +133,6 @@ const SearchScreent = () => {
 
   const fetchUsers = async () => {
     const currentDistance = DISTANCE_MAP[distance];
-    console.log('passed distance: ', currentDistance);
     try {
       const response = await axios.post(
         'https://marhaba-server.onrender.com/api/user/filterProfiles',
@@ -165,11 +159,9 @@ const SearchScreent = () => {
       );
 
       if (response.data?.success) {
-        console.log('response.data.data: ', response.data.data);
         setUsers(response.data.data);
         setIsRefreshing(false);
       } else {
-        console.log('response.data.error: ', response.data.error);
         setUsers([]);
         setIsRefreshing(false);
       }
