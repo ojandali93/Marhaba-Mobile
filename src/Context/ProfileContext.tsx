@@ -294,14 +294,12 @@ export const ProfileProvider = ({children}: {children: React.ReactNode}) => {
       );
 
       const unreadMap = response.data.unreadMap || {};
-      console.log('unreadMap:', unreadMap);
       setUnreadMap(unreadMap);
 
       // ✅ If any value is true, set hasUnreadMessages to true
       const hasAnyUnread = Object.values(unreadMap).some(
         value => value === true,
       );
-      console.log('hasAnyUnread:', hasAnyUnread);
       setHasUnreadMessages(hasAnyUnread);
     } catch (err) {
       console.error('❌ Error fetching unread messages:', err);

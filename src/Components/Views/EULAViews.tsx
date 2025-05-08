@@ -22,14 +22,14 @@ const EULAView = ({updateTab}: MenuViewProps) => {
             tailwind`text-2xl font-semibold ml-2`,
             {color: themeColors.primary},
           ]}>
-          Terms of Service
+          End User License Agreement
         </Text>
       </TouchableOpacity>
 
       {/* WebView to load EULA */}
       <WebView
         source={{
-          uri: 'https://app.termly.io/policy-viewer/policy.html?policyUUID=6c415447-ebe1-4647-9104-e89d1c3879c8',
+          uri: 'https://app.termly.io/policy-viewer/policy.html?policyUUID=2c96703e-b201-4b10-8414-c9a70374f352',
         }}
         style={tailwind`flex-1`}
       />

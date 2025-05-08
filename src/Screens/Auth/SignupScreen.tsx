@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
-import Logo from '../../Assets/marhaba-name-only-green.png';
+import Logo from '../../Assets/marhaba-name-only-blue.png';
 import Icon from '../../Assets/marhaba-icon-full-beige.png';
 import AithInputStandard from '../../Components/Inputs/AithInputStandard';
 import {
@@ -20,6 +20,7 @@ import {
 import AuthMainButton from '../../Components/Buttons/AuthMainButton';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import AuthInputStandardNumber from '../../Components/Inputs/AuthInputStandardNumber';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -55,21 +56,6 @@ const SignupScreen = () => {
     if (storedPhone) {
       setPhone(storedPhone);
     }
-  };
-
-  const formatPhoneNumber = (input: string): string => {
-    // Remove any non-digit characters
-    const cleaned = input.replace(/\D/g, '');
-  
-    // Match the cleaned string to format
-    const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
-  
-    if (match) {
-      return `${match[1]}-${match[2]}-${match[3]}`;
-    }
-  
-    // Return original if it can't be formatted
-    return input;
   };
 
   const handleEmailUpdate = (data: string) => {
@@ -177,10 +163,10 @@ const SignupScreen = () => {
                 Passwords & Verify do not match.
               </Text>
             )}
-            <AithInputStandard
+            <AuthInputStandardNumber
               fieldName="Phone (###) ###-####"
               value={phone}
-              changeText={formatPhoneNumber}
+              changeText={setPhone}
               secure={true}
               valid={validVerify}
             />

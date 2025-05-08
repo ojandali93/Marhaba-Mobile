@@ -11,6 +11,7 @@ import {
   Platform,
   Keyboard,
   TouchableWithoutFeedback,
+  Alert,
 } from 'react-native';
 import tailwind from 'twrnc';
 import {
@@ -39,6 +40,13 @@ const SingleProfileScreen = () => {
   const [isInteracting, setIsInteracting] = useState(false);
   const [showFullProfile, setShowFullProfile] = useState(false);
   const [photoIndex, setPhotoIndex] = useState(0);
+
+  const [showReportBlockModal, setShowReportBlockModal] = useState(false);
+  const [showReasonModal, setShowReasonModal] = useState(false);
+  const [reportReason, setReportReason] = useState('');
+
+  const [selectedReason, setSelectedReason] = useState('');
+  const [customReason, setCustomReason] = useState('');
 
   const user = profile;
   const about = user?.About?.[0] ?? {};
@@ -204,6 +212,53 @@ const SingleProfileScreen = () => {
 
   const handleToggleFullProfile = () => {
     setShowFullProfile(prev => !prev);
+  };
+
+  const handleReportProfile = async () => {
+    const finalReason =
+      selectedReason === 'Other' ? customReason.trim() : selectedReason;
+
+    if (!finalReason) {
+      Alert.alert('Missing Reason', 'Please enter a reason for the report.');
+      return;
+    }
+
+    try {
+      await axios.post(
+        'https://marhaba-server.onrender.com/api/user/reportUser',
+        {
+          reporterId: userId,
+          reportedId: profileId,
+          reason: finalReason,
+        },
+      );
+      setShowReasonModal(false);
+      setSelectedReason('');
+      setCustomReason('');
+      handleDislikeProfile();
+      Alert.alert('Reported', 'Profile has been reported successfully.');
+    } catch (error) {
+      console.error('Error reporting profile:', error);
+      Alert.alert('Error', 'Failed to report profile. Please try again.');
+    }
+  };
+
+  const handleBlockProfile = async () => {
+    try {
+      await axios.post(
+        'https://marhaba-server.onrender.com/api/user/blockUser',
+        {
+          blocker_id: userId,
+          blocked_id: profileId,
+        },
+      );
+      setShowReportBlockModal(false);
+      Alert.alert('Blocked', 'Profile has been blocked successfully.');
+      handleDislikeProfile();
+    } catch (error) {
+      console.error('Error blocking profile:', error);
+      Alert.alert('Error', 'Failed to block profile. Please try again.');
+    }
   };
 
   return (
@@ -783,11 +838,156 @@ const SingleProfileScreen = () => {
                     </View>
                   </View>
                 </View>
+                <View style={tailwind` mb-4`}>
+                  <TouchableOpacity
+                    onPress={() => setShowReportBlockModal(true)}
+                    style={[
+                      tailwind`w-full py-3 px-4 rounded-lg`,
+                      {backgroundColor: themeColors.primary},
+                    ]}>
+                    <Text
+                      style={tailwind`text-white text-lg font-semibold text-center`}>
+                      Block / Report
+                    </Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </ScrollView>
           </View>
         </>
       )}
+
+      <Modal
+        visible={showReportBlockModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowReportBlockModal(false)}>
+        <View
+          style={tailwind`flex-1 justify-center items-center bg-black bg-opacity-60 px-4`}>
+          <View
+            style={[
+              tailwind`w-full p-5 rounded-lg`,
+              {backgroundColor: themeColors.darkSecondary},
+            ]}>
+            <Text style={tailwind`text-xl font-bold text-center mb-4`}>
+              What would you like to do?
+            </Text>
+            <TouchableOpacity
+              onPress={handleBlockProfile}
+              style={[
+                tailwind`py-3 px-5 rounded-md mb-3`,
+                {backgroundColor: themeColors.primary},
+              ]}>
+              <Text style={tailwind`text-white text-center font-semibold`}>
+                Block User
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                setShowReportBlockModal(false);
+                setShowReasonModal(true);
+              }}
+              style={[
+                tailwind`py-3 px-5 rounded-md mb-3`,
+                {backgroundColor: themeColors.primary},
+              ]}>
+              <Text style={tailwind`text-white text-center font-semibold`}>
+                Report User
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setShowReportBlockModal(false)}
+              style={tailwind`mt-4`}>
+              <Text
+                style={tailwind`text-center text-base font-semibold text-red-400`}>
+                Cancel
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
+        visible={showReasonModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowReasonModal(false)}>
+        <View
+          style={tailwind`flex-1 justify-center items-center bg-black bg-opacity-60 px-4`}>
+          <View
+            style={[
+              tailwind`w-full p-5 rounded-lg`,
+              {backgroundColor: themeColors.secondary},
+            ]}>
+            <Text style={tailwind`text-xl font-bold text-center mb-4`}>
+              Select Report Reason
+            </Text>
+
+            {[
+              'Offensive Content',
+              'Inappropriate Behavior',
+              'Spam or Scam',
+              'Fake Profile',
+              'Other',
+            ].map(reason => (
+              <TouchableOpacity
+                key={reason}
+                onPress={() => setSelectedReason(reason)}
+                style={[
+                  tailwind`py-2 px-4 rounded-md mb-2`,
+                  {
+                    backgroundColor:
+                      selectedReason === reason
+                        ? themeColors.primary
+                        : themeColors.darkSecondary,
+                  },
+                ]}>
+                <Text
+                  style={[
+                    tailwind`text-base font-semibold`,
+                    {
+                      color: selectedReason === reason ? 'white' : 'gray',
+                    },
+                  ]}>
+                  {reason}
+                </Text>
+              </TouchableOpacity>
+            ))}
+
+            {/* Conditionally show input for "Other" */}
+            {selectedReason === 'Other' && (
+              <TextInput
+                style={tailwind`border border-gray-600 rounded-md p-3 mt-2 text-base`}
+                placeholder="Describe your reason..."
+                placeholderTextColor="gray"
+                value={customReason}
+                onChangeText={setCustomReason}
+              />
+            )}
+
+            <TouchableOpacity
+              onPress={handleReportProfile}
+              style={[
+                tailwind`mt-4 py-3 px-5 rounded-md`,
+                {backgroundColor: themeColors.primary},
+              ]}>
+              <Text style={tailwind`text-white text-center font-semibold`}>
+                Submit Report
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => {
+                setShowReasonModal(false);
+                setSelectedReason('');
+                setCustomReason('');
+              }}
+              style={tailwind`mt-4`}>
+              <Text style={tailwind`text-center text-gray-400`}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
 
       <Modal
         animationType="slide"

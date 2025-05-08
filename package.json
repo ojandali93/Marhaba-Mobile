@@ -26,6 +26,7 @@
     "@react-navigation/stack": "^7.2.10",
     "@supabase/supabase-js": "^2.49.4",
     "axios": "^1.8.4",
+    "js-sha256": "^0.11.0",
     "react": "19.0.0",
     "react-native": "^0.79.2",
     "react-native-config": "^1.5.5",
@@ -43,6 +44,7 @@
     "react-native-svg": "^15.11.2",
     "react-native-url-polyfill": "^2.0.0",
     "react-native-vector-icons": "^10.2.0",
+    "react-native-webview": "^13.13.5",
     "socket.io-client": "^4.8.1",
     "twrnc": "^4.6.1"
   },

@@ -30,6 +30,7 @@ import {useProfile} from '../../Context/ProfileContext';
 import ViewedView from '../../Components/Views/ViewedView';
 import NoticiationsView from '../../Components/Views/NoticiationsView';
 import VisbilityViews from '../../Components/Views/VisbilityViews';
+import BlockedUserViews from '../../Components/Views/BlockedUserViews';
 
 const ProfileScreen = () => {
   const {profile} = useProfile();
@@ -141,6 +142,9 @@ const ProfileScreen = () => {
           )}
           {activeTab === 'visibility' && (
             <VisbilityViews updateTab={setActiveTab} />
+          )}
+          {activeTab === 'blockedUsers' && (
+            <BlockedUserViews updateTab={setActiveTab} />
           )}
         </ScrollView>
       </View>

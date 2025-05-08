@@ -36,7 +36,6 @@ const {width} = Dimensions.get('window');
 
 const Conversations = () => {
   const {userId, unreadMap} = useProfile();
-  console.log('🔥 unreadMap:', unreadMap);
   const navigation = useNavigation();
   const [loading, setLoading] = useState<boolean>(true);
   const [conversations, setConversations] = useState<Conversation[]>([]);

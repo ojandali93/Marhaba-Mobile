@@ -1,9 +1,10 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   ActivityIndicator,
   Alert,
   Dimensions,
   Image,
+  Modal,
   Text,
   TouchableOpacity,
   View,
@@ -17,21 +18,10 @@ import {
   cropCenterImageForPhone,
   pickImageFromGallery,
 } from '../../Utils/Functions/ImageFunctions';
-import {getDownloadURL, ref, uploadBytesResumable} from 'firebase/storage';
-import {storage} from '../../Services/FirebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import RNFS from 'react-native-fs';
 import axios from 'axios';
 
 const screenHeight = Dimensions.get('window').height;
-
-interface ImageInterface {
-  uri: string;
-  fileName: string;
-  type: string;
-  width: number;
-  height: number;
-}
 
 const PhotosScreen = () => {
   const navigation = useNavigation();
@@ -42,6 +32,7 @@ const PhotosScreen = () => {
   const [loadingStates, setLoadingStates] = useState<boolean[]>(
     Array(9).fill(false),
   );
+  const [showGuidelines, setShowGuidelines] = useState(true);
 
   useFocusEffect(
     useCallback(() => {
@@ -54,12 +45,8 @@ const PhotosScreen = () => {
       const storedImages = await AsyncStorage.getItem('images');
       if (storedImages) {
         const rawArray: (string | null)[] = JSON.parse(storedImages);
-
-        // Convert empty strings ("") to nulls
         const imageArray = rawArray.map(item => (item?.trim() ? item : null));
         setUploadedImageUrls(imageArray);
-
-        // Set loadingStates: all false by default
         setLoadingStates(Array(12).fill(false));
       }
     } catch (err) {
@@ -79,10 +66,7 @@ const PhotosScreen = () => {
         image.fileName,
       );
 
-      if (!croppedImage?.uri) {
-        console.error('Cropping failed');
-        return;
-      }
+      if (!croppedImage?.uri) return;
 
       setLoadingStates(prev => {
         const updated = [...prev];
@@ -113,41 +97,31 @@ const PhotosScreen = () => {
     }
   };
 
-  // ✅ Upload cropped image directly
   const uploadImageToServer = async (
     localUri: string,
     originalFileName: string,
   ) => {
     try {
-      const filePath = localUri.replace('file://', '');
-
       const formData = new FormData();
       formData.append('file', {
         uri: localUri,
         name: originalFileName || 'photo.jpg',
         type: 'image/jpeg',
-      } as any); // 👈 Important for RN
+      } as any);
 
       const response = await axios.post(
         'https://marhaba-server.onrender.com/api/account/upoadImage',
         formData,
         {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
+          headers: {'Content-Type': 'multipart/form-data'},
           maxContentLength: Infinity,
           maxBodyLength: Infinity,
         },
       );
 
-      if (response.data.success) {
-        return response.data.url;
-      } else {
-        console.error('❌ Upload server error:', response.data.error);
-        return null;
-      }
+      return response.data.success ? response.data.url : null;
     } catch (error) {
-      console.error('❌ Upload failed:', error);
+      console.error('Upload failed:', error);
       return null;
     }
   };
@@ -167,7 +141,7 @@ const PhotosScreen = () => {
   const storeNextScreen = async () => {
     try {
       await AsyncStorage.setItem('images', JSON.stringify(uploadedImageUrls));
-      navigation.navigate('CreatingProfile');
+      navigation.navigate('Accept');
     } catch (err) {
       console.error('Failed to store images:', err);
     }
@@ -179,12 +153,62 @@ const PhotosScreen = () => {
         tailwind`flex-1 w-full h-full flex items-center`,
         {backgroundColor: themeColors.secondary},
       ]}>
+      {/* 📸 Guidelines Modal */}
+      {showGuidelines && (
+        <Modal transparent={true} visible={showGuidelines} animationType="fade">
+          <View
+            style={tailwind`flex-1 justify-center items-center bg-black bg-opacity-60`}>
+            <View style={tailwind`w-11/12 bg-white rounded-2xl p-5`}>
+              <Text style={tailwind`text-xl font-bold text-center mb-2`}>
+                📸 Profile Photo Guidelines
+              </Text>
+              <Text style={tailwind`text-gray-700 mb-3 text-sm`}>
+                Your photos are the{' '}
+                <Text style={tailwind`font-bold`}>first impression</Text>{' '}
+                someone has of you. The right images create meaningful
+                connections — while unclear or inappropriate ones may lead to
+                rejection.
+              </Text>
+
+              <Text style={tailwind`text-base font-bold mb-1`}>
+                ✅ Recommended:
+              </Text>
+              <Text style={tailwind`text-sm text-gray-800`}>
+                • Make your <Text style={tailwind`font-bold`}>first image</Text>{' '}
+                a clear photo of your face{'\n'}• Use bright, high-quality
+                images{'\n'}• Show lifestyle photos (e.g., hobbies, travel)
+                {'\n'}• Upload recent photos (within 6 months){'\n'}• Smile or
+                use natural expressions
+              </Text>
+
+              <Text style={tailwind`text-base font-bold mt-4 mb-1`}>
+                🚫 Avoid:
+              </Text>
+              <Text style={tailwind`text-sm text-gray-800`}>
+                • Blurry, dark, or pixelated photos{'\n'}• Group photos as your
+                first image{'\n'}• Inappropriate or revealing content{'\n'}•
+                Heavy filters or AI-generated images{'\n'}• Photos with your
+                face hidden
+              </Text>
+
+              <TouchableOpacity
+                onPress={() => setShowGuidelines(false)}
+                style={[
+                  tailwind`mt-6 py-2 rounded-xl`,
+                  {backgroundColor: themeColors.primary},
+                ]}>
+                <Text
+                  style={tailwind`text-center text-white text-lg font-semibold`}>
+                  Got it!
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+      )}
+
       <View style={tailwind`w-11/12 h-10/12 flex`}>
-        <View
-          style={[
-            tailwind`flex`,
-            {marginTop: screenHeight * 0.1}, // 20% of screen height
-          ]}>
+        <View style={[tailwind`flex`, {marginTop: screenHeight * 0.1}]}>
           <View style={tailwind`mt-2`}>
             <Text
               style={[
@@ -199,6 +223,7 @@ const PhotosScreen = () => {
             </Text>
           </View>
         </View>
+
         <View
           style={[
             tailwind`w-full flex flex-row items-center`,
@@ -244,6 +269,7 @@ const PhotosScreen = () => {
           </View>
         </View>
       </View>
+
       <View style={tailwind`absolute w-3/4 bottom-12`}>
         <View style={tailwind` w-full flex flex-row justify-end`}>
           <AuthMainButton

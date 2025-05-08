@@ -19,6 +19,7 @@ import AttachmentScreen from '../Screens/Auth/AttachmentScreen';
 import CommunicationScreen from '../Screens/Auth/LifestyleScreen';
 import LifestyleScreen from '../Screens/Auth/LifestyleScreen';
 import FutureScreen from '../Screens/Auth/FutureScreen';
+import AcceptScreen from '../Screens/Auth/AcceptScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -43,6 +44,7 @@ const AuthStack = () => {
       <Stack.Screen name="Attachment" component={AttachmentScreen} />
       <Stack.Screen name="Lifestyle" component={LifestyleScreen} />
       <Stack.Screen name="Future" component={FutureScreen} />
+      <Stack.Screen name="Accept" component={AcceptScreen} />
     </Stack.Navigator>
   );
 };

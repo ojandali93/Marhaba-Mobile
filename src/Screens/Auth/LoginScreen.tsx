@@ -14,7 +14,7 @@ import AuthMainButton from '../../Components/Buttons/AuthMainButton';
 import {useNavigation} from '@react-navigation/native';
 import axios from 'axios';
 import Icon from '../../Assets/marhaba-icon-full-beige.png';
-import Logo from '../../Assets/marhaba-name-only-green.png';
+import Logo from '../../Assets/marhaba-name-only-blue.png';
 import {useProfile} from '../../Context/ProfileContext';
 
 const screenHeight = Dimensions.get('window').height;

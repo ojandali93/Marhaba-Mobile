@@ -25,7 +25,6 @@ const CareerScreen = () => {
   const [job, setJob] = useState<string>('');
   const [company, setCompoany] = useState<string>('');
   const [site, setSite] = useState<string>('');
-  const [location, setLocation] = useState<string>('');
   const [education, setEducation] = useState<string>('');
   const [fiveYear, setFiveYear] = useState<string>('');
 
@@ -39,7 +38,6 @@ const CareerScreen = () => {
     const storedJob = await AsyncStorage.getItem('job');
     const storedCompany = await AsyncStorage.getItem('company');
     const storeSite = await AsyncStorage.getItem('site');
-    const storeLocation = await AsyncStorage.getItem('location');
     const storedEducation = await AsyncStorage.getItem('education');
     const storeFiveYear = await AsyncStorage.getItem('fiveYear');
 
@@ -51,9 +49,6 @@ const CareerScreen = () => {
     }
     if (storeSite) {
       setSite(storeSite);
-    }
-    if (storeLocation) {
-      setLocation(storeLocation);
     }
     if (storedEducation) {
       setEducation(storedEducation);
@@ -75,7 +70,6 @@ const CareerScreen = () => {
     await AsyncStorage.setItem('job', job);
     await AsyncStorage.setItem('company', company);
     await AsyncStorage.setItem('site', site);
-    await AsyncStorage.setItem('location', location);
     await AsyncStorage.setItem('education', education);
     await AsyncStorage.setItem('fiveYear', fiveYear);
     navigation.navigate('Personality');
@@ -125,13 +119,6 @@ const CareerScreen = () => {
             fieldName="Site"
             selected={site}
             onSelect={setSite}
-            optional
-          />
-          <AithInputStandard
-            fieldName="Location"
-            value={location}
-            changeText={setLocation}
-            valid={true}
             optional
           />
           <AithInputStandard

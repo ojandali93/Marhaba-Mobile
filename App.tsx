@@ -1,14 +1,16 @@
 import 'react-native-url-polyfill/auto';
 import React, {useEffect, useLayoutEffect, useState} from 'react';
-import {View} from 'react-native';
+import {View, Text, ActivityIndicator} from 'react-native';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {NavigationContainer} from '@react-navigation/native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import axios from 'axios';
 
 import BottomTabNavigation from './src/Navigation/BottomTabNavigation';
 import AuthStack from './src/Navigation/AuthStackNavigation';
 import {useProfile} from './src/Context/ProfileContext';
-
+import ReviewRejectedScreen from './src/Screens/ProfileScreens/ReviewRejectedScreen';
+import ReviewAwaitingScreen from './src/Screens/ProfileScreens/ReviewAwaitScreen';
 function App(): React.JSX.Element {
   const {
     authenticated,
@@ -25,15 +27,15 @@ function App(): React.JSX.Element {
 
   const [loading, setLoading] = useState(true);
   const [ready, setReady] = useState(false);
+  const [reviewNotes, setReviewNotes] = useState(null);
 
-  // Hydrate profile/session on first load
   useLayoutEffect(() => {
     initializeApp();
   }, []);
 
   const initializeApp = async () => {
     try {
-      await loadProfile(); // this sets profile + userId
+      await loadProfile();
       await loadUserId();
       await loadSession();
       await checkAuthenticated();
@@ -47,13 +49,27 @@ function App(): React.JSX.Element {
     }
   };
 
-  // Wait until profile is fully set before fetching likes
   useEffect(() => {
     if (ready && profile?.userId) {
       fetchLikes(profile.userId);
       fetchUnreadMessages(profile.jwtToken, profile.userId);
+
+      if (profile.approved === 'rejected') {
+        fetchReviewNotes(profile.userId);
+      }
     }
   }, [ready, profile?.userId]);
+
+  const fetchReviewNotes = async (userId: string) => {
+    try {
+      const res = await axios.get(
+        `https://marhaba-server.onrender.com/api/admin/reviewInfo/${userId}`,
+      );
+      setReviewNotes(res.data);
+    } catch (err) {
+      console.error('❌ Failed to fetch review notes:', err);
+    }
+  };
 
   return (
     <GestureHandlerRootView style={{flex: 1}}>
@@ -61,10 +77,20 @@ function App(): React.JSX.Element {
         <NavigationContainer>
           {loading ? (
             <View
-              style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
-            />
+              style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+              <ActivityIndicator size="large" />
+            </View>
           ) : authenticated ? (
-            <BottomTabNavigation />
+            profile?.approved === 'review' ? (
+              <ReviewAwaitingScreen />
+            ) : profile?.approved === 'rejected' ? (
+              <ReviewRejectedScreen
+                profile={profile}
+                reviewNotes={reviewNotes}
+              />
+            ) : (
+              <BottomTabNavigation />
+            )
           ) : (
             <AuthStack />
           )}

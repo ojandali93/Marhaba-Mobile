@@ -111,7 +111,7 @@ const PersonalityScreen = () => {
               you.
             </Text>
             <Text style={[tailwind`mt-1 text-sm font-semibold text-red-500`]}>
-              ** 3 responses required **
+              ** Minimum of 3 responses required **
             </Text>
           </View>
         </View>

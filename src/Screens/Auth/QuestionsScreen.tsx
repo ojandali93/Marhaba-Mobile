@@ -144,7 +144,10 @@ const QuestionsScreen = () => {
                         style={[
                           tailwind`flex-1 mx-1 py-2 rounded-md items-center border`,
                           isSelected
-                            ? tailwind`bg-[#2e694b] border-[#2e694b]`
+                            ? {
+                                backgroundColor: themeColors.primary,
+                                borderColor: themeColors.primary,
+                              }
                             : tailwind`border-gray-400`,
                         ]}>
                         <Text

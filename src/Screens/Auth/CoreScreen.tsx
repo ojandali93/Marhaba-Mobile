@@ -41,7 +41,9 @@ const CoreScreen = () => {
     const storedFamily = await AsyncStorage.getItem('coreFamily');
     const storedFaith = await AsyncStorage.getItem('coreFaith');
     const storedAmbition = await AsyncStorage.getItem('coreAmbition');
-    const storedCareerVsFamily = await AsyncStorage.getItem('coreCareerVsFamily');
+    const storedCareerVsFamily = await AsyncStorage.getItem(
+      'coreCareerVsFamily',
+    );
     const storedHonesty = await AsyncStorage.getItem('coreHonesty');
     const storedTransparency = await AsyncStorage.getItem('coreTransparency');
     const storedTrust = await AsyncStorage.getItem('coreTrust');
@@ -49,31 +51,31 @@ const CoreScreen = () => {
     const storedSocial = await AsyncStorage.getItem('coreSocial');
 
     if (storedFamily) {
-        setFamily(storedFamily);
+      setFamily(storedFamily);
     }
     if (storedFaith) {
-        setFaith(storedFaith);
+      setFaith(storedFaith);
     }
     if (storedAmbition) {
-        setAmbition(storedAmbition);
+      setAmbition(storedAmbition);
     }
     if (storedCareerVsFamily) {
-        setCareerVsFamily(storedCareerVsFamily);
+      setCareerVsFamily(storedCareerVsFamily);
     }
     if (storedHonesty) {
-        setHonesty(storedHonesty);
+      setHonesty(storedHonesty);
     }
     if (storedTransparency) {
-        setTransparency(storedTransparency);
+      setTransparency(storedTransparency);
     }
     if (storedTrust) {
-        setTrust(storedTrust);
+      setTrust(storedTrust);
     }
     if (storedPolitics) {
-        setPolitics(storedPolitics);
+      setPolitics(storedPolitics);
     }
     if (storedSocial) {
-        setSocial(storedSocial);
+      setSocial(storedSocial);
     }
   };
 
@@ -105,7 +107,7 @@ const CoreScreen = () => {
     await AsyncStorage.setItem('coreTrust', trust);
     await AsyncStorage.setItem('corePolitics', politics);
     await AsyncStorage.setItem('coreSocial', social);
-    navigation.navigate('Conflict');
+    navigation.navigate('Lifestyle');
   };
 
   return (
@@ -140,7 +142,7 @@ const CoreScreen = () => {
         <ScrollView style={tailwind`w-full flex-1`}>
           <View style={tailwind`w-full pr-1`}>
             <StandardSelect
-              fieldName="Building a Family`"
+              fieldName="Building a Family"
               selected={family}
               onSelect={setFamily}
               options={['Essential', 'Important', 'Neutral', 'Not Important']}
@@ -149,52 +151,98 @@ const CoreScreen = () => {
               fieldName="Shared Faith"
               selected={faith}
               onSelect={setFaith}
-              options={['Essential', 'Important', 'Flexible', 'Not Important', 'Opposing Views']}
+              options={[
+                'Essential',
+                'Important',
+                'Flexible',
+                'Not Important',
+                'Opposing Views',
+              ]}
             />
             <StandardSelect
               fieldName="Personal Ambition"
               selected={ambition}
               onSelect={setAmbition}
-              options={['Highly Ambitious', 'Moderately Ambitious', 'Low Ambition', 'Not A Priority', 'Still Exploring']}
+              options={[
+                'Highly Ambitious',
+                'Moderately Ambitious',
+                'Low Ambition',
+                'Not A Priority',
+                'Still Exploring',
+              ]}
             />
             <StandardSelect
               fieldName="Career vs Family"
               selected={careerVsFamily}
               onSelect={setCareerVsFamily}
-              options={['Career First', 'Family First', 'Balanced', 'Flexible', 'Career Options']}
+              options={[
+                'Career First',
+                'Family First',
+                'Balanced',
+                'Flexible',
+                'Career Options',
+              ]}
             />
             <StandardSelect
               fieldName="Honesty"
               selected={honesty}
               onSelect={setHonesty}
-              options={['Non-negotiable', 'Very Important', 'Important', 'Flexible', 'Depends on Situation']}
+              options={[
+                'Non-negotiable',
+                'Very Important',
+                'Important',
+                'Flexible',
+                'Depends on Situation',
+              ]}
             />
             <StandardSelect
               fieldName="Transparency"
               selected={transparency}
               onSelect={setTransparency}
-              options={['Non-negotiable', 'Very Important', 'Important', 'Flexible', 'Depends on Situation']}
+              options={[
+                'Non-negotiable',
+                'Very Important',
+                'Important',
+                'Flexible',
+                'Depends on Situation',
+              ]}
             />
             <StandardSelect
               fieldName="Trust"
               selected={trust}
               onSelect={setTrust}
-              options={['Non-negotiable', 'Very Important', 'Important', 'Flexible', 'Depends on Situation']}
+              options={[
+                'Non-negotiable',
+                'Very Important',
+                'Important',
+                'Flexible',
+                'Depends on Situation',
+              ]}
             />
             <StandardSelect
               fieldName="Political Views"
               selected={politics}
               onSelect={setPolitics}
-              options={['Essential', 'Important', 'Flexible', 'Not Important', 'Opposing Views']}
+              options={[
+                'Essential',
+                'Important',
+                'Flexible',
+                'Not Important',
+                'Opposing Views',
+              ]}
             />
             <StandardSelect
               fieldName="Social"
               selected={social}
               onSelect={setSocial}
-              options={['Very Important', 'Somewhat Important', 'Important', 'Not Important']}
+              options={[
+                'Very Important',
+                'Somewhat Important',
+                'Important',
+                'Not Important',
+              ]}
             />
           </View>
-          
         </ScrollView>
       </View>
       <View style={tailwind`absolute w-3/4 bottom-12`}>

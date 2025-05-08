@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {NavigationContainer} from '@react-navigation/native';
@@ -8,6 +8,7 @@ import {
   Home,
   MessageSquare,
   Search,
+  Shield,
   User,
   Zap,
 } from 'react-native-feather';
@@ -21,11 +22,23 @@ import ConversationStackNavigation from './ConversationStackNavigation';
 import ProfileStackNavigation from './ProfileStackNavigation';
 import SearchStackNavigation from './SearchStackNavigation';
 import {useProfile} from '../Context/ProfileContext';
+import AdminReviewScreen from '../Screens/HomeScreens/AdminReviewScreen';
 
 const Tab = createBottomTabNavigator();
 
 const BottomTabNavigation = () => {
-  const {unViewedInteractions, hasUnreadMessages} = useProfile();
+  const {unViewedInteractions, hasUnreadMessages, userId, profile} =
+    useProfile();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (userId && profile) {
+      const adminCheck =
+        userId === 'dc0150ff-4b08-4955-8036-8ad2d435a323' &&
+        profile?.admin === true;
+      setIsAdmin(adminCheck);
+    }
+  }, [userId, profile]);
 
   useEffect(() => {
     console.log('🔥 BottomTab updated: hasUnreadMessages =', hasUnreadMessages);
@@ -136,6 +149,25 @@ const BottomTabNavigation = () => {
             ),
           }}
         />
+        {isAdmin && (
+          <Tab.Screen
+            name="Admin"
+            component={AdminReviewScreen}
+            options={{
+              tabBarShowLabel: false,
+              tabBarIcon: ({focused}) => (
+                <View style={tailwind`items-center`}>
+                  <Shield
+                    stroke={focused ? themeColors.primary : 'black'}
+                    strokeWidth={2}
+                    height={26}
+                    width={26}
+                  />
+                </View>
+              ),
+            }}
+          />
+        )}
         <Tab.Screen
           name="Profiles"
           component={ProfileStackNavigation}

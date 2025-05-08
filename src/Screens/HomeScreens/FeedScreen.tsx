@@ -5,7 +5,7 @@ import {Alert, Image, Modal, Text, TouchableOpacity, View} from 'react-native';
 import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
 import FeedProfileComponent from '../../Components/Profiles/FeedProfileComponent';
-import {Check, Heart} from 'react-native-feather';
+import {Check, Heart, UserX} from 'react-native-feather';
 import {useProfile} from '../../Context/ProfileContext';
 import TutorialModal from '../../Components/Modals/TutorialModal';
 
@@ -298,6 +298,17 @@ const FeedScreen = () => {
       setSelectedProfile(newMatches[0] || null); // ✅ Update the selected profile
       return newMatches;
     });
+  };
+
+  const logout = async () => {
+    try {
+      removeSession();
+      removeUserId();
+      removeProfile();
+      checkAuthenticated();
+    } catch (err) {
+      console.error('❌ Logout exception:', err);
+    }
   };
 
   return (
