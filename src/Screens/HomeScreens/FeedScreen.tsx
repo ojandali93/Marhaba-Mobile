@@ -1,27 +1,24 @@
 import {useNavigation} from '@react-navigation/native';
-import axios, {all} from 'axios';
+import axios from 'axios';
 import React, {useEffect, useLayoutEffect, useState} from 'react';
 import {Alert, Image, Modal, Text, TouchableOpacity, View} from 'react-native';
 import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
 import FeedProfileComponent from '../../Components/Profiles/FeedProfileComponent';
-import {Check, Heart, UserX} from 'react-native-feather';
+import {Check, Heart} from 'react-native-feather';
 import {useProfile} from '../../Context/ProfileContext';
 import TutorialModal from '../../Components/Modals/TutorialModal';
 
 const FeedScreen = () => {
   const navigation = useNavigation();
   const {
-    checkAuthenticated,
-    grabUserMatches,
-    grabUserProfile,
+    profile,
     userId,
     allProfiles,
-    profile,
-    removeJwtToken,
-    removeProfile,
     removeSession,
     removeUserId,
+    removeProfile,
+    checkAuthenticated,
   } = useProfile();
 
   const [selectedProfile, setSelectedProfile] = useState<any>(allProfiles[0]);
@@ -34,10 +31,20 @@ const FeedScreen = () => {
   const [showMatchModal, setShowMatchModal] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
 
-  useLayoutEffect(() => {
-    grabUserMatches();
-    fetchUsage();
-  }, []);
+  // useEffect(() => {
+  //   if (profile?.Preferences) {
+  //     fetchPotentialMatches();
+  //   }
+  // }, [profile, userId]);
+
+  useEffect(() => {
+    if (profile?.tier !== undefined && userId) {
+      fetchUsage();
+    }
+    if (profile?.Preferences && userId) {
+      fetchPotentialMatches();
+    }
+  }, [profile, userId, profile?.Preferences]);
 
   useEffect(() => {
     if (profile?.tutorial) {
@@ -54,261 +61,108 @@ const FeedScreen = () => {
     }
   }, [allProfiles]);
 
-  const handleToggleTutorial = () => {
-    setShowTutorial(!showTutorial);
-  };
+  const fetchPotentialMatches = async () => {
+    console.log('fetching potential matches');
+    console.log('profile: ', profile);
+    console.log('userId: ', userId);
+    if (!profile || !userId) return;
 
-  const handleToggleFullProfile = () => {
-    setShowFullProfile(!showFullProfile);
-  };
+    const preferences = profile.Preferences?.[0];
+    const lat = profile?.latitude;
+    const lng = profile?.longitude;
 
-  const updateMatchStatus = async (interactionId: number) => {
+    const distanceMap = {
+      'Close (50 miles)': 50,
+      'Nearby (100 miles)': 100,
+      'Far (250 miles)': 250,
+      'Everywhere (1000+ miles)': 1000,
+    };
+
+    const distanceValue = distanceMap[preferences.distance] || 50;
+
     try {
-      await axios.put(`https://marhaba-server.onrender.com/api/user/approved`, {
-        id: interactionId,
-      });
-    } catch (error) {
-      console.error(`❌ Error approving match:`, error);
-    }
-  };
-
-  const createConversation = async (profileId: string) => {
-    try {
-      await axios.post(
-        `https://marhaba-server.onrender.com/api/conversation/create`,
+      const response = await axios.post(
+        'https://marhaba-server.onrender.com/api/user/getMatches',
         {
-          userId: userId,
-          userId2: profileId,
-          lastMessage: '',
-          updatedAt: new Date().toISOString(),
+          userId,
+          ageMin: preferences.ageMin,
+          ageMax: preferences.ageMax,
+          gender: preferences.gender,
+          background: parseCommaSeparated(preferences.background),
+          religion: parseCommaSeparated(preferences.religion),
+          sect: parseCommaSeparated(preferences.sect),
+          distance: distanceValue,
+          latitude: lat,
+          longitude: lng,
         },
       );
-    } catch (error) {
-      console.error(`❌ Error creating conversation with ${profileId}:`, error);
+
+      console.log('response.data: ', response.data);
+
+      if (response.data?.success) {
+        setResults(response.data.matches);
+        setSelectedProfile(response.data.matches[0] || null);
+      }
+    } catch (err) {
+      console.error('❌ Error fetching potential matches:', err);
     }
   };
 
-  const createViewed = async (profileId: string) => {
-    try {
-      await axios.post(
-        `https://marhaba-server.onrender.com/api/viewed/create`,
-        {
-          viewer: userId,
-          viewed: profileId,
-        },
-      );
-    } catch (error) {
-      console.error(`❌ Error creating conversation with ${profileId}:`, error);
-    }
+  const parseCommaSeparated = (value: string | null | undefined): string[] => {
+    if (!value || typeof value !== 'string') return [];
+    return value
+      .split(',')
+      .map(item => item.trim())
+      .filter(Boolean);
   };
 
   const fetchUsage = async () => {
-    if (!userId) return;
+    if (!userId || profile?.tier === undefined || profile?.tier === null)
+      return;
+
     try {
       const res = await axios.get(
         `https://marhaba-server.onrender.com/api/user/weeklyStats/${userId}`,
       );
       const {likesSentThisWeek, superLikesSentThisWeek} = res.data.data;
 
-      if (profile?.tier) {
-        let maxLikes = 10;
-        let maxSuperLikes = 5;
+      let maxLikes = 10;
+      let maxSuperLikes = 5;
 
-        switch (profile.tier) {
-          case 1:
-            maxLikes = 15;
-            maxSuperLikes = 10;
-            break;
-          case 2:
-            maxLikes = 100; // 100 = ∞
-            maxSuperLikes = 15;
-            break;
-          case 3:
-            maxLikes = 100; // 100 = ∞
-            maxSuperLikes = 20;
-            break;
-        }
-
-        setLikes(
-          maxLikes === 100 ? 100 : Math.max(0, maxLikes - likesSentThisWeek),
-        );
-        setSuperLikes(
-          maxSuperLikes === 100
-            ? 100
-            : Math.max(0, maxSuperLikes - superLikesSentThisWeek),
-        );
+      switch (profile.tier) {
+        case 1:
+          maxLikes = 15;
+          maxSuperLikes = 10;
+          break;
+        case 2:
+          maxLikes = 100;
+          maxSuperLikes = 15;
+          break;
+        case 3:
+          maxLikes = 100;
+          maxSuperLikes = 20;
+          break;
       }
+
+      setLikes(
+        maxLikes === 100 ? 100 : Math.max(0, maxLikes - likesSentThisWeek),
+      );
+      setSuperLikes(
+        maxSuperLikes === 100
+          ? 100
+          : Math.max(0, maxSuperLikes - superLikesSentThisWeek),
+      );
     } catch (error) {
       console.error('❌ Failed to fetch usage:', error);
     }
   };
 
-  const dislikeProfile = async (profileId: string) => {
-    createViewed(profileId);
-    removeTopProfile();
-  };
-
-  const likeProfile = async (profileId: string, profile: any) => {
-    if (likes === 0) {
-      Alert.alert('Out of Likes', 'Upgrade to Pro to get more!', [
-        {text: 'Cancel', style: 'cancel'},
-        {
-          text: 'Upgrade',
-          onPress: () => navigation.navigate('Profiles'),
-        },
-      ]);
-      return;
-    } else if (likes && likes > 0) {
-      setLikes(prev => (prev ? prev - 1 : null));
-
-      try {
-        const checkRes = await axios.get(
-          `https://marhaba-server.onrender.com/api/user/matchStatus/${userId}/${profileId}`,
-        );
-
-        const existingInteraction = checkRes.data?.data[0];
-
-        if (existingInteraction) {
-          const updatedRes = await axios.put(
-            `https://marhaba-server.onrender.com/api/user/updateInteraction`,
-            {
-              id: existingInteraction.id,
-              userId: userId,
-              targetUserId: existingInteraction.targetUserId,
-              userInteraction: existingInteraction.userInteraction,
-              targetInteraction: 'liked',
-              viewed: true,
-              approved: true,
-              viewed_at: new Date().toISOString(),
-              approved_at: new Date().toISOString(),
-              message: null,
-            },
-          );
-
-          updateMatchStatus(existingInteraction.id);
-          createConversation(profileId);
-          setMatchedProfile(profile);
-          setShowMatchModal(true);
-          return;
-        }
-
-        const response = await axios.post(
-          `https://marhaba-server.onrender.com/api/user/interaction`,
-          {
-            userId: userId,
-            targetUserId: profileId,
-            userInteraction: 'liked',
-            targetInteraction: null,
-            viewed: false,
-            approved: false,
-            viewed_at: null,
-            approved_at: null,
-            message: null,
-          },
-        );
-
-        if (response.data?.success) {
-          createViewed(profileId);
-          fetchUsage();
-          removeTopProfile();
-        }
-      } catch (error) {
-        console.error(`❌ Error liking profile ${profileId}:`, error);
-      }
-    }
-  };
-
-  const superLikeProfile = async (
-    profileId: string,
-    message?: string,
-    profile: any,
-  ) => {
-    if (superLikes === 0) {
-      Alert.alert('Out of Super Likes', 'Upgrade to Pro to get more!', [
-        {text: 'Cancel', style: 'cancel'},
-        {
-          text: 'Upgrade',
-          onPress: () => navigation.navigate('Profiles'),
-        },
-      ]);
-      return;
-    } else if (superLikes > 0) {
-      setSuperLikes(prev => (prev ? prev - 1 : null));
-
-      try {
-        const checkRes = await axios.get(
-          `https://marhaba-server.onrender.com/api/user/matchStatus/${userId}/${profileId}`,
-        );
-
-        const existingInteraction = checkRes.data?.data[0];
-
-        if (existingInteraction) {
-          const updatedRes = await axios.put(
-            `https://marhaba-server.onrender.com/api/user/updateInteraction`,
-            {
-              id: existingInteraction.id,
-              userId: existingInteraction.userId,
-              targetUserId: existingInteraction.targetUserId,
-              userInteraction: existingInteraction.userInteraction,
-              targetInteraction: 'super',
-              viewed: true,
-              approved: true,
-              viewed_at: new Date().toISOString(),
-              approved_at: new Date().toISOString(),
-              message: message,
-            },
-          );
-
-          updateMatchStatus(existingInteraction.id);
-          createConversation(profileId);
-          setMatchedProfile(profile);
-          setShowMatchModal(true);
-          return;
-        }
-
-        const response = await axios.post(
-          `https://marhaba-server.onrender.com/api/user/interaction`,
-          {
-            userId: userId,
-            targetUserId: profileId,
-            userInteraction: 'super',
-            targetInteraction: null,
-            viewed: false,
-            approved: false,
-            viewed_at: null,
-            approved_at: null,
-            message: message,
-          },
-        );
-
-        if (response.data?.success) {
-          createViewed(profileId);
-          fetchUsage();
-          removeTopProfile();
-        }
-      } catch (error) {
-        console.error(`❌ Error super liking profile ${profileId}:`, error);
-      }
-    }
-  };
-
   const removeTopProfile = () => {
-    setResults(prevMatches => {
-      const newMatches = prevMatches?.length ? prevMatches.slice(1) : [];
-      setSelectedProfile(newMatches[0] || null); // ✅ Update the selected profile
-      return newMatches;
+    setResults(prev => {
+      const next = prev.slice(1);
+      setSelectedProfile(next[0] || null);
+      return next;
     });
-  };
-
-  const logout = async () => {
-    try {
-      removeSession();
-      removeUserId();
-      removeProfile();
-      checkAuthenticated();
-    } catch (err) {
-      console.error('❌ Logout exception:', err);
-    }
   };
 
   return (
@@ -326,7 +180,7 @@ const FeedScreen = () => {
               {
                 backgroundColor: themeColors.secondary,
                 borderWidth: 1,
-                borderColor: themeColors.primary, // ✅ green border
+                borderColor: themeColors.primary,
               },
             ]}>
             {superLikes !== null && (
@@ -361,76 +215,16 @@ const FeedScreen = () => {
       )}
       <FeedProfileComponent
         profile={selectedProfile}
-        dislikeProfile={dislikeProfile}
-        likeProfile={likeProfile}
-        superlikeProfile={superLikeProfile}
+        dislikeProfile={() => removeTopProfile()}
+        likeProfile={() => removeTopProfile()}
+        superlikeProfile={() => removeTopProfile()}
         showFullProfile={showFullProfile}
         setShowFullProfile={setShowFullProfile}
-        handleToggleFullProfile={handleToggleFullProfile}
+        handleToggleFullProfile={() => setShowFullProfile(!showFullProfile)}
       />
-      <Modal
-        transparent
-        visible={showMatchModal}
-        animationType="fade"
-        onRequestClose={() => setShowMatchModal(false)}>
-        <View
-          style={tailwind`flex-1 bg-black bg-opacity-60 justify-center items-center px-6`}>
-          <View
-            style={[
-              tailwind`rounded-lg p-5 items-center justify-center h-9/12 w-full`,
-              {backgroundColor: themeColors.secondary},
-            ]}>
-            <Text style={tailwind`text-4xl font-bold text-green-800 mb-2`}>
-              You & {matchedProfile?.name}
-            </Text>
-            <Text style={tailwind`text-3xl font-bold text-green-800 mb-2`}>
-              Connected!
-            </Text>
-            {matchedProfile?.Photos?.[0]?.photoUrl && (
-              <Image
-                source={{uri: matchedProfile.Photos[0].photoUrl}}
-                style={tailwind`w-11/12 h-7/12 rounded-8 mb-4`}
-              />
-            )}
-            <Text style={tailwind`text-base text-center`}>
-              You and {matchedProfile?.name} have liked each other!
-            </Text>
-            <Text style={tailwind`text-base mb-4 text-center`}>
-              You can now start a conversation!
-            </Text>
-            <View style={tailwind`flex-col justify-between w-full`}>
-              <TouchableOpacity
-                onPress={() => {
-                  setShowMatchModal(false);
-                  removeTopProfile();
-                  navigation.navigate('Conversations'); // <-- Use the name of your Messages tab here
-                }}
-                style={tailwind`bg-green-700 px-4 py-4 rounded-md`}>
-                <Text
-                  style={tailwind`text-white text-center font-semibold text-base`}>
-                  Message
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {
-                  setShowMatchModal(false);
-                  removeTopProfile(); // go to next profile
-                }}
-                style={tailwind`p-4 rounded-md`}>
-                <Text
-                  style={tailwind`text-black text-center font-semibold text-base`}>
-                  Next Profile
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
       <TutorialModal
         visible={showTutorial}
-        onClose={() => {
-          handleToggleTutorial(); // Save to avoid showing again
-        }}
+        onClose={() => setShowTutorial(false)}
       />
     </View>
   );

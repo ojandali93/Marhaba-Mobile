@@ -4,6 +4,7 @@ import {
   Dimensions,
   Image,
   Text,
+  TouchableOpacity,
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
@@ -96,14 +97,14 @@ const LoginScreen = () => {
               valid
             />
             <View style={tailwind`w-full flex flex-row justify-end mt-2 pr-2`}>
-              <TouchableWithoutFeedback
+              <TouchableOpacity
                 onPress={() => {
-                  setEmail('forgot password');
+                  navigation.navigate('ForgotPassword');
                 }}>
                 <View style={tailwind`bg-transparent`}>
                   <Text style={tailwind`font-semibold`}>Forgot Password?</Text>
                 </View>
-              </TouchableWithoutFeedback>
+              </TouchableOpacity>
             </View>
             <View style={tailwind`w-full flex flex-row justify-end`}>
               <AuthMainButton text={'Login'} click={login} loading={loading} />

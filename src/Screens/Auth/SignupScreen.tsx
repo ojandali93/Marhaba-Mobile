@@ -21,6 +21,7 @@ import AuthMainButton from '../../Components/Buttons/AuthMainButton';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AuthInputStandardNumber from '../../Components/Inputs/AuthInputStandardNumber';
+import axios from 'axios';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -33,6 +34,7 @@ const SignupScreen = () => {
   const [phone, setPhone] = useState<string>('');
 
   const [validEmail, setValidEmail] = useState<boolean>(true);
+  const [availableEmail, setAvailableEmail] = useState<boolean>(true);
   const [validPassowrd, setValidPassword] = useState<boolean>(true);
   const [validVerify, setValidVerify] = useState<boolean>(true);
 
@@ -58,10 +60,23 @@ const SignupScreen = () => {
     }
   };
 
-  const handleEmailUpdate = (data: string) => {
+  const handleEmailUpdate = async (data: string) => {
     setEmail(data.toLowerCase());
     if (email.length > 0) {
       setValidEmail(emailUpdate(data.toLowerCase()));
+    }
+    try {
+      const response = await axios.get(
+        `https://marhaba-server.onrender.com/api/account/checkEmail/${data.toLowerCase()}`,
+      );
+      if (response.data.data.length > 0) {
+        console.log('email response:', response);
+        setAvailableEmail(false);
+      } else {
+        setAvailableEmail(true);
+      }
+    } catch (error) {
+      console.log('❌ Server responded with status:', error);
     }
   };
 
@@ -102,7 +117,17 @@ const SignupScreen = () => {
     await AsyncStorage.setItem('email', email);
     await AsyncStorage.setItem('password', password);
     await AsyncStorage.setItem('phone', phone);
+    // createAccount(email, password);
     navigation.navigate('Identity');
+  };
+
+  const formatPhoneNumber = (value: string) => {
+    const digits = value.replace(/\D/g, '').slice(0, 10); // Only digits, max 10
+    const len = digits.length;
+
+    if (len <= 3) return digits;
+    if (len <= 6) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+    return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`;
   };
 
   return (
@@ -138,6 +163,11 @@ const SignupScreen = () => {
                 Enter valid email.
               </Text>
             )}
+            {!availableEmail && (
+              <Text style={tailwind`text-xs text-red-600 mt-1`}>
+                Email is already in use.
+              </Text>
+            )}
             <AithInputStandard
               fieldName="Password:"
               value={password}
@@ -164,11 +194,11 @@ const SignupScreen = () => {
               </Text>
             )}
             <AuthInputStandardNumber
-              fieldName="Phone (###) ###-####"
+              fieldName="Phone"
               value={phone}
-              changeText={setPhone}
-              secure={true}
-              valid={validVerify}
+              changeText={(text: string) => setPhone(formatPhoneNumber(text))}
+              secure={false}
+              valid={true}
             />
             <View style={tailwind`w-full flex flex-row justify-end`}>
               <AuthMainButton text={'Signup'} click={redirectToIdentity} />

@@ -72,7 +72,8 @@ const SingleProfileScreen = () => {
   const name = user?.name ?? 'N/A';
   const smoke = about?.smoke;
   const hasKids = about?.hasKids;
-  const background = about?.background;
+  const backgroundArray = about?.background;
+  const background = JSON.parse(backgroundArray);
   const religion = about?.religion;
   const job = career?.job;
   const company = career?.company;
@@ -338,13 +339,18 @@ const SingleProfileScreen = () => {
                   ]}>
                   {name} {`(${age})`}
                 </Text>
-                <Text
-                  style={[
-                    tailwind`text-3xl font-semibold`,
-                    {color: themeColors.primary},
-                  ]}>
-                  {countryFlagMap[background] ?? ''}
-                </Text>
+                <View style={tailwind`flex-row flex-wrap items-center`}>
+                  {background.map((bg: string, index: number) => (
+                    <Text
+                      key={index}
+                      style={[
+                        tailwind`text-3xl font-semibold mr-2`,
+                        {color: themeColors.primary},
+                      ]}>
+                      {countryFlagMap[bg] ?? ''}
+                    </Text>
+                  ))}
+                </View>
               </View>
             </View>
 
@@ -480,7 +486,17 @@ const SingleProfileScreen = () => {
                     <View style={tailwind`pr-2 w-1/2`}>
                       <SingleInfoFull
                         label="Background"
-                        value={`${countryFlagMap[background]} ${background}`}
+                        value={
+                          <View style={tailwind`flex flex-col`}>
+                            {background.slice(0, 2).map((bg, idx) => (
+                              <Text
+                                key={idx}
+                                style={tailwind`text-base font-bold`}>
+                                {countryFlagMap[bg] ?? ''} {bg}
+                              </Text>
+                            ))}
+                          </View>
+                        }
                       />
                     </View>
                     <View style={tailwind`w-1/2`}>

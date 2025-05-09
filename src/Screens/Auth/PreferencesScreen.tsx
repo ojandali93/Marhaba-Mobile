@@ -33,7 +33,7 @@ const PreferencesScreen = () => {
   const [views, setViews] = useState<string>('');
   const [sect, setSect] = useState<string>('');
   const [religion, setReligion] = useState<string>('');
-  const [background, setBackground] = useState<string>('');
+  const [background, setBackground] = useState<string[]>([]);
 
   const [ageRange, setAgeRange] = useState<[number, number]>([18, 60]);
 
@@ -69,7 +69,7 @@ const PreferencesScreen = () => {
       setReligion(storedReligion);
     }
     if (storeBackground) {
-      setBackground(storeBackground);
+      setBackground(JSON.parse(storeBackground));
     }
     if (storeAgeMin && storeAgeMax) {
       setAgeRange([parseInt(storeAgeMin), parseInt(storeAgeMax)]);
@@ -90,7 +90,7 @@ const PreferencesScreen = () => {
     await AsyncStorage.setItem('prefViews', views);
     await AsyncStorage.setItem('prefSect', sect);
     await AsyncStorage.setItem('prefReligion', religion);
-    await AsyncStorage.setItem('prefBackground', background);
+    await AsyncStorage.setItem('prefBackground', JSON.stringify(background));
     await AsyncStorage.setItem('preAgeMin', ageRange[0].toString());
     await AsyncStorage.setItem('prefAgeMax', ageRange[1].toString());
     navigation.navigate('Photos');
@@ -143,8 +143,10 @@ const PreferencesScreen = () => {
           />
           <BackgroundSelect
             fieldName="Background"
+            options={[]}
             selected={background}
-            onSelect={setBackground}
+            setSelected={setBackground}
+            maxSelect={4}
           />
           <ReligionSelect
             fieldName="Religion"

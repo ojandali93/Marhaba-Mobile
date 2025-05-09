@@ -101,9 +101,14 @@ export const ProfileProvider = ({children}: {children: React.ReactNode}) => {
         `https://marhaba-server.onrender.com/api/user/${userId}`,
       );
       if (response.data) {
-        addProfile(response.data.data[0]);
-        addSession(JSON.stringify(session));
-        addUserId(userId);
+        await addProfile(response.data.data[0]);
+        await addSession(JSON.stringify(session));
+        await addUserId(userId);
+
+        // 🟢 Now that userId is stored, request location
+        setTimeout(() => {
+          requestLocation(userId); // calls addLocation() which depends on userId
+        }, 300); // give async setUserId a moment to settle
         setAuthenticated(true);
       }
     } catch (error) {
@@ -170,10 +175,15 @@ export const ProfileProvider = ({children}: {children: React.ReactNode}) => {
     setSession(null);
   };
 
-  const addLocation = async (location: {
-    latitude: number;
-    longitude: number;
-  }) => {
+  const addLocation = async (
+    userId: string,
+    location: {
+      latitude: number;
+      longitude: number;
+    },
+  ) => {
+    console.log('addLocation: ', location);
+    console.log('userId: ', userId);
     await AsyncStorage.setItem('location', JSON.stringify(location));
     setLocation(location);
     try {
@@ -185,6 +195,14 @@ export const ProfileProvider = ({children}: {children: React.ReactNode}) => {
           latitude: location.latitude,
         },
       );
+
+      if (response.data?.success) {
+        console.log('Location updated successfully');
+        return;
+      } else {
+        console.error('Error updating location:', response.data?.message);
+        return;
+      }
     } catch (error) {
       console.error('Error requesting location:', error);
     }
@@ -205,7 +223,7 @@ export const ProfileProvider = ({children}: {children: React.ReactNode}) => {
     }
   };
 
-  const requestLocation = async () => {
+  const requestLocation = async (userId: string) => {
     try {
       if (Platform.OS === 'android') {
         const granted = await PermissionsAndroid.request(
@@ -217,7 +235,8 @@ export const ProfileProvider = ({children}: {children: React.ReactNode}) => {
       }
       Geolocation.getCurrentPosition(
         position => {
-          addLocation(position?.coords);
+          console.log('position: ', position);
+          addLocation(userId, position?.coords);
         },
         error => console.log(error),
         {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000},

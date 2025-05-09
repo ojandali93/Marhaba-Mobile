@@ -45,9 +45,10 @@ const imageSize = (width - itemPadding * (numColumns + 1)) / numColumns;
 
 const SearchScreent = () => {
   const {profile, userId, location} = useProfile();
-  const {region, requestPermissions} = useLocation(); // use the right method name
+  const {region, requestPermissions} = useLocation();
   const navigation = useNavigation();
 
+  const [preferencesLoaded, setPreferencesLoaded] = useState(false);
   const [ageMin, setAgeMin] = useState<number>(18);
   const [ageMax, setAgeMax] = useState<number>(100);
   const [gender, setGender] = useState<string>('male');
@@ -71,28 +72,29 @@ const SearchScreent = () => {
   const [users, setUsers] = useState<ProcessedInteraction[]>([]);
   const [showFilterModal, setShowFilterModal] = useState(false);
 
-  useFocusEffect(
-    useCallback(() => {
-      fetchUsers();
-    }, [fetchUsers]),
-  );
-
-  useEffect(() => {
-    if (DISTANCE_MAP[profile.Preferences[0].distance]) {
-      fetchUsers();
-    }
-  }, [profile]);
-
-  const onRefresh = useCallback(() => {
-    fetchUsers();
-  }, [isRefreshing]);
-
   const DISTANCE_MAP = {
     'Close (50 miles)': 50,
     'Nearby (100 miles)': 100,
     'Far (150 miles)': 150,
     'Everywhere (500+ miles)': 2000,
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      initializeFilters();
+    }, []),
+  );
+
+  useEffect(() => {
+    if (preferencesLoaded) {
+      fetchUsers();
+    }
+  }, [preferencesLoaded]);
+
+  const onRefresh = useCallback(() => {
+    setIsRefreshing(true);
+    fetchUsers();
+  }, []);
 
   useEffect(() => {
     setAgeMin(ageRange[0]);
@@ -105,10 +107,7 @@ const SearchScreent = () => {
 
     setAgeMin(preferences.ageMin || 18);
     setAgeMax(preferences.ageMax || 100);
-    setGender(
-      preferences.gender.charAt(0).toUpperCase() +
-        preferences.gender.slice(1) || 2000,
-    );
+    setGender(preferences.gender || 'male');
     setDistance(preferences.distance || 'Close (50 miles)');
     setBackground(toArray(preferences.background));
     setReligion(toArray(preferences.religion));
@@ -122,13 +121,24 @@ const SearchScreent = () => {
     setTimeline(toArray(preferences.timeline));
     setRelocate(toArray(preferences.relocate));
     setAgeRange([preferences.ageMin, preferences.ageMax] || [18, 100]);
-    setLoading(true);
+    setPreferencesLoaded(true);
   };
 
   const toArray = (value: any): string[] => {
     if (!value) return [];
     if (Array.isArray(value)) return value;
-    return [value]; // if it's a single string, wrap it
+
+    try {
+      const parsed = JSON.parse(value);
+      if (Array.isArray(parsed)) return parsed;
+    } catch {
+      // If not JSON, try comma-separated fallback
+      if (typeof value === 'string' && value.includes(',')) {
+        return value.split(',').map(v => v.trim());
+      }
+    }
+
+    return [value]; // fallback for single string
   };
 
   const fetchUsers = async () => {
@@ -140,7 +150,7 @@ const SearchScreent = () => {
           userId,
           ageMin,
           ageMax,
-          gender: gender.charAt(0).toUpperCase() + gender.slice(1),
+          gender,
           background,
           religion,
           sect,
@@ -160,17 +170,15 @@ const SearchScreent = () => {
 
       if (response.data?.success) {
         setUsers(response.data.data);
-        setIsRefreshing(false);
       } else {
         setUsers([]);
-        setIsRefreshing(false);
       }
     } catch (err) {
       console.error('Error fetching users:', err);
       setUsers([]);
-      setIsRefreshing(false);
     } finally {
       setLoading(false);
+      setIsRefreshing(false);
     }
   };
 
@@ -198,7 +206,6 @@ const SearchScreent = () => {
             source={{uri: profilePicUrl}}
             style={styles.profileImage}
             resizeMode="cover"
-            blurRadius={0}
           />
           <Text
             style={tailwind`absolute bottom-0 left-0 p-3 text-white text-xl font-bold`}>
@@ -226,7 +233,7 @@ const SearchScreent = () => {
         <View style={tailwind`flex-1 justify-center items-center p-5`}>
           <Text style={tailwind`text-red-500 text-center`}>{error}</Text>
           <TouchableOpacity
-            onPress={() => fetchLikes(false)}
+            onPress={() => fetchUsers()}
             style={tailwind`mt-4 p-2 bg-gray-200 rounded`}>
             <Text>Retry</Text>
           </TouchableOpacity>
@@ -245,10 +252,10 @@ const SearchScreent = () => {
             />
           }>
           <Text style={tailwind`text-lg text-gray-500 text-center`}>
-            No one has liked you yet.
+            No matches found.
           </Text>
           <Text style={tailwind`text-gray-400 text-center mt-1`}>
-            Check back later!
+            Try adjusting your filters!
           </Text>
         </ScrollView>
       );
@@ -292,11 +299,12 @@ const SearchScreent = () => {
       </View>
 
       {renderContent()}
+
       <FilterModal
         visible={showFilterModal}
         onClose={() => setShowFilterModal(false)}
         onReset={() => {
-          setIsRefreshing(true);
+          initializeFilters();
         }}
         onApply={() => {
           fetchUsers();
@@ -328,6 +336,8 @@ const SearchScreent = () => {
         setLookingFor={setLookingFor}
         timeline={timeline}
         setTimeline={setTimeline}
+        relocate={relocate}
+        setRelocate={setRelocate}
       />
     </SafeAreaView>
   );
@@ -351,27 +361,6 @@ const styles = StyleSheet.create({
   profileImage: {
     width: '100%',
     height: '100%',
-  },
-  superLikeIndicator: {
-    position: 'absolute',
-    bottom: 6,
-    right: 6,
-    backgroundColor: 'rgba(255, 255, 255, 0.7)',
-    borderRadius: 12,
-    padding: 4,
-  },
-  nameText: {
-    position: 'absolute',
-    bottom: 4,
-    left: 4,
-    right: 4,
-    textAlign: 'center',
-    color: 'white',
-    fontWeight: 'bold',
-    fontSize: 12,
-    textShadowColor: 'rgba(0, 0, 0, 0.75)',
-    textShadowOffset: {width: 0, height: 1},
-    textShadowRadius: 2,
   },
 });
 

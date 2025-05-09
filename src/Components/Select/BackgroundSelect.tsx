@@ -10,6 +10,7 @@ import {
 import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
 import {Picker} from '@react-native-picker/picker';
+import {ScrollView} from 'react-native-gesture-handler';
 
 const background = [
   // 🌍 Middle Eastern countries (in region-specific order)
@@ -216,27 +217,33 @@ const screenHeight = Dimensions.get('window').height;
 
 interface GenderPickerProps {
   fieldName: string;
-  selected: string;
-  onSelect: (gender: string) => void;
+  options: string[];
+  selected: string[];
+  setSelected: (selected: string[]) => void;
+  maxSelect?: number;
 }
 
 const BackgroundSelect = ({
   fieldName,
+  options,
   selected,
-  onSelect,
+  setSelected,
+  maxSelect = 2,
 }: GenderPickerProps) => {
-  const [modalVisible, setModalVisible] = useState(false);
-  const [tempSelection, setTempSelection] = useState(selected || background[0]);
-
-  const isDarkMode = useColorScheme() === 'dark';
+  const handleToggle = (value: string) => {
+    if (selected.includes(value)) {
+      setSelected(selected.filter(item => item !== value));
+    } else if (selected.length < maxSelect) {
+      setSelected([...selected, value]);
+    }
+  };
 
   return (
     <>
       {/* Touchable input field */}
-      <TouchableOpacity
-        onPress={() => setModalVisible(true)}
+      <View
         style={[
-          tailwind`w-full h-14 justify-center px-4 rounded-2 border-2`,
+          tailwind`w-full justify-center px-4 rounded-2 border-2`,
           {
             borderColor: themeColors.primary,
             backgroundColor: themeColors.secondary,
@@ -255,69 +262,33 @@ const BackgroundSelect = ({
         </View>
 
         {/* Display selected gender */}
-        <Text style={tailwind`text-base text-gray-800`}>
-          {selected || 'Select Background'}
-        </Text>
-      </TouchableOpacity>
-
-      {/* Picker in Modal */}
-      <Modal visible={modalVisible} animationType="slide" transparent>
-        <View style={tailwind`flex-1 justify-end bg-black bg-opacity-30`}>
-          <View
-            style={[
-              tailwind`rounded-t-2xl p-4 pb-8`,
-              {
-                backgroundColor: isDarkMode ? '#1c1c1e' : '#fff',
-              },
-            ]}>
-            <Text
-              style={[
-                tailwind`text-center font-semibold text-lg mb-4`,
-                {color: isDarkMode ? '#fff' : '#000'},
-              ]}>
-              Select Background
-            </Text>
-
-            <Picker
-              selectedValue={tempSelection}
-              onValueChange={itemValue => setTempSelection(itemValue)}
-              style={{color: isDarkMode ? '#fff' : '#000'}}>
-              {background.map(gender => (
-                <Picker.Item
-                  label={gender}
-                  value={gender}
-                  key={gender}
-                  color={isDarkMode ? '#fff' : '#000'}
-                />
-              ))}
-            </Picker>
-
-            {/* Confirm Button */}
-            <TouchableOpacity
-              style={[
-                tailwind`mt-4 py-4 rounded-2`,
-                {backgroundColor: themeColors.primary},
-              ]}
-              onPress={() => {
-                onSelect(tempSelection);
-                setModalVisible(false);
-              }}>
-              <Text style={tailwind`text-center text-white text-base`}>
-                Confirm
-              </Text>
-            </TouchableOpacity>
-
-            {/* Cancel Button */}
-            <TouchableOpacity
-              style={tailwind`mt-2 py-2`}
-              onPress={() => setModalVisible(false)}>
-              <Text style={tailwind`text-center text-red-500 text-base`}>
-                Cancel
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+        <ScrollView style={tailwind`w-full h-56 py-3`}>
+          {background.map((option, index) => {
+            const isSelected = selected.includes(option);
+            return (
+              <TouchableOpacity
+                key={index}
+                onPress={() => handleToggle(option)}
+                style={[
+                  tailwind`px-4 py-2 mb-2 rounded-lg`,
+                  {
+                    backgroundColor: isSelected
+                      ? themeColors.primary
+                      : themeColors.secondaryHighlight,
+                    borderColor: isSelected ? themeColors.primary : '#ccc',
+                  },
+                ]}>
+                <Text
+                  style={tailwind`text-base font-medium ${
+                    isSelected ? 'text-white' : 'text-gray-800'
+                  }`}>
+                  {option}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
+      </View>
     </>
   );
 };

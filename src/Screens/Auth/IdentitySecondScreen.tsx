@@ -30,7 +30,7 @@ const IdentitySecondScreen = () => {
   const [views, setViews] = useState<string>('');
   const [sect, setSect] = useState<string>('');
   const [religion, setReligion] = useState<string>('');
-  const [background, setBackground] = useState<string>('');
+  const [background, setBackground] = useState<string[]>([]);
   const [timeline, setTimeline] = useState<string>('');
   const [travel, setTravel] = useState<string>('');
   const [futureKids, setFutureKids] = useState<string>('');
@@ -55,7 +55,7 @@ const IdentitySecondScreen = () => {
       setLookingFor(storedLookingFor);
     }
     if (storedBackground) {
-      setBackground(storedBackground);
+      setBackground(JSOn.parse(storedBackground));
     }
     if (storedReligion) {
       setReligion(storedReligion);
@@ -93,7 +93,7 @@ const IdentitySecondScreen = () => {
 
   const storeNextScreen = async () => {
     await AsyncStorage.setItem('lookingFor', lookingFor);
-    await AsyncStorage.setItem('background', background);
+    await AsyncStorage.setItem('background', JSON.stringify(background));
     await AsyncStorage.setItem('religion', religion);
     await AsyncStorage.setItem('sect', sect);
     await AsyncStorage.setItem('views', views);
@@ -148,8 +148,9 @@ const IdentitySecondScreen = () => {
           />
           <BackgroundSelect
             fieldName="Background"
+            options={[]}
             selected={background}
-            onSelect={setBackground}
+            setSelected={setBackground}
           />
           <ReligionSelect
             fieldName="Religion"

@@ -123,7 +123,20 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
   const name = user?.name ?? 'N/A';
   const smoke = about?.smoke;
   const hasKids = about?.hasKids;
-  const background = about?.background;
+  let background: string[] = [];
+
+  try {
+    if (typeof about?.background === 'string') {
+      background = about.background.includes('[')
+        ? JSON.parse(about.background)
+        : about.background.split(',').map(s => s.trim());
+    } else if (Array.isArray(about?.background)) {
+      background = about.background;
+    }
+  } catch (e) {
+    console.warn('Failed to parse background:', about?.background, e);
+    background = [];
+  }
   const religion = about?.religion;
   const job = career?.job;
   const company = career?.company;
@@ -268,7 +281,18 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                     tailwind`text-3xl font-semibold`,
                     {color: themeColors.primary},
                   ]}>
-                  {countryFlagMap[background] ?? ''}
+                  <View style={tailwind`flex-row flex-wrap items-center`}>
+                    {background.map((bg: string, index: number) => (
+                      <Text
+                        key={index}
+                        style={[
+                          tailwind`text-3xl font-semibold mr-2`,
+                          {color: themeColors.primary},
+                        ]}>
+                        {countryFlagMap[bg] ?? ''}
+                      </Text>
+                    ))}
+                  </View>
                 </Text>
               </View>
             </View>
@@ -473,7 +497,17 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                     <View style={tailwind`pr-2 w-1/2`}>
                       <SingleInfoFull
                         label="Background"
-                        value={`${countryFlagMap[background]} ${background}`}
+                        value={
+                          <View style={tailwind`flex flex-col`}>
+                            {background.slice(0, 2).map((bg, idx) => (
+                              <Text
+                                key={idx}
+                                style={tailwind`text-base font-bold`}>
+                                {countryFlagMap[bg] ?? ''} {bg}
+                              </Text>
+                            ))}
+                          </View>
+                        }
                       />
                     </View>
                     <View style={tailwind`w-1/2`}>

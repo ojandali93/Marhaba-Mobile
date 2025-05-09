@@ -114,7 +114,9 @@ const CreatingProfileScreen = () => {
 
   const createAbout = async (userId: string) => {
     const lookingFor = await AsyncStorage.getItem('lookingFor');
-    const background = await AsyncStorage.getItem('background');
+    const backgroundArray = await AsyncStorage.getItem('background');
+    const background = JSON.parse(backgroundArray);
+
     const religion = await AsyncStorage.getItem('religion');
     const sect = await AsyncStorage.getItem('sect');
     const views = await AsyncStorage.getItem('views');
@@ -207,6 +209,8 @@ const CreatingProfileScreen = () => {
     const religion = await AsyncStorage.getItem('prefReligion');
     const ageMin = await AsyncStorage.getItem('preAgeMin');
     const ageMax = await AsyncStorage.getItem('prefAgeMax');
+    const prefBackground = await AsyncStorage.getItem('prefBackground');
+    const background = JSON.parse(prefBackground);
     console.log('preferences gender: ', gender);
     axios
       .post(
@@ -220,6 +224,7 @@ const CreatingProfileScreen = () => {
           views,
           ageMin,
           ageMax,
+          background: background.length ? background.join(',') : '',
         },
       )
       .then(response => {
