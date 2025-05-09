@@ -263,15 +263,15 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
         <>
           <View
             style={[
-              tailwind`absolute bottom-42 left-4 right-4 rounded-4`,
-              {backgroundColor: themeColors.darkSecondaryOpacity},
+              tailwind`absolute bottom-37 left-1 right-1 rounded-2`,
+              {backgroundColor: themeColors.darkGrey},
             ]}>
             <View
-              style={tailwind`flex-row justify-between items-center p-4 pb-2`}>
+              style={tailwind`flex-row justify-between items-center p-3 pb-2`}>
               <View style={tailwind`flex-row justify-between w-full items-end`}>
                 <Text
                   style={[
-                    tailwind`text-3xl font-bold`,
+                    tailwind`text-3xl font-bold text-white`,
                     {color: themeColors.primary},
                   ]}>
                   {name} {`(${age})`}
@@ -297,8 +297,8 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
               </View>
             </View>
 
-            <View style={tailwind` px-4`}>
-              <Text style={tailwind`text-base text-gray-800`}>
+            <View style={tailwind` px-3`}>
+              <Text style={tailwind`text-base text-white`}>
                 {height ? `${height} • ` : ''}
                 {religion ? `${religion}${sect ? ` (${sect})` : ''} • ` : ''}
                 {job ?? ''}
@@ -306,8 +306,8 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
             </View>
 
             {(lookingFor || timeline) && (
-              <View style={tailwind`mt-1 px-4`}>
-                <Text style={tailwind`font-semibold text-base text-gray-900`}>
+              <View style={tailwind`mt-1 px-3`}>
+                <Text style={tailwind`font-semibold text-base text-white`}>
                   {lookingFor}
                   {lookingFor && timeline ? ' • ' : ''}
                   {timeline}
@@ -316,13 +316,17 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
             )}
 
             {prompt?.prompt && (
-              <View style={tailwind`mt-2 px-4`}>
-                <Text style={tailwind`text-lg italic`}>{prompt.prompt}</Text>
+              <View style={tailwind`mt-2 px-3`}>
+                <Text style={tailwind`text-lg italic text-white`}>
+                  {prompt.prompt}
+                </Text>
               </View>
             )}
             {prompt?.response && (
-              <View style={tailwind`mt-2 px-4 pb-3`}>
-                <Text numberOfLines={1} style={tailwind`font-semibold text-lg`}>
+              <View style={tailwind`mt-2 px-3 pb-3`}>
+                <Text
+                  numberOfLines={1}
+                  style={tailwind`font-semibold text-lg text-white`}>
                   {`"${prompt.response}"`}
                 </Text>
               </View>
@@ -331,8 +335,8 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
             <TouchableWithoutFeedback onPress={handleToggleFullProfile}>
               <View
                 style={[
-                  tailwind`flex flex-row items-center justify-between rounded-5 p-4`,
-                  {backgroundColor: themeColors.darkSecondary},
+                  tailwind`flex flex-row items-center justify-between rounded-2 p-4`,
+                  {backgroundColor: themeColors.darkGrey},
                 ]}>
                 <Text
                   style={[
@@ -350,11 +354,11 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
             </TouchableWithoutFeedback>
           </View>
           <View
-            style={tailwind`absolute z-20 bottom-23 left-4 right-4 rounded-5 flex flex-row items-center justify-center`}>
+            style={tailwind`absolute z-20 bottom-20 left-1 right-1 rounded-2 flex flex-row items-center justify-center`}>
             <View
               style={[
-                tailwind`w-full flex flex-row items-center justify-center rounded-4 py-2`,
-                {backgroundColor: themeColors.darkSecondaryOpacity},
+                tailwind`w-full flex flex-row items-center justify-center rounded-2 py-2`,
+                {backgroundColor: themeColors.darkGrey},
               ]}>
               <TouchableOpacity
                 onPress={handleDislikeProfile}
@@ -365,16 +369,18 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                 <X height={24} width={24} color={'white'} strokeWidth={3} />
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={handleOpenSuperlikeModal}
+                onPress={handleReportProfile}
                 style={[
-                  tailwind`p-3 rounded-full shadow-lg mx-7`,
+                  tailwind`p-3 rounded-2 shadow-lg mx-4 px-6`,
                   {
                     backgroundColor: isInteracting
                       ? '#6ee7b7'
                       : themeColors.primary,
                   },
                 ]}>
-                <Heart height={30} width={30} color={'white'} strokeWidth={3} />
+                <Text style={tailwind`text-white text-lg font-semibold`}>
+                  Send Message
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={handleLikeProfile}
@@ -387,11 +393,11 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
       ) : (
         <>
           <View
-            style={tailwind`absolute z-20 bottom-23 left-4 right-4 rounded-5 flex flex-row items-center justify-center`}>
+            style={tailwind`absolute z-20 bottom-20 left-1 right-1 rounded-2 flex flex-row items-center justify-center`}>
             <View
               style={[
-                tailwind`w-full flex flex-row items-center justify-center rounded-4 py-2`,
-                {backgroundColor: themeColors.darkSecondaryOpacity},
+                tailwind`w-full flex flex-row items-center justify-center rounded-2 py-2`,
+                {backgroundColor: themeColors.darkGrey},
               ]}>
               <TouchableOpacity
                 onPress={handleDislikeProfile}
@@ -402,16 +408,18 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                 <X height={24} width={24} color={'white'} strokeWidth={3} />
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={handleOpenSuperlikeModal}
+                onPress={handleReportProfile}
                 style={[
-                  tailwind`p-3 rounded-full shadow-lg mx-7`,
+                  tailwind`p-3 rounded-2 shadow-lg mx-4 px-6`,
                   {
                     backgroundColor: isInteracting
                       ? '#6ee7b7'
                       : themeColors.primary,
                   },
                 ]}>
-                <Heart height={30} width={30} color={'white'} strokeWidth={3} />
+                <Text style={tailwind`text-white text-lg font-semibold`}>
+                  Send Message
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={handleLikeProfile}
@@ -420,12 +428,12 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
               </TouchableOpacity>
             </View>
           </View>
-          <View style={tailwind`absolute z-20 bottom-42 left-4 right-4`}>
+          <View style={tailwind`absolute z-20 bottom-37 left-1 right-1`}>
             <TouchableWithoutFeedback onPress={handleToggleFullProfile}>
               <View
                 style={[
-                  tailwind`flex flex-row items-center justify-between rounded-5 p-4`,
-                  {backgroundColor: themeColors.darkSecondary},
+                  tailwind`flex flex-row items-center justify-between rounded-2 p-4`,
+                  {backgroundColor: themeColors.darkGrey},
                 ]}>
                 <Text
                   style={[
@@ -444,8 +452,8 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
           </View>
           <View
             style={[
-              tailwind`absolute top-16 bottom-42 left-4 right-4 rounded-5`,
-              {backgroundColor: themeColors.darkSecondaryOpacity},
+              tailwind`absolute top-16 bottom-37 left-1 right-1 rounded-2 pb-14`,
+              {backgroundColor: themeColors.darkGrey},
             ]}>
             <ScrollView
               style={tailwind`flex-1 p-4 pt-6`}
@@ -673,20 +681,20 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                       style={[
                         tailwind`px-5 py-4 rounded-lg`,
                         {
-                          backgroundColor: themeColors.darkSecondary,
+                          backgroundColor: themeColors.lightGrey,
                         },
                       ]}>
                       <Text
                         style={[
                           tailwind`text-lg font-semibold text-center`,
-                          {color: themeColors.primary},
+                          {color: 'white'},
                         ]}>
                         This section is locked.
                       </Text>
                       <Text
                         style={[
                           tailwind`text-base  text-center mt-1`,
-                          {color: themeColors.primary},
+                          {color: 'white'},
                         ]}>
                         Upgrade to Pro to view full profile insights like
                         lifestyle, career, and more.
@@ -694,7 +702,7 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                       <Text
                         style={[
                           tailwind`text-lg font-bold text-yellow-800 text-center mt-2 underline`,
-                          {color: themeColors.primary},
+                          {color: 'white'},
                         ]}>
                         Tap here to upgrade
                       </Text>
@@ -756,20 +764,20 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                         style={[
                           tailwind`px-5 py-4 rounded-lg`,
                           {
-                            backgroundColor: themeColors.darkSecondary,
+                            backgroundColor: themeColors.lightGrey,
                           },
                         ]}>
                         <Text
                           style={[
                             tailwind`text-lg font-semibold text-center`,
-                            {color: themeColors.primary},
+                            {color: 'white'},
                           ]}>
                           This section is locked.
                         </Text>
                         <Text
                           style={[
                             tailwind`text-base  text-center mt-1`,
-                            {color: themeColors.primary},
+                            {color: 'white'},
                           ]}>
                           Upgrade to Pro to view full profile insights like
                           lifestyle, career, and more.
@@ -777,7 +785,7 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                         <Text
                           style={[
                             tailwind`text-lg font-bold text-yellow-800 text-center mt-2 underline`,
-                            {color: themeColors.primary},
+                            {color: 'white'},
                           ]}>
                           Tap here to upgrade
                         </Text>
@@ -812,20 +820,20 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                         style={[
                           tailwind`px-5 py-4 rounded-lg`,
                           {
-                            backgroundColor: themeColors.darkSecondary,
+                            backgroundColor: themeColors.lightGrey,
                           },
                         ]}>
                         <Text
                           style={[
                             tailwind`text-lg font-semibold text-center`,
-                            {color: themeColors.primary},
+                            {color: 'white'},
                           ]}>
                           This section is locked.
                         </Text>
                         <Text
                           style={[
                             tailwind`text-base  text-center mt-1`,
-                            {color: themeColors.primary},
+                            {color: 'white'},
                           ]}>
                           Upgrade to Pro to view full profile insights like
                           lifestyle, career, and more.
@@ -833,7 +841,7 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                         <Text
                           style={[
                             tailwind`text-lg font-bold text-yellow-800 text-center mt-2 underline`,
-                            {color: themeColors.primary},
+                            {color: 'white'},
                           ]}>
                           Tap here to upgrade
                         </Text>
@@ -867,20 +875,20 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                       style={[
                         tailwind`px-5 py-4 rounded-lg mb-6`,
                         {
-                          backgroundColor: themeColors.darkSecondary,
+                          backgroundColor: themeColors.lightGrey,
                         },
                       ]}>
                       <Text
                         style={[
                           tailwind`text-lg font-semibold text-center`,
-                          {color: themeColors.primary},
+                          {color: 'white'},
                         ]}>
                         This section is locked.
                       </Text>
                       <Text
                         style={[
                           tailwind`text-base  text-center mt-1`,
-                          {color: themeColors.primary},
+                          {color: 'white'},
                         ]}>
                         Upgrade to Pro to view full profile insights like
                         lifestyle, career, and more.
@@ -888,7 +896,7 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                       <Text
                         style={[
                           tailwind`text-lg font-bold text-yellow-800 text-center mt-2 underline`,
-                          {color: themeColors.primary},
+                          {color: 'white'},
                         ]}>
                         Tap here to upgrade
                       </Text>

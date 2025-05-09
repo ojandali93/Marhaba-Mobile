@@ -1,9 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import {View} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {NavigationContainer} from '@react-navigation/native';
-
 import {
+  Grid,
   Heart,
   Home,
   MessageSquare,
@@ -12,17 +11,16 @@ import {
   User,
   Zap,
 } from 'react-native-feather';
-import HomeScreen from '../Screens/HomeScreen';
 import tailwind from 'twrnc';
 import themeColors from '../Utils/custonColors';
+
 import FeedStackNavigation from './FeedStackNavigation';
-import ProfileScreen from '../Screens/ProfileScreens/ProfileScreen';
+import ProfileStackNavigation from './ProfileStackNavigation';
 import LikeStackNavigation from './LikeStackNavigation';
 import ConversationStackNavigation from './ConversationStackNavigation';
-import ProfileStackNavigation from './ProfileStackNavigation';
 import SearchStackNavigation from './SearchStackNavigation';
-import {useProfile} from '../Context/ProfileContext';
 import AdminReviewScreen from '../Screens/HomeScreens/AdminReviewScreen';
+import {useProfile} from '../Context/ProfileContext';
 
 const Tab = createBottomTabNavigator();
 
@@ -40,64 +38,132 @@ const BottomTabNavigation = () => {
     }
   }, [userId, profile]);
 
-  useEffect(() => {
-    console.log('🔥 BottomTab updated: hasUnreadMessages =', hasUnreadMessages);
-  }, [hasUnreadMessages]);
+  const getTabBarStyle = routeName => {
+    const transparentScreens = ['Feeds', 'List', 'Searchs'];
+    const isTransparent = transparentScreens.includes(routeName);
+
+    return {
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      borderTopWidth: 0,
+      backgroundColor: isTransparent
+        ? 'rgba(0, 0, 0, 0.5)'
+        : themeColors.secondary,
+      elevation: 0,
+      shadowOpacity: 0,
+      height: 76,
+      paddingTop: 10,
+    };
+  };
+
+  const screenOptions = ({route}) => ({
+    headerShown: false,
+    tabBarStyle: getTabBarStyle(route.name),
+    tabBarShowLabel: false,
+    tabBarActiveTintColor: themeColors.primary,
+    tabBarInactiveTintColor: 'rgba(255, 255, 255, 0.4)',
+  });
 
   return (
-    <>
-      <Tab.Navigator
-        screenOptions={{
-          headerShown: false,
-          tabBarActiveTintColor: 'black',
-          tabBarInactiveTintColor: 'gray',
-          tabBarStyle: {
-            position: 'absolute',
-            bottom: 16,
-            left: 16,
-            right: 16,
-            borderRadius: 30,
-            height: 60,
-            backgroundColor: themeColors.darkSecondary,
-            paddingBottom: 10,
-            paddingTop: 10,
-            marginBottom: 8,
-            marginLeft: 18,
-            marginRight: 18,
-            shadowColor: themeColors.primary,
-            shadowOffset: {width: 0, height: 4},
-            shadowOpacity: 0.1,
-            shadowRadius: 10,
-            elevation: 10,
-          },
-        }}>
-        <Tab.Screen
-          name="Feeds"
-          component={FeedStackNavigation}
-          options={{
-            tabBarShowLabel: false,
-            tabBarIcon: ({focused}) => (
-              <View style={tailwind`items-center`}>
-                <Home
-                  stroke={focused ? themeColors.primary : 'black'}
-                  strokeWidth={2}
-                  height={26}
-                  width={26}
+    <Tab.Navigator screenOptions={screenOptions}>
+      <Tab.Screen
+        name="Feeds"
+        component={FeedStackNavigation}
+        options={{
+          tabBarIcon: ({focused}) => (
+            <View style={tailwind`items-center`}>
+              <Grid
+                stroke={focused ? themeColors.primary : 'rgba(255,255,255,0.5)'}
+                strokeWidth={2.5}
+                height={26}
+                width={26}
+              />
+              {unViewedInteractions && (
+                <View
+                  style={tailwind`absolute top--.25 right--1 w-2.5 h-2.5 bg-red-500 rounded-full`}
                 />
-              </View>
-            ),
-          }}
-        />
+              )}
+            </View>
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="List"
+        component={LikeStackNavigation}
+        options={{
+          tabBarIcon: ({focused}) => (
+            <View style={tailwind`items-center`}>
+              <Heart
+                stroke={focused ? themeColors.primary : 'rgba(255,255,255,0.5)'}
+                strokeWidth={2.5}
+                height={26}
+                width={26}
+              />
+              {unViewedInteractions && (
+                <View
+                  style={tailwind`absolute top--.25 right--1 w-2.5 h-2.5 bg-red-500 rounded-full`}
+                />
+              )}
+            </View>
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Searchs"
+        component={SearchStackNavigation}
+        options={{
+          tabBarIcon: ({focused}) => (
+            <View style={tailwind`items-center`}>
+              <Zap
+                stroke={focused ? themeColors.primary : 'rgba(255,255,255,0.5)'}
+                strokeWidth={2.5}
+                height={26}
+                width={26}
+              />
+              {unViewedInteractions && (
+                <View
+                  style={tailwind`absolute top--.25 right--1 w-2.5 h-2.5 bg-red-500 rounded-full`}
+                />
+              )}
+            </View>
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Conversations"
+        component={ConversationStackNavigation}
+        options={{
+          tabBarIcon: ({focused}) => (
+            <View style={tailwind`items-center`}>
+              <MessageSquare
+                stroke={focused ? themeColors.primary : 'rgba(255,255,255,0.5)'}
+                strokeWidth={2.5}
+                height={26}
+                width={26}
+              />
+              {hasUnreadMessages && (
+                <View
+                  style={tailwind`absolute top--.75 right--1 w-2.5 h-2.5 bg-red-500 rounded-full`}
+                />
+              )}
+            </View>
+          ),
+        }}
+      />
+      {isAdmin && (
         <Tab.Screen
-          name="List"
-          component={LikeStackNavigation}
+          name="Admin"
+          component={AdminReviewScreen}
           options={{
-            tabBarShowLabel: false,
             tabBarIcon: ({focused}) => (
               <View style={tailwind`items-center`}>
-                <Heart
-                  stroke={focused ? themeColors.primary : 'black'}
-                  strokeWidth={2}
+                <Shield
+                  stroke={
+                    focused ? themeColors.primary : 'rgba(255,255,255,0.5)'
+                  }
+                  strokeWidth={2.5}
                   height={26}
                   width={26}
                 />
@@ -110,83 +176,29 @@ const BottomTabNavigation = () => {
             ),
           }}
         />
-        <Tab.Screen
-          name="Searchs"
-          component={SearchStackNavigation}
-          options={{
-            tabBarShowLabel: false,
-            tabBarIcon: ({focused}) => (
-              <View style={tailwind`items-center`}>
-                <Zap
-                  stroke={focused ? themeColors.primary : 'black'}
-                  strokeWidth={2}
-                  height={26}
-                  width={26}
+      )}
+      <Tab.Screen
+        name="Profiles"
+        component={ProfileStackNavigation}
+        options={{
+          tabBarIcon: ({focused}) => (
+            <View style={tailwind`items-center`}>
+              <User
+                stroke={focused ? themeColors.primary : 'rgba(255,255,255,0.5)'}
+                strokeWidth={2.5}
+                height={26}
+                width={26}
+              />
+              {unViewedInteractions && (
+                <View
+                  style={tailwind`absolute top--.25 right--1 w-2.5 h-2.5 bg-red-500 rounded-full`}
                 />
-              </View>
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="Conversations"
-          component={ConversationStackNavigation}
-          options={{
-            tabBarShowLabel: false,
-            tabBarIcon: ({focused}) => (
-              <View style={tailwind`items-center`}>
-                <MessageSquare
-                  stroke={focused ? themeColors.primary : 'black'}
-                  strokeWidth={2}
-                  height={26}
-                  width={26}
-                />
-                {hasUnreadMessages && (
-                  <View
-                    style={tailwind`absolute top--.75 right--1 w-2.5 h-2.5 bg-red-500 rounded-full`}
-                  />
-                )}
-              </View>
-            ),
-          }}
-        />
-        {isAdmin && (
-          <Tab.Screen
-            name="Admin"
-            component={AdminReviewScreen}
-            options={{
-              tabBarShowLabel: false,
-              tabBarIcon: ({focused}) => (
-                <View style={tailwind`items-center`}>
-                  <Shield
-                    stroke={focused ? themeColors.primary : 'black'}
-                    strokeWidth={2}
-                    height={26}
-                    width={26}
-                  />
-                </View>
-              ),
-            }}
-          />
-        )}
-        <Tab.Screen
-          name="Profiles"
-          component={ProfileStackNavigation}
-          options={{
-            tabBarShowLabel: false,
-            tabBarIcon: ({focused}) => (
-              <View style={tailwind`items-center`}>
-                <User
-                  stroke={focused ? themeColors.primary : 'black'}
-                  strokeWidth={2}
-                  height={26}
-                  width={26}
-                />
-              </View>
-            ),
-          }}
-        />
-      </Tab.Navigator>
-    </>
+              )}
+            </View>
+          ),
+        }}
+      />
+    </Tab.Navigator>
   );
 };
 

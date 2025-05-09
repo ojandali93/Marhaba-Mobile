@@ -5,7 +5,7 @@ import {Alert, Image, Modal, Text, TouchableOpacity, View} from 'react-native';
 import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
 import FeedProfileComponent from '../../Components/Profiles/FeedProfileComponent';
-import {Check, Heart} from 'react-native-feather';
+import {Check, Heart, MapPin} from 'react-native-feather';
 import {useProfile} from '../../Context/ProfileContext';
 import TutorialModal from '../../Components/Modals/TutorialModal';
 
@@ -165,6 +165,29 @@ const FeedScreen = () => {
     });
   };
 
+  const getDistanceMiles = (
+    lat1: number,
+    lon1: number,
+    lat2: number,
+    lon2: number,
+  ) => {
+    if (lat1 == null || lon1 == null || lat2 == null || lon2 == null)
+      return null;
+
+    const toRad = deg => (deg * Math.PI) / 180;
+    const R = 3958.8; // Radius of the Earth in miles
+
+    const dLat = toRad(lat2 - lat1);
+    const dLon = toRad(lon2 - lon1);
+
+    const a =
+      Math.sin(dLat / 2) ** 2 +
+      Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return Math.round(R * c);
+  };
+
   return (
     <View
       style={[
@@ -173,14 +196,12 @@ const FeedScreen = () => {
       ]}>
       {!showFullProfile && (
         <View
-          style={tailwind`absolute w-full flex flex-row justify-end z-10 top-18 px-6`}>
+          style={tailwind`absolute w-full flex flex-row justify-between z-10 top-18 px-2`}>
           <View
             style={[
-              tailwind`flex-row items-center p-2.5 py-2 rounded-2`,
+              tailwind`flex-row items-center px-4 py-2 rounded-full`,
               {
                 backgroundColor: themeColors.secondary,
-                borderWidth: 1,
-                borderColor: themeColors.primary,
               },
             ]}>
             {superLikes !== null && (
@@ -210,6 +231,29 @@ const FeedScreen = () => {
                 </Text>
               </View>
             )}
+          </View>
+          <View
+            style={[
+              tailwind`flex-row items-center px-4 py-2 rounded-full`,
+              {
+                backgroundColor: themeColors.secondary,
+              },
+            ]}>
+            <MapPin
+              height={16}
+              width={16}
+              color={themeColors.primary}
+              strokeWidth={3}
+            />
+            <Text style={tailwind`ml-2 text-xl font-bold`}>
+              {getDistanceMiles(
+                profile.latitude,
+                profile.longitude,
+                selectedProfile.latitude,
+                selectedProfile.longitude,
+              )}
+              {' mi.'}
+            </Text>
           </View>
         </View>
       )}
