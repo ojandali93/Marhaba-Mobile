@@ -3,9 +3,12 @@ import App from './App';
 import { name as appName } from './app.json';
 import { ProfileProvider } from './src/Context/ProfileContext';
 
-const Root = () => (
+import * as amplitude from '@amplitude/analytics-react-native';
 
-  // let firebasepApp = app;
+import {amplitudeKey} from './src/Services/Amplitude';
+amplitude.init(amplitudeKey);
+
+const Root = () => (
 
   <ProfileProvider>
     <App />

@@ -11,6 +11,7 @@ import AuthStack from './src/Navigation/AuthStackNavigation';
 import {useProfile} from './src/Context/ProfileContext';
 import ReviewRejectedScreen from './src/Screens/ProfileScreens/ReviewRejectedScreen';
 import ReviewAwaitingScreen from './src/Screens/ProfileScreens/ReviewAwaitScreen';
+
 function App(): React.JSX.Element {
   const {
     authenticated,

@@ -78,3 +78,6 @@ yarn-error.log
 ios/GoogleService-Info.plist
 ios/Marhaba/GoogleService-Info.plist
 GoogleService-Info.plist
+
+src/Services/Amplitude.js
+src/Services/Supabase.js

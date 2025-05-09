@@ -34,7 +34,7 @@ const BottomTabNavigation = () => {
   useEffect(() => {
     if (userId && profile) {
       const adminCheck =
-        userId === 'dc0150ff-4b08-4955-8036-8ad2d435a323' &&
+        userId === '831a043d-ff7f-4d1a-81e5-86ddd48cfda8' &&
         profile?.admin === true;
       setIsAdmin(adminCheck);
     }
