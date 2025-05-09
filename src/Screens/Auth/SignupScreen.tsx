@@ -121,6 +121,23 @@ const SignupScreen = () => {
     navigation.navigate('Identity');
   };
 
+  // const createAccount = async (email: string, password: string) => {
+  //   axios
+  //     .post('https://marhaba-server.onrender.com/api/account/createAccount', {
+  //       email,
+  //       password,
+  //       name: 'omar',
+  //     })
+  //     .then(response => {
+  //       console.log('account response:', response);
+  //     })
+  //     .catch(error => {
+  //       if (error) {
+  //         console.log('❌ Server responded with status:', error);
+  //       }
+  //     });
+  // };
+
   const formatPhoneNumber = (value: string) => {
     const digits = value.replace(/\D/g, '').slice(0, 10); // Only digits, max 10
     const len = digits.length;

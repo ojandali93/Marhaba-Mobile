@@ -39,23 +39,26 @@ const LoginScreen = () => {
         'https://marhaba-server.onrender.com/api/auth/loginUser',
         {email, password},
       );
-      if (response.data) {
-        const {session, userId} = response.data;
-        grabUserProfileData(session, userId);
-      } else {
+
+      const {session, userId, user} = response.data;
+
+      if (!user?.email_confirmed_at) {
         Alert.alert(
-          'Login Failed',
-          'Email / Password do not match our records.',
+          'Email Not Verified',
+          'Please verify your email before logging in. Check your inbox or spam folder.',
         );
         setLoading(false);
+        return;
       }
 
+      grabUserProfileData(session, userId);
       setLoading(false);
     } catch (error) {
       console.error('Login failed:', error);
       Alert.alert(
         'Login Failed',
-        error?.message || 'Please check your network or try again later.',
+        error?.response?.data?.error ||
+          'Please check your credentials or try again later.',
       );
       setLoading(false);
     }
