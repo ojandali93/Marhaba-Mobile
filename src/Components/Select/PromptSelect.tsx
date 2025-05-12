@@ -12,7 +12,6 @@ import themeColors from '../../Utils/custonColors';
 import {Picker} from '@react-native-picker/picker';
 
 const meaningfulPrompts = [
-  'Who am i...',
   'Faith is important to me',
   'My ideal partner is...',
   'A tradition I love is...',

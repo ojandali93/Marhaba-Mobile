@@ -25,11 +25,10 @@ const CoreScreen = () => {
   const [faith, setFaith] = useState<string>('');
   const [ambition, setAmbition] = useState<string>('');
   const [careerVsFamily, setCareerVsFamily] = useState<string>('');
-  const [honesty, setHonesty] = useState<string>('');
-  const [transparency, setTransparency] = useState<string>('');
-  const [trust, setTrust] = useState<string>('');
+  const [conflicts, setConflicts] = useState<string>('');
+  const [independence, setIndependence] = useState<string>('');
+  const [decisions, setDecisions] = useState<string>('');
   const [politics, setPolitics] = useState<string>('');
-  const [social, setSocial] = useState<string>('');
 
   useFocusEffect(
     useCallback(() => {
@@ -38,17 +37,16 @@ const CoreScreen = () => {
   );
 
   const loadPreferences = async () => {
-    const storedFamily = await AsyncStorage.getItem('coreFamily');
-    const storedFaith = await AsyncStorage.getItem('coreFaith');
-    const storedAmbition = await AsyncStorage.getItem('coreAmbition');
+    const storedFamily = await AsyncStorage.getItem('CR_Family');
+    const storedFaith = await AsyncStorage.getItem('CR_Faith');
+    const storedAmbition = await AsyncStorage.getItem('CR_Ambition');
     const storedCareerVsFamily = await AsyncStorage.getItem(
-      'coreCareerVsFamily',
+      'CR_CareerVsFamily',
     );
-    const storedHonesty = await AsyncStorage.getItem('coreHonesty');
-    const storedTransparency = await AsyncStorage.getItem('coreTransparency');
-    const storedTrust = await AsyncStorage.getItem('coreTrust');
-    const storedPolitics = await AsyncStorage.getItem('corePolitics');
-    const storedSocial = await AsyncStorage.getItem('coreSocial');
+    const storedConflicts = await AsyncStorage.getItem('CR_Conflicts');
+    const storedIndependence = await AsyncStorage.getItem('CR_Independence');
+    const storedDecisions = await AsyncStorage.getItem('CR_Decisions');
+    const storedPolitics = await AsyncStorage.getItem('CR_Politics');
 
     if (storedFamily) {
       setFamily(storedFamily);
@@ -62,34 +60,28 @@ const CoreScreen = () => {
     if (storedCareerVsFamily) {
       setCareerVsFamily(storedCareerVsFamily);
     }
-    if (storedHonesty) {
-      setHonesty(storedHonesty);
+    if (storedConflicts) {
+      setConflicts(storedConflicts);
     }
-    if (storedTransparency) {
-      setTransparency(storedTransparency);
+    if (storedIndependence) {
+      setIndependence(storedIndependence);
     }
-    if (storedTrust) {
-      setTrust(storedTrust);
+    if (storedDecisions) {
+      setDecisions(storedDecisions);
     }
     if (storedPolitics) {
       setPolitics(storedPolitics);
-    }
-    if (storedSocial) {
-      setSocial(storedSocial);
     }
   };
 
   const redirectToPersonalityScreen = () => {
     if (
-      family != '' &&
-      faith != '' &&
-      ambition != '' &&
-      careerVsFamily != '' &&
-      honesty != '' &&
-      transparency != '' &&
-      trust != '' &&
-      politics != '' &&
-      social != ''
+      family !== '' &&
+      faith !== '' &&
+      ambition !== '' &&
+      careerVsFamily !== '' &&
+      conflicts !== '' &&
+      decisions !== ''
     ) {
       storeNextScreen();
     } else {
@@ -98,16 +90,15 @@ const CoreScreen = () => {
   };
 
   const storeNextScreen = async () => {
-    await AsyncStorage.setItem('coreFamily', family);
-    await AsyncStorage.setItem('coreFaith', faith);
-    await AsyncStorage.setItem('coreAmbition', ambition);
-    await AsyncStorage.setItem('coreCareerVsFamily', careerVsFamily);
-    await AsyncStorage.setItem('coreHonesty', honesty);
-    await AsyncStorage.setItem('coreTransparency', transparency);
-    await AsyncStorage.setItem('coreTrust', trust);
-    await AsyncStorage.setItem('corePolitics', politics);
-    await AsyncStorage.setItem('coreSocial', social);
-    navigation.navigate('Lifestyle');
+    await AsyncStorage.setItem('CR_Family', family);
+    await AsyncStorage.setItem('CR_Faith', faith);
+    await AsyncStorage.setItem('CR_Ambition', ambition);
+    await AsyncStorage.setItem('CR_CareerVsFamily', careerVsFamily);
+    await AsyncStorage.setItem('CR_Conflicts', conflicts);
+    await AsyncStorage.setItem('CR_Independence', independence);
+    await AsyncStorage.setItem('CR_Decisions', decisions);
+    await AsyncStorage.setItem('CR_Politics', politics);
+    navigation.navigate('IdentityThird');
   };
 
   return (
@@ -120,7 +111,7 @@ const CoreScreen = () => {
         <View
           style={[
             tailwind`flex`,
-            {marginTop: screenHeight * 0.1}, // 20% of screen height
+            {marginTop: screenHeight * 0.06}, // 20% of screen height
           ]}>
           <View style={tailwind`mt-2`}>
             <Text
@@ -132,11 +123,7 @@ const CoreScreen = () => {
             </Text>
           </View>
         </View>
-        <View
-          style={[
-            tailwind`w-full flex flex-row items-center`,
-            {marginTop: screenHeight * 0.02},
-          ]}>
+        <View style={tailwind`w-full flex flex-row items-center`}>
           <></>
         </View>
         <ScrollView style={tailwind`w-full flex-1`}>
@@ -146,6 +133,7 @@ const CoreScreen = () => {
               selected={family}
               onSelect={setFamily}
               options={['Essential', 'Important', 'Neutral', 'Not Important']}
+              label="Building a Family"
             />
             <StandardSelect
               fieldName="Shared Faith"
@@ -158,6 +146,7 @@ const CoreScreen = () => {
                 'Not Important',
                 'Opposing Views',
               ]}
+              label="Shared Faith"
             />
             <StandardSelect
               fieldName="Personal Ambition"
@@ -170,6 +159,7 @@ const CoreScreen = () => {
                 'Not A Priority',
                 'Still Exploring',
               ]}
+              label="Personal Ambition"
             />
             <StandardSelect
               fieldName="Career vs Family"
@@ -182,65 +172,57 @@ const CoreScreen = () => {
                 'Flexible',
                 'Career Options',
               ]}
+              label="Career vs Family"
             />
             <StandardSelect
-              fieldName="Honesty"
-              selected={honesty}
-              onSelect={setHonesty}
+              fieldName="Conflicts"
+              selected={conflicts}
+              onSelect={setConflicts}
               options={[
-                'Non-negotiable',
-                'Very Important',
-                'Important',
-                'Flexible',
-                'Depends on Situation',
+                'Calm decisions',
+                'Tackle head on',
+                'Need space',
+                'Emotional expression',
+                'Avoid conflict',
               ]}
+              label="Conflict Style"
             />
             <StandardSelect
-              fieldName="Transparency"
-              selected={transparency}
-              onSelect={setTransparency}
+              fieldName="Decisions"
+              selected={decisions}
+              onSelect={setDecisions}
               options={[
-                'Non-negotiable',
-                'Very Important',
-                'Important',
-                'Flexible',
-                'Depends on Situation',
+                'Lead the decision',
+                'collaborate equally',
+                'Let them decide',
+                'No preference',
               ]}
+              label="Decision Making"
             />
             <StandardSelect
-              fieldName="Trust"
-              selected={trust}
-              onSelect={setTrust}
+              fieldName="Independence"
+              selected={independence}
+              onSelect={setIndependence}
               options={[
-                'Non-negotiable',
-                'Very Important',
-                'Important',
+                'Need space',
+                'Need to be close',
                 'Flexible',
-                'Depends on Situation',
+                'No preference',
               ]}
+              label="Independence (Relationship)"
+              optional
             />
             <StandardSelect
               fieldName="Political Views"
               selected={politics}
               onSelect={setPolitics}
               options={[
-                'Essential',
-                'Important',
-                'Flexible',
-                'Not Important',
-                'Opposing Views',
+                'Aligned with my views',
+                'Open to other views',
+                'No preference',
               ]}
-            />
-            <StandardSelect
-              fieldName="Social"
-              selected={social}
-              onSelect={setSocial}
-              options={[
-                'Very Important',
-                'Somewhat Important',
-                'Important',
-                'Not Important',
-              ]}
+              label="Political Views"
+              optional
             />
           </View>
         </ScrollView>

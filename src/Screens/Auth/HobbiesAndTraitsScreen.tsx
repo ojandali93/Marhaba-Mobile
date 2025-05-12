@@ -68,11 +68,11 @@ const HobbiesAndTraitsScreen = () => {
         tailwind`flex-1 w-full h-full flex items-center`,
         {backgroundColor: themeColors.secondary},
       ]}>
-      <View style={tailwind`w-11/12 h-10/12 flex`}>
+      <View style={tailwind`w-11/12 h-11/12 flex`}>
         <View
           style={[
             tailwind`flex`,
-            {marginTop: screenHeight * 0.1}, // 20% of screen height
+            {marginTop: screenHeight * 0.06}, // 20% of screen height
           ]}>
           <View style={tailwind`mt-2`}>
             <Text
@@ -84,7 +84,7 @@ const HobbiesAndTraitsScreen = () => {
             </Text>
           </View>
         </View>
-        <View style={{marginTop: screenHeight * 0.02}}>
+        <View style={tailwind`mt-2`}>
           <View
             style={tailwind`w-full flex flex-row items-center justify-between`}>
             <Text style={tailwind`text-base mt-1`}>

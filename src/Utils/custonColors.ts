@@ -1,20 +1,27 @@
 const themeColors = {
-  primary: '#008080',
-  primaryOpacity: 'rgba(0, 128, 128, .8)',
-  secondary: '#FAF9F6',
-  secondaryOpacity: 'rgba(250, 249, 246,.6)' ,
-  secondaryHighlight: '#f1eee6',
-  darkSecondary: '#e8e3d5',
-  darkSecondaryOpacity: 'rgba(227, 224, 216, .6)',
-  red: '#EF5350',
-  green: '#4ade80',
-  blue: '#2196F3',
-  yellow: '#FFEB3B',
-  orange: '#FF9800',
-  purple: '#9C27B0',
-  pink: '#E91E63',
-  darkGrey: 'rgba(0, 0, 0, 0.6)',
-  lightGrey: 'rgba(86, 86, 86, 0.4)',
+  primary: '#00796B',           // Rich teal for brand identity
+  primaryDark: '#004D40',       // Darker teal for accents and buttons
+  primaryOpacity: 'rgba(0, 121, 107, 0.8)',
+
+  secondary: '#FCF9F4',         // Subtle cream for clean light background
+  secondaryHighlight: '#F4EFE8',
+  darkSecondary: '#d6d1c1',
+  lightGrey: '#B0B0B0',
+  darkGrey: 'rgba(0, 0, 0, 0.8)',
+
+  darkSecondaryOpacity: 'rgba(227, 224, 216, .7)',
+
+  green: '#4CAF50',
+  red: '#E53935',
+  yellow: '#FBC02D',
+  blue: '#1976D2',
+
+  success: '#66BB6A',
+  warning: '#FFA726',
+  danger: '#EF5350',
+
+  textPrimary: '#212121',
+  textSecondary: '#757575',
 };
 
 export default themeColors;

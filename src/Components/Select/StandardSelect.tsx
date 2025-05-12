@@ -19,6 +19,7 @@ interface GenderPickerProps {
   onSelect: (gender: string) => void;
   optional?: boolean;
   options: string[];
+  label: string;
 }
 
 const StandardSelect = ({
@@ -26,7 +27,8 @@ const StandardSelect = ({
   selected,
   onSelect,
   optional,
-  options
+  options,
+  label,
 }: GenderPickerProps) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [tempSelection, setTempSelection] = useState(selected || options[0]);
@@ -39,26 +41,27 @@ const StandardSelect = ({
       <TouchableOpacity
         onPress={() => setModalVisible(true)}
         style={[
-          tailwind`w-full h-14 justify-center px-4 rounded-2 border-2`,
+          tailwind`w-full justify-center rounded-2 mt-1`,
           {
             borderColor: themeColors.primary,
             backgroundColor: themeColors.secondary,
-            marginTop: screenHeight * 0.015,
           },
         ]}>
         {/* Floating label */}
-        <View style={tailwind`absolute left-3 top--3.5`}>
-          <Text
-            style={[
-              tailwind`text-sm font-semibold px-1`,
-              {backgroundColor: themeColors.secondary, color: 'grey'},
-            ]}>
-            {fieldName} {optional ? '(optional)' : ''}
+        <View style={tailwind``}>
+          <Text style={tailwind`italic text-base px-2 pb-1`}>
+            {label}{' '}
+            {optional ? (
+              ' (optional)'
+            ) : (
+              <Text style={tailwind`text-red-500`}>* </Text>
+            )}
           </Text>
         </View>
 
         {/* Display selected gender */}
-        <Text style={tailwind`text-base text-gray-800`}>
+        <Text
+          style={tailwind`text-base text-gray-800 w-full border-2 border-slate-600 rounded-2 px-2 py-2`}>
           {selected || `Select ${fieldName}`}
         </Text>
       </TouchableOpacity>

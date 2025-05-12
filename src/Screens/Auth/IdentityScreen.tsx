@@ -20,6 +20,7 @@ import SmokeSelect from '../../Components/Select/SmokeSelect';
 import DrinkSelect from '../../Components/Select/DrinkSelect';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import KidsSelect from '../../Components/Select/KidsSelect';
+import StandardSelect from '../../Components/Select/StandardSelect';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -33,9 +34,6 @@ const IdentityScreen = () => {
   const [gender, setGender] = useState<string>('');
 
   const [height, setHeight] = useState<string>('');
-  const [smoke, setSmoke] = useState<string>('');
-  const [drink, setDrink] = useState<string>('');
-  const [kids, setKids] = useState<string>('');
 
   useFocusEffect(
     useCallback(() => {
@@ -44,13 +42,10 @@ const IdentityScreen = () => {
   );
 
   const loadPreferences = async () => {
-    const storedName = await AsyncStorage.getItem('name');
-    const storedDob = await AsyncStorage.getItem('dob');
-    const storedGender = await AsyncStorage.getItem('gender');
-    const storeHeight = await AsyncStorage.getItem('height');
-    const storedSmoke = await AsyncStorage.getItem('smoke');
-    const storedDrink = await AsyncStorage.getItem('drink');
-    const storeKids = await AsyncStorage.getItem('hasKids');
+    const storedName = await AsyncStorage.getItem('E_name');
+    const storedDob = await AsyncStorage.getItem('E_dob');
+    const storedGender = await AsyncStorage.getItem('E_gender');
+    const storeHeight = await AsyncStorage.getItem('E_height');
 
     if (storedName) {
       setName(storedName);
@@ -73,25 +68,10 @@ const IdentityScreen = () => {
     if (storeHeight) {
       setHeight(storeHeight);
     }
-    if (storedSmoke) {
-      setSmoke(storedSmoke);
-    }
-    if (storedDrink) {
-      setDrink(storedDrink);
-    }
-    if (storeKids) {
-      setKids(storeKids);
-    }
   };
 
   const redirectToPersonalityScreen = () => {
-    if (
-      name != '' &&
-      dob != null &&
-      gender != '' &&
-      kids != '' &&
-      height != ''
-    ) {
+    if (name != '' && dob != null && gender != '' && height != '') {
       storeNextScreen();
     } else {
       Alert.alert('Requirements', 'Please fill out all of the fields');
@@ -99,14 +79,11 @@ const IdentityScreen = () => {
   };
 
   const storeNextScreen = async () => {
-    await AsyncStorage.setItem('name', name);
-    await AsyncStorage.setItem('dob', dob?.toString());
-    await AsyncStorage.setItem('gender', gender);
-    await AsyncStorage.setItem('height', height);
-    await AsyncStorage.setItem('smoke', smoke);
-    await AsyncStorage.setItem('drink', drink);
-    await AsyncStorage.setItem('hasKids', kids);
-    navigation.navigate('IdentitySecond');
+    await AsyncStorage.setItem('E_name', name);
+    await AsyncStorage.setItem('E_dob', dob?.toString());
+    await AsyncStorage.setItem('E_gender', gender);
+    await AsyncStorage.setItem('E_height', height);
+    navigation.navigate('Background');
   };
 
   return (
@@ -119,7 +96,7 @@ const IdentityScreen = () => {
         <View
           style={[
             tailwind`flex`,
-            {marginTop: screenHeight * 0.1}, // 20% of screen height
+            {marginTop: screenHeight * 0.06}, // 20% of screen height
           ]}>
           <View style={tailwind`mt-2`}>
             <Text
@@ -131,50 +108,83 @@ const IdentityScreen = () => {
             </Text>
           </View>
         </View>
-        <View
-          style={[
-            tailwind`w-full flex flex-row items-center`,
-            {marginTop: screenHeight * 0.02},
-          ]}>
+        <View style={tailwind`w-full flex flex-row items-center mt-2`}>
           <></>
         </View>
         <ScrollView style={tailwind`w-full flex-1`}>
-          <View style={tailwind`w-full pr-1`}>
+          <View style={tailwind`w-full`}>
             <AithInputStandard
               fieldName="Name"
               value={name}
               changeText={setName}
               valid
+              label="Name"
             />
           </View>
           <DateSelect fieldName="Date of Birth" dob={dob} setDate={setDob} />
-          <GenderSelector
+          <StandardSelect
             fieldName="Gender"
             selected={gender}
             onSelect={setGender}
+            options={['Male', 'Female']}
+            label="Gender"
           />
-          <HeightSelect
+          <StandardSelect
             fieldName="Height"
             selected={height}
             onSelect={setHeight}
+            options={[
+              '5\'0"',
+              '5\'1"',
+              '5\'2"',
+              '5\'3"',
+              '5\'4"',
+              '5\'5"',
+              '5\'6"',
+              '5\'7"',
+              '5\'8"',
+              '5\'9"',
+              '5\'10"',
+              '5\'11"',
+              '6\'0"',
+              '6\'1"',
+              '6\'2"',
+              '6\'3"',
+              '6\'4"',
+              '6\'5"',
+              '6\'6"',
+              '6\'7"',
+              '6\'8"',
+              '6\'9"',
+              '6\'10"',
+              '6\'11"',
+              '7\'0"',
+            ]}
+            label="Height"
           />
-          <KidsSelect
+          {/* <StandardSelect
             fieldName="Have Kids"
             selected={kids}
             onSelect={setKids}
+            options={['Yes', 'No']}
+            label="Have Kids"
           />
-          <SmokeSelect
+          <StandardSelect
             fieldName="Smoke"
             selected={smoke}
             onSelect={setSmoke}
+            options={['Yes', 'No']}
+            label="Smoke"
             optional
           />
-          <DrinkSelect
+          <StandardSelect
             fieldName="Drink"
             selected={drink}
             onSelect={setDrink}
+            options={['Yes', 'No']}
+            label="Drink"
             optional
-          />
+          /> */}
         </ScrollView>
       </View>
       <View style={tailwind`absolute w-3/4 bottom-12`}>

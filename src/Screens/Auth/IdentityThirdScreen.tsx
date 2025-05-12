@@ -102,10 +102,10 @@ const IdentityThirdScreen = () => {
   );
 
   const loadPreferences = async () => {
-    const storedLookingFor = await AsyncStorage.getItem('commStyle');
-    const storedLoveLanguage = await AsyncStorage.getItem('loveLanguage');
-    const storedCoreValues = await AsyncStorage.getItem('coreValues');
-    const storedTimePriority = await AsyncStorage.getItem('timePriority');
+    const storedLookingFor = await AsyncStorage.getItem('RD_commStyle');
+    const storedLoveLanguage = await AsyncStorage.getItem('RD_loveLanguage');
+    const storedCoreValues = await AsyncStorage.getItem('RD_coreValues');
+    const storedTimePriority = await AsyncStorage.getItem('RD_timePriority');
 
     if (storedLookingFor) {
       setCommStyle(JSON.parse(storedLookingFor));
@@ -135,11 +135,11 @@ const IdentityThirdScreen = () => {
   };
 
   const storeNextScreen = async () => {
-    await AsyncStorage.setItem('commStyle', JSON.stringify(commStyle));
-    await AsyncStorage.setItem('loveLanguage', JSON.stringify(loveLanguage));
-    await AsyncStorage.setItem('coreValues', JSON.stringify(coreValues));
-    await AsyncStorage.setItem('timePriority', JSON.stringify(timePriority));
-    navigation.navigate('Core');
+    await AsyncStorage.setItem('RD_commStyle', JSON.stringify(commStyle));
+    await AsyncStorage.setItem('RD_loveLanguage', JSON.stringify(loveLanguage));
+    await AsyncStorage.setItem('RD_coreValues', JSON.stringify(coreValues));
+    await AsyncStorage.setItem('RD_timePriority', JSON.stringify(timePriority));
+    navigation.navigate('Career');
   };
 
   return (
@@ -152,7 +152,7 @@ const IdentityThirdScreen = () => {
         <View
           style={[
             tailwind`flex`,
-            {marginTop: screenHeight * 0.1}, // 20% of screen height
+            {marginTop: screenHeight * 0.06}, // 20% of screen height
           ]}>
           <View style={tailwind`mt-2`}>
             <Text
@@ -160,18 +160,14 @@ const IdentityThirdScreen = () => {
                 tailwind`mt-2 text-3xl font-semibold`,
                 {color: themeColors.primary},
               ]}>
-              Essential Info (Continued)
+              Relationship Dynamics
             </Text>
           </View>
         </View>
-        <View
-          style={[
-            tailwind`w-full flex justify-center`,
-            {marginTop: screenHeight * 0.02},
-          ]}></View>
+        <View style={tailwind`w-full flex justify-center`}></View>
         <ScrollView style={tailwind`w-full flex-1`}>
           <View style={tailwind`mt-2`}>
-            <Text style={tailwind`text-lg font-semibold mb-2`}>
+            <Text style={tailwind`italic text-base px-2 pb-1 mb-2`}>
               Communication Style (Select 2)
             </Text>
 
@@ -208,7 +204,7 @@ const IdentityThirdScreen = () => {
             </ScrollView>
           </View>
           <View style={tailwind`mt-2`}>
-            <Text style={tailwind`text-lg font-semibold mb-2`}>
+            <Text style={tailwind`italic text-base px-2 pb-1 mb-2`}>
               Love Language (Select 2)
             </Text>
 
@@ -245,8 +241,8 @@ const IdentityThirdScreen = () => {
               </View>
             </ScrollView>
           </View>
-          <View style={tailwind`mt-4`}>
-            <Text style={tailwind`text-lg font-semibold mb-2`}>
+          <View style={tailwind`mt-2`}>
+            <Text style={tailwind`italic text-base px-2 pb-1 mb-2`}>
               Core Values (Select 4)
             </Text>
 
@@ -281,8 +277,8 @@ const IdentityThirdScreen = () => {
               </View>
             </ScrollView>
           </View>
-          <View style={tailwind`mt-4`}>
-            <Text style={tailwind`text-lg font-semibold mb-2`}>
+          <View style={tailwind`mt-2`}>
+            <Text style={tailwind`italic text-base px-2 pb-1 mb-2`}>
               Time Priorities (Select 2)
             </Text>
 

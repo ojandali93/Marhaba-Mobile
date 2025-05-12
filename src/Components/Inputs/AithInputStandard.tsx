@@ -10,6 +10,8 @@ interface InputProps {
   secure?: boolean;
   valid?: boolean;
   optional?: boolean;
+  label?: string;
+  multiline?: boolean;
 }
 
 const screenHeight = Dimensions.get('window').height;
@@ -21,43 +23,34 @@ const AithInputStandard: React.FC<InputProps> = ({
   secure,
   valid,
   optional,
+  label,
+  multiline,
 }) => {
   return (
-    <View
-      style={[
-        tailwind`w-full h-14 flex justify-center pl-3.5 rounded-2 border-2`,
-        {
-          borderColor: valid ? themeColors.primary : 'red',
-          backgroundColor: themeColors.secondary,
-          marginTop: screenHeight * 0.015,
-        },
-      ]}>
-      <View style={tailwind`absolute left-3 top--3.5`}>
-        <Text
-          style={[
-            tailwind`font-semibold text-base px-2`,
-            {backgroundColor: themeColors.secondary, color: 'grey'},
-          ]}>
-          {fieldName} {optional ? ' (optional)' : null}
+    <View style={tailwind`w-full flex justify-center rounded-2 mt-1`}>
+      <View style={tailwind``}>
+        <Text style={tailwind`italic text-base px-2 pb-1`}>
+          {label}{' '}
+          {optional ? (
+            ' (optional)'
+          ) : (
+            <Text style={tailwind`text-red-500`}>* </Text>
+          )}
         </Text>
       </View>
-      <View style={tailwind``}>
+      <View style={tailwind`border-2 border-slate-600 rounded-2 px-2 py-1`}>
         <TextInput
           value={value}
           onChangeText={changeText}
           placeholder={fieldName.toLowerCase()}
           placeholderTextColor={'grey'}
           secureTextEntry={secure}
-          style={[
-            tailwind`text-lg mx-1.5 mr-5`,
-            {
-              height: 64, // matches parent h-16
-              paddingBottom: 8,
-              paddingTop: 8,
-              lineHeight: 24, // or match to font size
-              textAlignVertical: 'center', // ensures proper vertical alignment
-            },
-          ]}
+          style={tailwind`text-base`}
+          paddingBottom={8}
+          paddingTop={0}
+          lineHeight={24} // or match to font size
+          textAlignVertical="center" // ensures proper vertical alignment
+          multiline={multiline}
         />
       </View>
     </View>

@@ -2,7 +2,6 @@ import React, {useCallback, useState} from 'react';
 import {
   Alert,
   Dimensions,
-  Image,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -10,30 +9,22 @@ import {
 } from 'react-native';
 import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
-import AithInputStandard from '../../Components/Inputs/AithInputStandard';
 import AuthMainButton from '../../Components/Buttons/AuthMainButton';
-import DateSelect from '../../Components/Select/DateSelect';
-import GenderSelector from '../../Components/Select/GenderSelect';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
-import HeightSelect from '../../Components/Select/HeightSelect';
-import SmokeSelect from '../../Components/Select/SmokeSelect';
-import DrinkSelect from '../../Components/Select/DrinkSelect';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import KidsSelect from '../../Components/Select/KidsSelect';
 import StandardSelect from '../../Components/Select/StandardSelect';
-import StaandardMultiSelect from '../../Components/Select/StaandardMultiSelect';
+import AithInputStandard from '../../Components/Inputs/AithInputStandard';
 
 const screenHeight = Dimensions.get('window').height;
 
 const FutureScreen = () => {
   const navigation = useNavigation();
 
-  const [marriage, setMarriage] = useState<string>('');
-  const [children,setChildren] = useState<string>('');
   const [career, setCareer] = useState<string>('');
   const [finances, setFinances] = useState<string>('');
   const [pace, setPace] = useState<string>('');
   const [location, setLocation] = useState<string>('');
+  const [fiveYears, setFiveYears] = useState<string>('');
 
   useFocusEffect(
     useCallback(() => {
@@ -42,42 +33,31 @@ const FutureScreen = () => {
   );
 
   const loadPreferences = async () => {
-    const storedMarriage = await AsyncStorage.getItem('futureMarriage');
-    const storedChildren = await AsyncStorage.getItem('futureChildren');
-    const storedCareer = await AsyncStorage.getItem('futureCareer');
-    const storedFinances = await AsyncStorage.getItem('futureFinances');
-    const storedPace = await AsyncStorage.getItem('futurePace');
-    const storedLocation = await AsyncStorage.getItem('futureLocation');
+    const storedCareer = await AsyncStorage.getItem('FTR_Career');
+    const storedFinances = await AsyncStorage.getItem('FTR_Finances');
+    const storedPace = await AsyncStorage.getItem('FTR_Pace');
+    const storedLocation = await AsyncStorage.getItem('FTR_Location');
+    const storedFiveYears = await AsyncStorage.getItem('FTR_FiveYears');
 
-    if (storedMarriage) {
-        setMarriage(storedMarriage);
+    if (storedCareer) {
+      setCareer(storedCareer);
     }
-    if (storedChildren) {
-        setChildren(storedChildren);
-    }
-  if (storedCareer) {
-    setCareer(storedCareer); // Load as array
-  }
     if (storedFinances) {
-        setFinances(storedFinances);
+      setFinances(storedFinances);
     }
     if (storedPace) {
-        setPace(storedPace);
+      setPace(storedPace);
     }
     if (storedLocation) {
-        setLocation(storedLocation);
+      setLocation(storedLocation);
+    }
+    if (storedFiveYears) {
+      setFiveYears(storedFiveYears);
     }
   };
 
   const redirectToPersonalityScreen = () => {
-    if (
-      marriage != '' &&
-      children != '' &&
-      career != '' &&
-      finances != '' &&
-      pace != '' &&
-      location != ''
-    ) {
+    if (career !== '' && finances !== '') {
       storeNextScreen();
     } else {
       Alert.alert('Requirements', 'Please fill out all of the fields');
@@ -85,13 +65,12 @@ const FutureScreen = () => {
   };
 
   const storeNextScreen = async () => {
-    await AsyncStorage.setItem('futureMarriage', marriage);
-    await AsyncStorage.setItem('futureChildren', children);
-    await AsyncStorage.setItem('futureCareer', career); // Save as JSON
-    await AsyncStorage.setItem('futureFinances', finances);
-    await AsyncStorage.setItem('futurePace', pace);
-    await AsyncStorage.setItem('futureLocation', location);
-    navigation.navigate('Career');
+    await AsyncStorage.setItem('FTR_Career', career);
+    await AsyncStorage.setItem('FTR_Finances', finances);
+    await AsyncStorage.setItem('FTR_Pace', pace);
+    await AsyncStorage.setItem('FTR_Location', location);
+    await AsyncStorage.setItem('FTR_FiveYears', fiveYears);
+    navigation.navigate('Personality');
   };
 
   return (
@@ -104,7 +83,7 @@ const FutureScreen = () => {
         <View
           style={[
             tailwind`flex`,
-            {marginTop: screenHeight * 0.1}, // 20% of screen height
+            {marginTop: screenHeight * 0.06}, // 20% of screen height
           ]}>
           <View style={tailwind`mt-2`}>
             <Text
@@ -112,57 +91,73 @@ const FutureScreen = () => {
                 tailwind`mt-2 text-3xl font-semibold`,
                 {color: themeColors.primary},
               ]}>
-              Future
+              The Future
             </Text>
           </View>
         </View>
-        <View
-          style={[
-            tailwind`w-full flex flex-row items-center`,
-            {marginTop: screenHeight * 0.02},
-          ]}>
+        <View style={tailwind`w-full flex flex-row items-center`}>
           <></>
         </View>
         <ScrollView style={tailwind`w-full flex-1`}>
           <View style={tailwind`w-full pr-1`}>
             <StandardSelect
-              fieldName="Desired Marriage"
-              selected={marriage}
-              onSelect={setMarriage}
-              options={['Essential', 'Important', 'Flexible', 'Not Important', 'Other']}
+              label="Career Ambition"
+              fieldName="Career Ambition"
+              selected={career}
+              onSelect={setCareer}
+              options={[
+                'Very Ambitious',
+                'Balanced',
+                'Flexible',
+                'Simple Lifestyle',
+                'Other',
+              ]}
             />
             <StandardSelect
-              fieldName="Children"
-              selected={children}
-              onSelect={setChildren}
-              options={['Essential', 'Important', 'Open/Natural', 'Prefer No Children', 'Other']}
+              label="Financial Ambition"
+              fieldName="Financial Ambition"
+              selected={finances}
+              onSelect={setFinances}
+              options={[
+                'Very Ambitious',
+                'Balanced',
+                'Flexible',
+                'Simple Lifestyle',
+                'Other',
+              ]}
             />
             <StandardSelect
-            fieldName="Career Ambition"
-            selected={career}
-            onSelect={setCareer}
-            options={['Very Ambitious', 'Balanced', 'Flexible', 'Simple Lifestyle', 'Other']}
+              label="Pace of Life"
+              fieldName="Pace of Life"
+              selected={pace}
+              onSelect={setPace}
+              options={['Fast', 'Moderate', 'Slow', 'Flexible', 'Other']}
+              optional
             />
             <StandardSelect
-            fieldName="Financial Ambition"
-            selected={finances}
-            onSelect={setFinances}
-            options={['Very Ambitious', 'Balanced', 'Flexible', 'Simple Lifestyle', 'Other']}
+              label="Long Term Living"
+              fieldName="Long Term Living"
+              selected={location}
+              onSelect={setLocation}
+              options={[
+                'Stay near family',
+                'Open to relocating',
+                'Desire to move abroad',
+                'No strong preference',
+                'Other',
+              ]}
+              optional
             />
-            <StandardSelect
-            fieldName="Pace of Life"
-            selected={pace}
-            onSelect={setPace}
-            options={['Fast', 'Moderate', 'Slow', 'Flexible', 'Other']}
-            />
-            <StandardSelect
-            fieldName="Long Term Living"
-            selected={location}
-            onSelect={setLocation}
-            options={['Stay near family', 'Open to relocating', 'Desire to move abroad', 'No strong preference', 'Other']}
+            <AithInputStandard
+              fieldName="Education"
+              value={fiveYears}
+              changeText={setFiveYears}
+              valid={true}
+              label="5 Year Plan"
+              multiline
+              optional
             />
           </View>
-          
         </ScrollView>
       </View>
       <View style={tailwind`absolute w-3/4 bottom-12`}>

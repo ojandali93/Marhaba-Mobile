@@ -83,13 +83,13 @@ const ProfileScreen = () => {
       </View>
       <View
         style={[
-          tailwind`absolute left-4 right-4 bottom-6 ${
+          tailwind`absolute left-0 right-0 bottom-19 ${
             activeTab === 'editProfile' ||
             activeTab === 'upgrade' ||
             activeTab === 'Viewed'
               ? 'h-10/12'
               : 'h-5/12'
-          } rounded-8`,
+          }`,
           {backgroundColor: themeColors.secondary},
         ]}>
         {activeTab === 'profile' && (
@@ -120,7 +120,7 @@ const ProfileScreen = () => {
             </View>
           </>
         )}
-        <ScrollView style={tailwind`flex-1 mt-3 mb-16 px-4`}>
+        <ScrollView style={tailwind`flex-1 mt-3 mb-4 px-4`}>
           {activeTab === 'profile' && <MenuView updateTab={setActiveTab} />}
           {activeTab === 'settings' && (
             <SettingsView updateTab={setActiveTab} />

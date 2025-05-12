@@ -26,7 +26,7 @@ const SingleInfoFull: React.FC<SingleInfoFullProps> = ({
         tailwind`flex flex-col rounded-md py-2 px-3`,
         {
           borderColor: themeColors.primary,
-          backgroundColor: themeColors.lightGrey,
+          backgroundColor: themeColors.darkGrey,
         },
         containerStyle,
       ]}>

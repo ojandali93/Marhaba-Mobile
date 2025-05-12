@@ -105,7 +105,7 @@ const QuestionsScreen = () => {
         {backgroundColor: themeColors.secondary},
       ]}>
       <View style={tailwind`w-11/12 h-10/12 flex`}>
-        <View style={{marginTop: screenHeight * 0.1}}>
+        <View style={{marginTop: screenHeight * 0.06}}>
           <Text
             style={[
               tailwind`mt-2 text-3xl font-semibold`,
@@ -131,7 +131,7 @@ const QuestionsScreen = () => {
               questionStateMap[q.question];
             return (
               <View key={index} style={tailwind`mb-4`}>
-                <Text style={tailwind`text-lg font-semibold mb-2`}>
+                <Text style={tailwind`italic text-base px-2 pb-1`}>
                   {q.question}
                 </Text>
                 <View style={tailwind`flex-row justify-between`}>

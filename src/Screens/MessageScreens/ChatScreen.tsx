@@ -37,34 +37,6 @@ const ChatScreen = ({route}) => {
   const [textMessage, setTextMessage] = useState('');
   const scrollViewRef = useRef();
 
-  // Hide tab bar
-  useLayoutEffect(() => {
-    navigation.getParent()?.setOptions({tabBarStyle: {display: 'none'}});
-    return () => {
-      navigation.getParent()?.setOptions({
-        tabBarStyle: {
-          position: 'absolute',
-          bottom: 16,
-          left: 16,
-          right: 16,
-          borderRadius: 30,
-          height: 60,
-          backgroundColor: themeColors.darkSecondary,
-          paddingBottom: 10,
-          paddingTop: 10,
-          marginBottom: 8,
-          marginLeft: 18,
-          marginRight: 18,
-          shadowColor: themeColors.primary,
-          shadowOffset: {width: 0, height: 4},
-          shadowOpacity: 0.1,
-          shadowRadius: 10,
-          elevation: 10,
-        },
-      });
-    };
-  }, [navigation]);
-
   // Fetch existing messages
   useEffect(() => {
     const fetchMessages = async () => {

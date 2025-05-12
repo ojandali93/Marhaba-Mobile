@@ -288,11 +288,11 @@ const SingleProfileScreen = () => {
       </TouchableWithoutFeedback>
 
       <View
-        style={tailwind`absolute z-20 bottom-23 left-4 right-4 rounded-5 flex flex-row items-center justify-center`}>
+        style={tailwind`absolute z-20 bottom-19 left-0 right-0 flex flex-row items-center justify-center`}>
         <View
           style={[
-            tailwind`w-full flex flex-row items-center justify-center rounded-4 py-2`,
-            {backgroundColor: themeColors.darkSecondaryOpacity},
+            tailwind`w-full flex flex-row items-center justify-center py-4`,
+            {backgroundColor: themeColors.darkGrey},
           ]}>
           <TouchableOpacity
             onPress={handleDislikeProfile}
@@ -303,16 +303,18 @@ const SingleProfileScreen = () => {
             <X height={24} width={24} color={'white'} strokeWidth={3} />
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={handleOpenSuperlikeModal}
+            onPress={handleSendSuperlike}
             style={[
-              tailwind`p-3 rounded-full shadow-lg mx-7`,
+              tailwind`p-3 rounded-2 shadow-lg mx-4 px-6`,
               {
                 backgroundColor: isInteracting
                   ? '#6ee7b7'
                   : themeColors.primary,
               },
             ]}>
-            <Heart height={30} width={30} color={'white'} strokeWidth={3} />
+            <Text style={tailwind`text-white text-lg font-semibold`}>
+              Send Message
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={handleLikeProfile}
@@ -326,8 +328,8 @@ const SingleProfileScreen = () => {
         <>
           <View
             style={[
-              tailwind`absolute bottom-42 left-4 right-4 rounded-4`,
-              {backgroundColor: themeColors.darkSecondaryOpacity},
+              tailwind`absolute bottom-39 left-0 right-0 rounded-t-2`,
+              {backgroundColor: themeColors.darkGrey},
             ]}>
             <View
               style={tailwind`flex-row justify-between items-center p-4 pb-2`}>
@@ -343,10 +345,7 @@ const SingleProfileScreen = () => {
                   {background.map((bg: string, index: number) => (
                     <Text
                       key={index}
-                      style={[
-                        tailwind`text-3xl font-semibold mr-2`,
-                        {color: themeColors.primary},
-                      ]}>
+                      style={tailwind`text-3xl font-semibold mr-2 text-white`}>
                       {countryFlagMap[bg] ?? ''}
                     </Text>
                   ))}
@@ -355,7 +354,7 @@ const SingleProfileScreen = () => {
             </View>
 
             <View style={tailwind` px-4`}>
-              <Text style={tailwind`text-base text-gray-800`}>
+              <Text style={tailwind`text-base text-white`}>
                 {height ? `${height} • ` : ''}
                 {religion ? `${religion}${sect ? ` (${sect})` : ''} • ` : ''}
                 {job ?? ''}
@@ -364,22 +363,18 @@ const SingleProfileScreen = () => {
 
             {(lookingFor || timeline) && (
               <View style={tailwind`mt-1 px-4`}>
-                <Text style={tailwind`font-semibold text-base text-gray-900`}>
+                <Text style={tailwind`font-semibold text-base text-white`}>
                   {lookingFor}
                   {lookingFor && timeline ? ' • ' : ''}
                   {timeline}
                 </Text>
               </View>
             )}
-
-            {prompt?.prompt && (
-              <View style={tailwind`mt-2 px-4`}>
-                <Text style={tailwind`text-lg italic`}>{prompt.prompt}</Text>
-              </View>
-            )}
             {prompt?.response && (
               <View style={tailwind`mt-2 px-4 pb-3`}>
-                <Text numberOfLines={1} style={tailwind`font-semibold text-lg`}>
+                <Text
+                  numberOfLines={1}
+                  style={tailwind`font-semibold text-lg text-white`}>
                   {`"${prompt.response}"`}
                 </Text>
               </View>
@@ -388,14 +383,15 @@ const SingleProfileScreen = () => {
             <TouchableWithoutFeedback onPress={handleToggleFullProfile}>
               <View
                 style={[
-                  tailwind`flex flex-row items-center justify-between rounded-5 p-4`,
-                  {backgroundColor: themeColors.darkSecondary},
+                  tailwind`flex flex-row items-center justify-center rounded-2 p-4`,
+                  {backgroundColor: themeColors.darkGrey},
                 ]}>
-                <Text
-                  style={[
-                    tailwind`text-lg font-semibold`,
-                    {color: themeColors.primary},
-                  ]}>
+                <ChevronsUp
+                  height={24}
+                  width={24}
+                  color={themeColors.primary}
+                />
+                <Text style={tailwind`text-lg font-semibold text-white px-4`}>
                   More Details
                 </Text>
                 <ChevronsUp
@@ -409,18 +405,19 @@ const SingleProfileScreen = () => {
         </>
       ) : (
         <>
-          <View style={tailwind`absolute z-20 bottom-42 left-4 right-4`}>
+          <View style={tailwind`absolute z-20 bottom-39 left-0 right-0`}>
             <TouchableWithoutFeedback onPress={handleToggleFullProfile}>
               <View
                 style={[
-                  tailwind`flex flex-row items-center justify-between rounded-5 p-4`,
-                  {backgroundColor: themeColors.darkSecondary},
+                  tailwind`flex flex-row items-center justify-center rounded-2 p-4`,
+                  {backgroundColor: themeColors.darkGrey},
                 ]}>
-                <Text
-                  style={[
-                    tailwind`text-lg font-semibold`,
-                    {color: themeColors.primary},
-                  ]}>
+                <ChevronsDown
+                  height={24}
+                  width={24}
+                  color={themeColors.primary}
+                />
+                <Text style={tailwind`text-lg font-semibold text-white px-4`}>
                   Less Details
                 </Text>
                 <ChevronsDown
@@ -433,8 +430,8 @@ const SingleProfileScreen = () => {
           </View>
           <View
             style={[
-              tailwind`absolute top-36 bottom-42 left-4 right-4 rounded-5`,
-              {backgroundColor: themeColors.darkSecondaryOpacity},
+              tailwind`absolute top-39 bottom-39 left-0 right-0 pb-14`,
+              {backgroundColor: themeColors.darkGrey},
             ]}>
             <ScrollView
               style={tailwind`flex-1 p-4 pt-6`}

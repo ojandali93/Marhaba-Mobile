@@ -8,15 +8,17 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
 import AithInputStandard from '../../Components/Inputs/AithInputStandard';
 import AuthMainButton from '../../Components/Buttons/AuthMainButton';
 import {useNavigation} from '@react-navigation/native';
 import axios from 'axios';
-import Icon from '../../Assets/marhaba-icon-full-beige.png';
+import Icon from '../../Assets/marhaba-icon-full-white.png';
 import Logo from '../../Assets/marhaba-name-only-blue.png';
 import {useProfile} from '../../Context/ProfileContext';
+import AuthLoginInput from '../../Components/Inputs/AuthLoginInput';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -64,12 +66,12 @@ const LoginScreen = () => {
     }
   };
 
+  //#76ccc2
+
   return (
-    <View
-      style={[
-        tailwind`flex-1 w-full h-full flex justify-between`,
-        {backgroundColor: themeColors.secondary},
-      ]}>
+    <LinearGradient
+      colors={['#76ccc2', '#afdbd6']}
+      style={tailwind`flex-1 justify-between`}>
       <View>
         <View
           style={[
@@ -84,22 +86,30 @@ const LoginScreen = () => {
             </Text>
           </View>
         </View>
-        <View style={tailwind`w-full flex items-center mt-6`}>
-          <View style={tailwind`w-3/4`}>
-            <AithInputStandard
+        <View style={tailwind`w-full flex items-center justify-center mt-4`}>
+          <View
+            style={[
+              tailwind`w-11/12 p-6 rounded-2`,
+              {backgroundColor: '#9be0d9'},
+            ]}>
+            <AuthLoginInput
               fieldName="Email"
               value={email}
               changeText={handleUpdateEmail}
+              iconName="Mail"
               valid
             />
-            <AithInputStandard
-              fieldName="Password"
-              value={password}
-              changeText={setPassword}
-              secure={true}
-              valid
-            />
-            <View style={tailwind`w-full flex flex-row justify-end mt-2 pr-2`}>
+            <View style={tailwind`mt-3`}>
+              <AuthLoginInput
+                fieldName="Password"
+                value={password}
+                changeText={setPassword}
+                secure={true}
+                iconName="Lock"
+                valid
+              />
+            </View>
+            <View style={tailwind`w-full flex flex-row justify-end pr-2 mt-2`}>
               <TouchableOpacity
                 onPress={() => {
                   navigation.navigate('ForgotPassword');
@@ -132,7 +142,7 @@ const LoginScreen = () => {
           </View>
         </TouchableWithoutFeedback>
       </View>
-    </View>
+    </LinearGradient>
   );
 };
 

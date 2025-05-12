@@ -258,12 +258,33 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
           <View style={tailwind`absolute w-full h-full bg-gray-300`} />
         )}
       </TouchableWithoutFeedback>
+      {photos.length > 1 && (
+        <View
+          style={tailwind`absolute top-22 w-full flex-row justify-center z-30`}>
+          {photos.map((_, idx) => (
+            <View
+              key={idx}
+              style={[
+                tailwind`mx-1 w-3 h-3 rounded-full`,
+                {
+                  backgroundColor:
+                    idx === photoIndex
+                      ? themeColors.primary
+                      : themeColors.darkGrey,
+                  opacity: idx === photoIndex ? 1 : 0.5,
+                },
+              ]}
+            />
+          ))}
+        </View>
+      )}
 
       {!showFullProfile ? (
         <>
-          <View
+          <TouchableOpacity
+            onPress={handleToggleFullProfile}
             style={[
-              tailwind`absolute bottom-37 left-1 right-1 rounded-2`,
+              tailwind`absolute bottom-39 left-0 right-0 rounded-t-2`,
               {backgroundColor: themeColors.darkGrey},
             ]}>
             <View
@@ -314,14 +335,14 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                 </Text>
               </View>
             )}
-
+            {/* 
             {prompt?.prompt && (
               <View style={tailwind`mt-2 px-3`}>
                 <Text style={tailwind`text-lg italic text-white`}>
                   {prompt.prompt}
                 </Text>
               </View>
-            )}
+            )} */}
             {prompt?.response && (
               <View style={tailwind`mt-2 px-3 pb-3`}>
                 <Text
@@ -335,14 +356,15 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
             <TouchableWithoutFeedback onPress={handleToggleFullProfile}>
               <View
                 style={[
-                  tailwind`flex flex-row items-center justify-between rounded-2 p-4`,
+                  tailwind`flex flex-row items-center justify-center rounded-2 p-4`,
                   {backgroundColor: themeColors.darkGrey},
                 ]}>
-                <Text
-                  style={[
-                    tailwind`text-lg font-semibold`,
-                    {color: themeColors.primary},
-                  ]}>
+                <ChevronsUp
+                  height={24}
+                  width={24}
+                  color={themeColors.primary}
+                />
+                <Text style={tailwind`text-lg font-semibold text-white px-4`}>
                   More Details
                 </Text>
                 <ChevronsUp
@@ -352,12 +374,12 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                 />
               </View>
             </TouchableWithoutFeedback>
-          </View>
+          </TouchableOpacity>
           <View
-            style={tailwind`absolute z-20 bottom-20 left-1 right-1 rounded-2 flex flex-row items-center justify-center`}>
+            style={tailwind`absolute z-20 bottom-19 left-0 right-0 flex flex-row items-center justify-center`}>
             <View
               style={[
-                tailwind`w-full flex flex-row items-center justify-center rounded-2 py-2`,
+                tailwind`w-full flex flex-row items-center justify-center py-4`,
                 {backgroundColor: themeColors.darkGrey},
               ]}>
               <TouchableOpacity
@@ -369,7 +391,7 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                 <X height={24} width={24} color={'white'} strokeWidth={3} />
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={handleReportProfile}
+                onPress={handleSendSuperlike}
                 style={[
                   tailwind`p-3 rounded-2 shadow-lg mx-4 px-6`,
                   {
@@ -393,10 +415,10 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
       ) : (
         <>
           <View
-            style={tailwind`absolute z-20 bottom-20 left-1 right-1 rounded-2 flex flex-row items-center justify-center`}>
+            style={tailwind`absolute z-20 bottom-19 left-0 right-0  flex flex-row items-center justify-center`}>
             <View
               style={[
-                tailwind`w-full flex flex-row items-center justify-center rounded-2 py-2`,
+                tailwind`w-full flex flex-row items-center justify-center  py-4`,
                 {backgroundColor: themeColors.darkGrey},
               ]}>
               <TouchableOpacity
@@ -428,18 +450,19 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
               </TouchableOpacity>
             </View>
           </View>
-          <View style={tailwind`absolute z-20 bottom-37 left-1 right-1`}>
+          <View style={tailwind`absolute z-20 bottom-39 left-0 right-0`}>
             <TouchableWithoutFeedback onPress={handleToggleFullProfile}>
               <View
                 style={[
-                  tailwind`flex flex-row items-center justify-between rounded-2 p-4`,
+                  tailwind`flex flex-row items-center justify-center rounded-2 p-4`,
                   {backgroundColor: themeColors.darkGrey},
                 ]}>
-                <Text
-                  style={[
-                    tailwind`text-lg font-semibold`,
-                    {color: themeColors.primary},
-                  ]}>
+                <ChevronsDown
+                  height={24}
+                  width={24}
+                  color={themeColors.primary}
+                />
+                <Text style={tailwind`text-lg font-semibold text-white px-4`}>
                   Less Details
                 </Text>
                 <ChevronsDown
@@ -452,7 +475,7 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
           </View>
           <View
             style={[
-              tailwind`absolute top-16 bottom-37 left-1 right-1 rounded-2 pb-14`,
+              tailwind`absolute top-16 bottom-39 left-0 right-0  pb-14`,
               {backgroundColor: themeColors.darkGrey},
             ]}>
             <ScrollView
@@ -681,7 +704,7 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                       style={[
                         tailwind`px-5 py-4 rounded-lg`,
                         {
-                          backgroundColor: themeColors.lightGrey,
+                          backgroundColor: themeColors.darkGrey,
                         },
                       ]}>
                       <Text
@@ -764,7 +787,7 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                         style={[
                           tailwind`px-5 py-4 rounded-lg`,
                           {
-                            backgroundColor: themeColors.lightGrey,
+                            backgroundColor: themeColors.darkGrey,
                           },
                         ]}>
                         <Text
@@ -820,7 +843,7 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                         style={[
                           tailwind`px-5 py-4 rounded-lg`,
                           {
-                            backgroundColor: themeColors.lightGrey,
+                            backgroundColor: themeColors.darkGrey,
                           },
                         ]}>
                         <Text
@@ -875,7 +898,7 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                       style={[
                         tailwind`px-5 py-4 rounded-lg mb-6`,
                         {
-                          backgroundColor: themeColors.lightGrey,
+                          backgroundColor: themeColors.darkGrey,
                         },
                       ]}>
                       <Text

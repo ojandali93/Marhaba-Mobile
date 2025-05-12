@@ -287,7 +287,7 @@ const SearchScreent = () => {
       <View
         style={[
           tailwind`w-full flex flex-row items-center justify-between px-4 p-4 rounded-2 mb-3`,
-          {backgroundColor: themeColors.darkSecondary},
+          {backgroundColor: themeColors.secondary},
         ]}>
         <Text style={tailwind`text-2xl font-bold text-gray-800`}>Search</Text>
         <TouchableOpacity

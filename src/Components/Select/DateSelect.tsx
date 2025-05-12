@@ -66,24 +66,20 @@ const DateSelect: React.FC<InputProps> = ({fieldName, dob, setDate}) => {
     <>
       <View
         style={[
-          tailwind`w-full h-14 flex justify-center pl-3.5 rounded-2 border-2`,
+          tailwind`w-full h-14 flex justify-center rounded-2 mt-3`,
           {
-            borderColor: themeColors.primary,
             backgroundColor: themeColors.secondary,
-            marginTop: screenHeight * 0.015,
           },
         ]}>
-        <View style={tailwind`absolute left-3 top--3.5`}>
-          <Text
-            style={[
-              tailwind`font-semibold  text-base px-2`,
-              {backgroundColor: themeColors.secondary, color: 'grey'},
-            ]}>
+        <View style={tailwind``}>
+          <Text style={tailwind`italic text-base px-2 pb-1`}>
             {fieldName}
+            <Text style={tailwind`text-red-500`}> * </Text>
           </Text>
         </View>
         <TouchableOpacity onPress={() => setOpen(true)}>
-          <Text style={tailwind`text-base font-semibold text-gray-700 ml-1.5`}>
+          <Text
+            style={tailwind`text-base text-gray-700 border-2 border-slate-600 rounded-2 px-2 py-2`}>
             {dob
               ? dob.toDateString().split(' ').slice(1).join(' ')
               : 'Select Date of Birth'}

@@ -11,7 +11,6 @@ import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
 import AuthMainButton from '../../Components/Buttons/AuthMainButton';
 import StandardInputBordered from '../../Components/Inputs/StandardInputBordered';
-import AithInputStandard from '../../Components/Inputs/AithInputStandard';
 import PromptSelect from '../../Components/Select/PromptSelect';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -32,12 +31,18 @@ const PersonalityScreen = () => {
       const loadStoredResponses = async () => {
         try {
           const stored = await AsyncStorage.getItem('prompts');
+          let parsed: {prompt: string; response: string}[] = [];
           if (stored) {
-            const parsed = JSON.parse(stored);
-            if (Array.isArray(parsed)) {
-              setPromptResponses(parsed);
-            }
+            parsed = JSON.parse(stored);
           }
+
+          const hasWhoAmI = parsed.some(p => p.prompt === 'Who am I?');
+          if (!hasWhoAmI) {
+            parsed.unshift({prompt: 'Who am I?', response: ''});
+          }
+
+          setPromptResponses(parsed);
+          setCurrentPrompt('Who am I?');
         } catch (err) {
           console.error('Failed to load prompts:', err);
         }
@@ -67,6 +72,7 @@ const PersonalityScreen = () => {
   };
 
   const removePrompt = (promptToRemove: string) => {
+    if (promptToRemove === 'Who am I?') return;
     setPromptResponses(prev => prev.filter(p => p.prompt !== promptToRemove));
     if (currentPrompt === promptToRemove) {
       setCurrentPrompt('');
@@ -74,15 +80,18 @@ const PersonalityScreen = () => {
   };
 
   const redirectToCareer = () => {
-    if (promptResponses.length >= 3) {
-      storeNextScreen();
+    const validResponses = promptResponses.filter(
+      p => p.response.trim().length > 0,
+    );
+    if (validResponses.length >= 3) {
+      storeNextScreen(validResponses);
     } else {
-      Alert.alert('Responses', 'You must submit 3+ response.');
+      Alert.alert('Responses', 'You must submit at least 3 prompt responses.');
     }
   };
 
-  const storeNextScreen = async () => {
-    await AsyncStorage.setItem('prompts', JSON.stringify(promptResponses));
+  const storeNextScreen = async responses => {
+    await AsyncStorage.setItem('prompts', JSON.stringify(responses));
     navigation.navigate('Hobbies');
   };
 
@@ -93,27 +102,20 @@ const PersonalityScreen = () => {
         {backgroundColor: themeColors.secondary},
       ]}>
       <View style={tailwind`w-11/12 h-10/12 flex`}>
-        <View
-          style={[
-            tailwind`flex`,
-            {marginTop: screenHeight * 0.1}, // 20% of screen height
-          ]}>
-          <View style={tailwind`mt-2`}>
-            <Text
-              style={[
-                tailwind`mt-2 text-3xl font-semibold`,
-                {color: themeColors.primary},
-              ]}>
-              About Me
-            </Text>
-            <Text style={[tailwind`mt-2 text-sm font-semibold text-gray-500`]}>
-              The more prompts you answer, the better matches we can find for
-              you.
-            </Text>
-            <Text style={[tailwind`mt-1 text-sm font-semibold text-red-500`]}>
-              ** Minimum of 3 responses required **
-            </Text>
-          </View>
+        <View style={[tailwind`flex`, {marginTop: screenHeight * 0.06}]}>
+          <Text
+            style={[
+              tailwind`mt-2 text-3xl font-semibold`,
+              {color: themeColors.primary},
+            ]}>
+            About Me
+          </Text>
+          <Text style={[tailwind`mt-2 text-sm font-semibold text-gray-500`]}>
+            The more prompts you answer, the better matches we can find for you.
+          </Text>
+          <Text style={[tailwind`mt-1 text-sm font-semibold text-red-500`]}>
+            ** Minimum of 3 responses required **
+          </Text>
         </View>
         <View style={[tailwind`w-full flex flex-col justify-center mt-4`]}>
           <PromptSelect
@@ -132,7 +134,7 @@ const PersonalityScreen = () => {
                 fieldName={p.prompt}
                 longContent
                 placeholder={'Enter response...'}
-                remove
+                remove={p.prompt !== 'Who am I?'}
                 removeClick={() => removePrompt(p.prompt)}
               />
             </View>

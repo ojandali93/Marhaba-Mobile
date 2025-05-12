@@ -243,50 +243,54 @@ const BackgroundSelect = ({
       {/* Touchable input field */}
       <View
         style={[
-          tailwind`w-full justify-center px-4 rounded-2 border-2`,
+          tailwind`w-full justify-center`,
           {
             borderColor: themeColors.primary,
             backgroundColor: themeColors.secondary,
             marginTop: screenHeight * 0.015,
           },
         ]}>
-        {/* Floating label */}
-        <View style={tailwind`absolute left-3 top--3.5`}>
-          <Text
-            style={[
-              tailwind`text-sm font-semibold px-1`,
-              {backgroundColor: themeColors.secondary, color: 'grey'},
-            ]}>
-            {fieldName}
+        <View style={tailwind``}>
+          <Text style={tailwind`italic text-base px-2`}>
+            {fieldName} <Text style={tailwind`text-red-500`}>*</Text>
           </Text>
         </View>
 
         {/* Display selected gender */}
-        <ScrollView style={tailwind`w-full h-56 py-3`}>
-          {background.map((option, index) => {
-            const isSelected = selected.includes(option);
-            return (
-              <TouchableOpacity
-                key={index}
-                onPress={() => handleToggle(option)}
-                style={[
-                  tailwind`px-4 py-2 mb-2 rounded-lg`,
-                  {
-                    backgroundColor: isSelected
-                      ? themeColors.primary
-                      : themeColors.secondaryHighlight,
-                    borderColor: isSelected ? themeColors.primary : '#ccc',
-                  },
-                ]}>
-                <Text
-                  style={tailwind`text-base font-medium ${
-                    isSelected ? 'text-white' : 'text-gray-800'
-                  }`}>
-                  {option}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
+        <ScrollView style={tailwind`w-full h-56 border-2 rounded-2 mt-1`}>
+          <View style={tailwind`w-full flex flex-row items-center p-2`}>
+            <View style={tailwind`flex-row flex-wrap`}>
+              {background.map((country, index) => {
+                const isSelected = selected.includes(country);
+                return (
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() => {
+                      handleToggle(country);
+                    }}
+                    style={[
+                      tailwind`px-2 py-1 m-1 rounded-full border`,
+                      {
+                        backgroundColor: isSelected
+                          ? themeColors.primary
+                          : themeColors.secondary,
+                        borderColor: themeColors.primary,
+                      },
+                    ]}>
+                    <Text
+                      style={[
+                        tailwind`text-base font-semibold`,
+                        {
+                          color: isSelected ? 'white' : themeColors.primary,
+                        },
+                      ]}>
+                      {country}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </View>
         </ScrollView>
       </View>
     </>

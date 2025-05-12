@@ -212,6 +212,13 @@ const lookingForOptions = [
   'Marriage',
 ]
 
+const importanceMarriageOptions = [
+  'Extremely',
+  'Very',
+  'Somewhat',
+  'Not at all',
+]
+
 const timelineOptions = [
   'As soon as possible',
   'Within 6–12 months',
@@ -543,6 +550,20 @@ export const tutorialScreens = [
   },
 ];
 
+const intentionsOptions = [
+  'Friendship',
+  'Connect with Community',
+  'Something Serious',
+  'Marriage',
+];
 
+const marriageStatusOptions = [
+  'Single',
+  'In a Relationship',
+  'Married',
+  'Divorced',
+  'Widowed',
+  'Prefer not to say',
+];
 
-module.exports = {traitsAndHobbies, eitherOrQuestions, faqs, heightsOptions, lookingForOptions, timelineOptions, backgroundOptions, religionOptions, religiousSectOptions, religiousViewsOptions, tutorialScreens }
+module.exports = {marriageStatusOptions, importanceMarriageOptions, traitsAndHobbies, eitherOrQuestions, faqs, heightsOptions, lookingForOptions, timelineOptions, backgroundOptions, religionOptions, religiousSectOptions, religiousViewsOptions, tutorialScreens, intentionsOptions, timelineOptions}

@@ -24,25 +24,22 @@ const AgeRangeSlider: React.FC<AgeRangeSliderProps> = ({
   return (
     <View
       style={[
-        tailwind`w-full flex justify-center rounded-2 border-2`,
+        tailwind`w-full flex justify-center`,
         {
           borderColor: themeColors.primary,
           backgroundColor: themeColors.secondary,
           marginTop: screenHeight * 0.015,
         },
       ]}>
-      <View style={tailwind`absolute left-3 top--3.5`}>
-        <Text
-          style={[
-            tailwind`font-semibold text-base px-2`,
-            {backgroundColor: themeColors.secondary, color: 'grey'},
-          ]}>
-          {fieldName}
+      <View style={tailwind``}>
+        <Text style={tailwind`italic text-base px-2`}>
+          {fieldName} <Text style={tailwind`text-red-500`}>*</Text>
         </Text>
       </View>
-      <View style={tailwind`w-full flex items-center mt-4`}>
+      <View
+        style={tailwind`w-full flex items-center mt-1 border-2 rounded-2 pt-3`}>
         <Text style={tailwind`text-base font-semibold text-gray-700`}>
-          Age: {ageRange[0]} - {ageRange[1]}
+          {ageRange[0]} - {ageRange[1]} years old
         </Text>
 
         <MultiSlider

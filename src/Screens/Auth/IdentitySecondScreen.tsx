@@ -55,7 +55,7 @@ const IdentitySecondScreen = () => {
       setLookingFor(storedLookingFor);
     }
     if (storedBackground) {
-      setBackground(JSOn.parse(storedBackground));
+      setBackground(JSON.parse(storedBackground));
     }
     if (storedReligion) {
       setReligion(storedReligion);

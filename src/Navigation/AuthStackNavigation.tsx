@@ -21,6 +21,10 @@ import LifestyleScreen from '../Screens/Auth/LifestyleScreen';
 import FutureScreen from '../Screens/Auth/FutureScreen';
 import AcceptScreen from '../Screens/Auth/AcceptScreen';
 import ForgotPasswordScreen from '../Screens/Auth/ForgotPasswordScreen';
+import BackgroundScreen from '../Screens/Auth/BackgroundScreen';
+import LookingForScreen from '../Screens/Auth/LookingForScreen';
+import LifestyleHabitsScreen from '../Screens/Auth/LifestyleHabitsScreen';
+import ReligionScreen from '../Screens/Auth/ReligionScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -47,6 +51,10 @@ const AuthStack = () => {
       <Stack.Screen name="Future" component={FutureScreen} />
       <Stack.Screen name="Accept" component={AcceptScreen} />
       <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+      <Stack.Screen name="Background" component={BackgroundScreen} />
+      <Stack.Screen name="LookingFor" component={LookingForScreen} />
+      <Stack.Screen name="LifestyleHabits" component={LifestyleHabitsScreen} />
+      <Stack.Screen name="Religion" component={ReligionScreen} />
     </Stack.Navigator>
   );
 };

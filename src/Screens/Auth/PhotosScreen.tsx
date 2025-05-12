@@ -208,7 +208,7 @@ const PhotosScreen = () => {
       )}
 
       <View style={tailwind`w-11/12 h-10/12 flex`}>
-        <View style={[tailwind`flex`, {marginTop: screenHeight * 0.1}]}>
+        <View style={[tailwind`flex`, {marginTop: screenHeight * 0.06}]}>
           <View style={tailwind`mt-2`}>
             <Text
               style={[
@@ -224,11 +224,7 @@ const PhotosScreen = () => {
           </View>
         </View>
 
-        <View
-          style={[
-            tailwind`w-full flex flex-row items-center`,
-            {marginTop: screenHeight * 0.02},
-          ]}>
+        <View style={tailwind`w-full flex flex-row items-center mt-3`}>
           <View style={tailwind`flex-1 flex-row flex-wrap`}>
             {uploadedImageUrls.map((_, index) => (
               <View

@@ -2,15 +2,12 @@ import React, {useCallback, useState} from 'react';
 import {
   Alert,
   Dimensions,
-  Image,
   Text,
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
-import Logo from '../../Assets/marhaba-name-only-blue.png';
-import Icon from '../../Assets/marhaba-icon-full-beige.png';
 import AithInputStandard from '../../Components/Inputs/AithInputStandard';
 import {
   emailUpdate,
@@ -22,6 +19,7 @@ import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AuthInputStandardNumber from '../../Components/Inputs/AuthInputStandardNumber';
 import axios from 'axios';
+import LinearGradient from 'react-native-linear-gradient';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -45,9 +43,9 @@ const SignupScreen = () => {
   );
 
   const loadPreferences = async () => {
-    const storedEmail = await AsyncStorage.getItem('email');
-    const storedPassword = await AsyncStorage.getItem('password');
-    const storedPhone = await AsyncStorage.getItem('phone');
+    const storedEmail = await AsyncStorage.getItem('SU_email');
+    const storedPassword = await AsyncStorage.getItem('SU_password');
+    const storedPhone = await AsyncStorage.getItem('SU_phone');
     if (storedEmail) {
       setEmail(storedEmail);
     }
@@ -114,30 +112,12 @@ const SignupScreen = () => {
   };
 
   const storeNextScreen = async () => {
-    await AsyncStorage.setItem('email', email);
-    await AsyncStorage.setItem('password', password);
-    await AsyncStorage.setItem('phone', phone);
+    await AsyncStorage.setItem('SU_email', email);
+    await AsyncStorage.setItem('SU_password', password);
+    await AsyncStorage.setItem('SU_phone', phone);
     // createAccount(email, password);
     navigation.navigate('Identity');
   };
-
-  // const createAccount = async (email: string, password: string) => {
-  //   axios
-  //     .post('https://marhaba-server.onrender.com/api/account/createAccount', {
-  //       email,
-  //       password,
-  //       name: 'omar',
-  //     })
-  //     .then(response => {
-  //       console.log('account response:', response);
-  //     })
-  //     .catch(error => {
-  //       if (error) {
-  //         console.log('❌ Server responded with status:', error);
-  //       }
-  //     });
-  // };
-
   const formatPhoneNumber = (value: string) => {
     const digits = value.replace(/\D/g, '').slice(0, 10); // Only digits, max 10
     const len = digits.length;
@@ -148,99 +128,113 @@ const SignupScreen = () => {
   };
 
   return (
-    <View
-      style={[
-        tailwind`flex-1 w-full h-full flex justify-between`,
-        {backgroundColor: themeColors.secondary},
-      ]}>
-      <View>
-        <View
-          style={[
-            tailwind`flex items-center justify-center`,
-            {marginTop: screenHeight * 0.1}, // 20% of screen height
-          ]}>
-          <Image style={tailwind`w-22 h-22`} source={Icon} />
-          <View style={tailwind`mt-2 items-center`}>
-            <Image style={tailwind`w-62 h-12`} source={Logo} />
-            <Text style={tailwind`mt-2 text-lg font-semibold text-gray-800`}>
-              Where love begins with hello!
-            </Text>
+    <LinearGradient
+      colors={['#76ccc2', '#afdbd6']}
+      style={tailwind`h-full w-full justify-between`}>
+      <View
+        style={[
+          tailwind`flex-1 w-full h-full flex items-center`,
+          {backgroundColor: themeColors.secondary},
+        ]}>
+        <View style={tailwind`w-11/12 h-10/12 flex`}>
+          <View
+            style={[
+              tailwind`flex`,
+              {marginTop: screenHeight * 0.06}, // 20% of screen height
+            ]}>
+            <View style={tailwind`mt-2`}>
+              <Text
+                style={[
+                  tailwind`mt-2 text-3xl font-semibold`,
+                  {color: themeColors.primary},
+                ]}>
+                Signup
+              </Text>
+              <Text style={tailwind`text-base mt-1`}>
+                Enter your details below.
+              </Text>
+            </View>
           </View>
-        </View>
-        <View style={tailwind`w-full flex items-center mt-6`}>
-          <View style={tailwind`w-3/4`}>
-            <AithInputStandard
-              fieldName="Email"
-              value={email}
-              changeText={handleEmailUpdate}
-              valid
-            />
-            {!validEmail && (
-              <Text style={tailwind`text-xs text-red-600 mt-1`}>
-                Enter valid email.
-              </Text>
-            )}
-            {!availableEmail && (
-              <Text style={tailwind`text-xs text-red-600 mt-1`}>
-                Email is already in use.
-              </Text>
-            )}
-            <AithInputStandard
-              fieldName="Password:"
-              value={password}
-              changeText={handleUpdatePassword}
-              secure={true}
-              valid={validPassowrd}
-            />
-            {!validPassowrd && (
-              <Text style={tailwind`text-xs text-red-600 mt-1`}>
-                Password requirements: 8+ chars, capital letter, number, and
-                special character.
-              </Text>
-            )}
-            <AithInputStandard
-              fieldName="Verify Password"
-              value={verify}
-              changeText={handleUpdateVerify}
-              secure={true}
-              valid={validVerify}
-            />
-            {!validVerify && (
-              <Text style={tailwind`text-xs text-red-600 mt-1`}>
-                Passwords & Verify do not match.
-              </Text>
-            )}
-            <AuthInputStandardNumber
-              fieldName="Phone"
-              value={phone}
-              changeText={(text: string) => setPhone(formatPhoneNumber(text))}
-              secure={false}
-              valid={true}
-            />
-            <View style={tailwind`w-full flex flex-row justify-end`}>
-              <AuthMainButton text={'Signup'} click={redirectToIdentity} />
+          <View style={tailwind`w-full flex items-center mt-2`}>
+            <View style={tailwind`w-full`}>
+              <AithInputStandard
+                fieldName="Email"
+                value={email}
+                changeText={handleEmailUpdate}
+                label="Email"
+                valid
+              />
+              {!validEmail && (
+                <Text style={tailwind`text-xs text-red-600 mt-1`}>
+                  Enter valid email.
+                </Text>
+              )}
+              {!availableEmail && (
+                <Text style={tailwind`text-xs text-red-600 mt-1`}>
+                  Email is already in use.
+                </Text>
+              )}
+              <AithInputStandard
+                fieldName="Password:"
+                value={password}
+                changeText={handleUpdatePassword}
+                secure={true}
+                valid={validPassowrd}
+                label="Password"
+              />
+              {!validPassowrd && (
+                <Text style={tailwind`text-xs text-red-600 mt-1`}>
+                  Password requirements: 8+ chars, capital letter, number, and
+                  special character.
+                </Text>
+              )}
+              <AithInputStandard
+                fieldName="Verify Password"
+                value={verify}
+                changeText={handleUpdateVerify}
+                secure={true}
+                valid={validVerify}
+                label="Verify Password"
+              />
+              {!validVerify && (
+                <Text style={tailwind`text-xs text-red-600 mt-1`}>
+                  Passwords & Verify do not match.
+                </Text>
+              )}
+              <AuthInputStandardNumber
+                fieldName="Phone"
+                value={phone}
+                changeText={(text: string) => setPhone(formatPhoneNumber(text))}
+                secure={false}
+                valid={true}
+                label="Phone"
+              />
+              <View style={tailwind`w-full flex flex-row justify-end`}>
+                <AuthMainButton text={'Signup'} click={redirectToIdentity} />
+              </View>
             </View>
           </View>
         </View>
+        <View
+          style={tailwind`absolute bottom-0 w-full flex-row justify-center items-center mb-14`}>
+          <Text style={tailwind`text-base`}>I'm already a user. </Text>
+          <TouchableWithoutFeedback
+            onPress={() => {
+              navigation.navigate('Login');
+            }}>
+            <View style={tailwind``}>
+              <Text
+                style={[
+                  tailwind`text-base font-bold`,
+                  {color: themeColors.primary},
+                ]}>
+                Login
+              </Text>
+            </View>
+          </TouchableWithoutFeedback>
+        </View>
       </View>
-      <View style={tailwind`w-full flex-row justify-center items-center mb-14`}>
-        <Text style={tailwind`text-base`}>I'm already a user. </Text>
-        <TouchableWithoutFeedback
-          onPress={() => {
-            navigation.navigate('Login');
-          }}>
-          <View style={tailwind``}>
-            <Text
-              style={[
-                tailwind`text-base font-bold`,
-                {color: themeColors.primary},
-              ]}>
-              Login
-            </Text>
-          </View>
-        </TouchableWithoutFeedback>
-      </View>
-    </View>
+    </LinearGradient>
   );
 };
 

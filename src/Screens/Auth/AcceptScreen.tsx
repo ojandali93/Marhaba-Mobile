@@ -1,8 +1,7 @@
-import React, {useCallback, useState} from 'react';
+import React, {useState} from 'react';
 import {
   Alert,
   Dimensions,
-  Image,
   Linking,
   ScrollView,
   Switch,
@@ -12,188 +11,171 @@ import {
 } from 'react-native';
 import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
-import AithInputStandard from '../../Components/Inputs/AithInputStandard';
 import AuthMainButton from '../../Components/Buttons/AuthMainButton';
-import DateSelect from '../../Components/Select/DateSelect';
-import GenderSelector from '../../Components/Select/GenderSelect';
-import {useFocusEffect, useNavigation} from '@react-navigation/native';
-import HeightSelect from '../../Components/Select/HeightSelect';
-import SmokeSelect from '../../Components/Select/SmokeSelect';
-import DrinkSelect from '../../Components/Select/DrinkSelect';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import KidsSelect from '../../Components/Select/KidsSelect';
-import StandardSelect from '../../Components/Select/StandardSelect';
-import {ChevronsDown, ChevronsUp} from 'react-native-feather';
 
 const screenHeight = Dimensions.get('window').height;
 
-const AcceptScreen = () => {
-  const navigation = useNavigation();
+const FinalAgreementsScreen = ({navigation}) => {
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [acceptedEULA, setAcceptedEULA] = useState(false);
+  const [acceptedPledge, setAcceptedPledge] = useState(false);
 
-  const [acceptedTerms, setAcceptedTerms] = useState<boolean>(false);
-  const [acceptEULA, setAcceptEULA] = useState<boolean>(false);
-  const [expandedTab, setExpandedTab] = useState<string>('');
+  const allAccepted = acceptedTerms && acceptedEULA && acceptedPledge;
 
-  const handleTriggerUpdateTab = (tab: string) => {
-    if (expandedTab === tab) {
-      setExpandedTab('');
+  const handleContinue = () => {
+    if (allAccepted) {
+      navigation.navigate('CreatingProfile');
     } else {
-      setExpandedTab(tab);
+      Alert.alert(
+        'Agreements Required',
+        'Please accept all agreements to proceed.',
+      );
     }
-  };
-
-  const redirectToPersonalityScreen = () => {
-    if (acceptEULA && acceptedTerms) {
-      storeNextScreen();
-    } else {
-      Alert.alert('Requirements', 'Please accept the terms and conditions');
-    }
-  };
-
-  const storeNextScreen = async () => {
-    navigation.navigate('CreatingProfile');
   };
 
   return (
     <View
       style={[
-        tailwind`flex-1 w-full h-full flex items-center`,
+        tailwind`flex-1 w-full h-full items-center`,
         {backgroundColor: themeColors.secondary},
       ]}>
-      <View style={tailwind`w-11/12 h-10/12 flex`}>
-        <View
-          style={[
-            tailwind`flex`,
-            {marginTop: screenHeight * 0.1}, // 20% of screen height
-          ]}>
-          <View style={tailwind`mt-2`}>
-            <Text
-              style={[
-                tailwind`mt-2 text-3xl font-semibold`,
-                {color: themeColors.primary},
-              ]}>
-              Legal Acceptance
-            </Text>
-          </View>
-        </View>
-        <View
-          style={[
-            tailwind`w-full flex flex-row items-center`,
-            {marginTop: screenHeight * 0.02},
-          ]}>
-          <></>
-        </View>
-        <ScrollView style={tailwind`w-full flex-1`}>
-          <TouchableOpacity
-            onPress={() => handleTriggerUpdateTab('terms')}
+      <View style={tailwind`w-11/12 h-10/12`}>
+        <View style={[tailwind`flex`, {marginTop: screenHeight * 0.06}]}>
+          <Text
             style={[
-              tailwind`w-full flex flex-row justify-between items-center mb-3 mt-2 p-3 rounded-2`,
+              tailwind`text-3xl font-semibold`,
+              {color: themeColors.primary},
+            ]}>
+            Final Agreements
+          </Text>
+          <Text style={tailwind`text-sm text-gray-600 mt-2`}>
+            Please read and accept the following to complete your signup.
+          </Text>
+        </View>
+
+        <ScrollView style={tailwind`w-full mt-6`}>
+          {/* Terms of Service */}
+          <TouchableOpacity
+            onPress={() =>
+              Linking.openURL(
+                'https://app.termly.io/policy-viewer/policy.html?policyUUID=6c415447-ebe1-4647-9104-e89d1c3879c8',
+              )
+            }
+            style={[
+              tailwind`p-4 rounded-lg mb-2`,
               {backgroundColor: themeColors.darkSecondary},
             ]}>
             <Text
               style={[
-                tailwind`text-2xl font-semibold`,
+                tailwind`text-xl font-semibold`,
                 {color: themeColors.primary},
               ]}>
               Terms of Service
             </Text>
-          </TouchableOpacity>
-          <View style={tailwind`px-2 pb-4`}>
-            <Text style={tailwind`text-base text-gray-700`}>
-              Marhabah's Terms of Service describe your rights,
-              responsibilities, and the rules for using the app. You can view
-              the full Terms of Service below.
+            <Text style={tailwind`text-sm text-gray-700 mt-1`}>
+              Read Marhabah's Terms of Service to understand your rights and
+              responsibilities.
             </Text>
-            <TouchableOpacity
-              onPress={() =>
-                Linking.openURL(
-                  'https://app.termly.io/policy-viewer/policy.html?policyUUID=6c415447-ebe1-4647-9104-e89d1c3879c8',
-                )
-              }
-              style={tailwind`mt-2 w-full flex flex-row justify-center`}>
-              <Text
-                style={[
-                  tailwind`text-base font-bold`,
-                  {color: themeColors.primary},
-                ]}>
-                View Terms of Service
-              </Text>
-            </TouchableOpacity>
-            <View
-              style={[
-                tailwind`mt-4 flex-row justify-between items-center p-3 rounded-lg`,
-                {backgroundColor: themeColors.darkSecondary},
-              ]}>
-              <Text style={tailwind`text-lg text-gray-800 font-semibold`}>
+            <View style={tailwind`mt-2 flex-row justify-between items-center`}>
+              <Text style={tailwind`text-base text-blue-500 underline`}>
                 Accept Terms
               </Text>
               <Switch
                 value={acceptedTerms}
-                onValueChange={value => setAcceptedTerms(!acceptedTerms)}
+                onValueChange={() => setAcceptedTerms(!acceptedTerms)}
                 thumbColor={acceptedTerms ? themeColors.primary : '#ccc'}
                 trackColor={{false: '#aaa', true: themeColors.primary}}
               />
             </View>
-          </View>
+          </TouchableOpacity>
+
+          {/* EULA */}
           <TouchableOpacity
-            onPress={() => handleTriggerUpdateTab('eula')}
+            onPress={() =>
+              Linking.openURL(
+                'https://app.termly.io/policy-viewer/policy.html?policyUUID=2c96703e-b201-4b10-8414-c9a70374f352',
+              )
+            }
             style={[
-              tailwind`w-full flex flex-row justify-between items-center mb-3 mt-2 p-3 rounded-2`,
+              tailwind`p-4 rounded-lg mb-2`,
               {backgroundColor: themeColors.darkSecondary},
             ]}>
             <Text
               style={[
-                tailwind`text-2xl font-semibold`,
+                tailwind`text-xl font-semibold`,
                 {color: themeColors.primary},
               ]}>
-              EULA
+              End User License Agreement (EULA)
             </Text>
-          </TouchableOpacity>
-          <View style={tailwind`px-2 pb-4`}>
-            <Text style={tailwind`text-base text-gray-700`}>
-              Marhabah is licensed to you under the End User License Agreement.
-              This governs your use of the app, your contributions, and limits
-              liability. You can review the full EULA below.
+            <Text style={tailwind`text-sm text-gray-700 mt-1`}>
+              Learn about your license to use Marhabah and limits of liability.
             </Text>
-            <TouchableOpacity
-              onPress={() =>
-                Linking.openURL(
-                  'https://app.termly.io/policy-viewer/policy.html?policyUUID=2c96703e-b201-4b10-8414-c9a70374f352',
-                )
-              }
-              style={tailwind`mt-2 w-full flex flex-row justify-center`}>
-              <Text
-                style={[
-                  tailwind`text-base font-bold`,
-                  {color: themeColors.primary},
-                ]}>
-                View EULA
-              </Text>
-            </TouchableOpacity>
-            <View
-              style={[
-                tailwind`mt-4 flex-row justify-between items-center p-3 rounded-lg`,
-                {backgroundColor: themeColors.darkSecondary},
-              ]}>
-              <Text style={tailwind`text-lg text-gray-800 font-semibold`}>
+            <View style={tailwind`mt-2 flex-row justify-between items-center`}>
+              <Text style={tailwind`text-base text-blue-500 underline`}>
                 Accept EULA
               </Text>
               <Switch
-                value={acceptEULA}
-                onValueChange={value => setAcceptEULA(!acceptEULA)}
-                thumbColor={acceptEULA ? themeColors.primary : '#ccc'}
+                value={acceptedEULA}
+                onValueChange={() => setAcceptedEULA(!acceptedEULA)}
+                thumbColor={acceptedEULA ? themeColors.primary : '#ccc'}
+                trackColor={{false: '#aaa', true: themeColors.primary}}
+              />
+            </View>
+          </TouchableOpacity>
+
+          {/* Community Pledge */}
+          <View
+            style={[
+              tailwind`p-4 rounded-lg mb-2`,
+              {backgroundColor: themeColors.darkSecondary},
+            ]}>
+            <Text
+              style={[
+                tailwind`text-xl font-semibold`,
+                {color: themeColors.primary},
+              ]}>
+              Community Pledge
+            </Text>
+            <Text style={tailwind`text-sm text-gray-700 mt-1`}>
+              By joining Marhabah, I pledge to:
+            </Text>
+            <Text style={tailwind`text-sm text-gray-600 mt-2`}>
+              • Treat all users with kindness and respect
+            </Text>
+            <Text style={tailwind`text-sm text-gray-600 mt-2`}>
+              • Be honest and authentic in my profile and conversations
+            </Text>
+            <Text style={tailwind`text-sm text-gray-600 mt-2`}>
+              • Never harass, discriminate, or harm others
+            </Text>
+            <Text style={tailwind`text-sm text-gray-600 mt-2`}>
+              • Report inappropriate behavior or suspicious activity
+            </Text>
+            <Text style={tailwind`text-sm text-gray-600 mt-2`}>
+              • Prioritize safety in all interactions
+            </Text>
+            <Text style={tailwind`text-sm text-gray-600 mt-2`}>
+              • Use Marhabah for sincere, marriage-intended connections
+            </Text>
+            <View style={tailwind`mt-4 flex-row justify-between items-center`}>
+              <Text style={tailwind`text-base text-gray-800`}>
+                Accept Pledge
+              </Text>
+              <Switch
+                value={acceptedPledge}
+                onValueChange={() => setAcceptedPledge(!acceptedPledge)}
+                thumbColor={acceptedPledge ? themeColors.primary : '#ccc'}
                 trackColor={{false: '#aaa', true: themeColors.primary}}
               />
             </View>
           </View>
         </ScrollView>
       </View>
+
+      {/* Continue Button */}
       <View style={tailwind`absolute w-3/4 bottom-12`}>
-        <View style={tailwind` w-full flex flex-row justify-end`}>
-          <AuthMainButton
-            text={'Continue'}
-            click={redirectToPersonalityScreen}
-          />
+        <View style={tailwind`w-full flex-row justify-end`}>
+          <AuthMainButton text={'Continue'} click={handleContinue} />
         </View>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
@@ -205,4 +187,4 @@ const AcceptScreen = () => {
   );
 };
 
-export default AcceptScreen;
+export default FinalAgreementsScreen;

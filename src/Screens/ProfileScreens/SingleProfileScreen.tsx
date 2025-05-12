@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useLayoutEffect, useState} from 'react';
 import {
   Image,
   ScrollView,
@@ -288,8 +288,8 @@ const SingleProfileScreen = () => {
         <>
           <View
             style={[
-              tailwind`absolute bottom-24 left-4 right-4 rounded-4`,
-              {backgroundColor: themeColors.darkSecondaryOpacity},
+              tailwind`absolute bottom-19 left-0 right-0`,
+              {backgroundColor: themeColors.darkGrey},
             ]}>
             <View
               style={tailwind`flex-row justify-between items-center p-4 pb-2`}>
@@ -317,7 +317,7 @@ const SingleProfileScreen = () => {
             </View>
 
             <View style={tailwind` px-4`}>
-              <Text style={tailwind`text-base text-gray-800`}>
+              <Text style={tailwind`text-base text-white`}>
                 {height ? `${height} • ` : ''}
                 {religion ? `${religion}${sect ? ` (${sect})` : ''} • ` : ''}
                 {job ?? ''}
@@ -326,7 +326,7 @@ const SingleProfileScreen = () => {
 
             {(lookingFor || timeline) && (
               <View style={tailwind`mt-1 px-4`}>
-                <Text style={tailwind`font-semibold text-base text-gray-900`}>
+                <Text style={tailwind`font-semibold text-base text-white`}>
                   {lookingFor}
                   {lookingFor && timeline ? ' • ' : ''}
                   {timeline}
@@ -334,14 +334,18 @@ const SingleProfileScreen = () => {
               </View>
             )}
 
-            {prompt?.prompt && (
+            {/* {prompt?.prompt && (
               <View style={tailwind`mt-2 px-4`}>
-                <Text style={tailwind`text-lg italic`}>{prompt.prompt}</Text>
+                <Text style={tailwind`text-lg italic text-white`}>
+                  {prompt.prompt}
+                </Text>
               </View>
-            )}
+            )} */}
             {prompt?.response && (
               <View style={tailwind`mt-2 px-4 pb-3`}>
-                <Text numberOfLines={1} style={tailwind`font-semibold text-lg`}>
+                <Text
+                  numberOfLines={1}
+                  style={tailwind`font-semibold text-lg text-white`}>
                   {`"${prompt.response}"`}
                 </Text>
               </View>
@@ -350,14 +354,15 @@ const SingleProfileScreen = () => {
             <TouchableWithoutFeedback onPress={handleToggleFullProfile}>
               <View
                 style={[
-                  tailwind`flex flex-row items-center justify-between rounded-5 p-4`,
-                  {backgroundColor: themeColors.darkSecondary},
+                  tailwind`flex flex-row items-center justify-center rounded-2 p-4`,
+                  {backgroundColor: themeColors.darkGrey},
                 ]}>
-                <Text
-                  style={[
-                    tailwind`text-lg font-semibold`,
-                    {color: themeColors.primary},
-                  ]}>
+                <ChevronsUp
+                  height={24}
+                  width={24}
+                  color={themeColors.primary}
+                />
+                <Text style={tailwind`text-lg font-semibold text-white px-4`}>
                   More Details
                 </Text>
                 <ChevronsUp
@@ -371,18 +376,19 @@ const SingleProfileScreen = () => {
         </>
       ) : (
         <>
-          <View style={tailwind`absolute z-20 bottom-24 left-4 right-4`}>
+          <View style={tailwind`absolute z-20 bottom-19 left-0 right-0`}>
             <TouchableWithoutFeedback onPress={handleToggleFullProfile}>
               <View
                 style={[
-                  tailwind`flex flex-row items-center justify-between rounded-5 p-4`,
-                  {backgroundColor: themeColors.darkSecondary},
+                  tailwind`flex flex-row items-center justify-center rounded-2 p-4`,
+                  {backgroundColor: themeColors.darkGrey},
                 ]}>
-                <Text
-                  style={[
-                    tailwind`text-lg font-semibold`,
-                    {color: themeColors.primary},
-                  ]}>
+                <ChevronsDown
+                  height={24}
+                  width={24}
+                  color={themeColors.primary}
+                />
+                <Text style={tailwind`text-lg font-semibold text-white px-4`}>
                   Less Details
                 </Text>
                 <ChevronsDown
@@ -395,8 +401,8 @@ const SingleProfileScreen = () => {
           </View>
           <View
             style={[
-              tailwind`absolute top-36 bottom-24 left-4 right-4 rounded-5`,
-              {backgroundColor: themeColors.darkSecondaryOpacity},
+              tailwind`absolute top-36 bottom-19 left-0 right-0 pb-14`,
+              {backgroundColor: themeColors.darkGrey},
             ]}>
             <ScrollView
               style={tailwind`flex-1 p-4 pt-6`}
@@ -636,25 +642,6 @@ const SingleProfileScreen = () => {
                   </View>
                 </View>
 
-                {/* {communicationStyles.length > 0 && (
-                  <View style={tailwind`mt-4`}>
-                    <Text
-                      style={tailwind`text-3xl font-bold text-green-900 mb-4`}>
-                      Communication Style
-                    </Text>
-                    <View style={tailwind`flex flex-col flex-wrap`}>
-                      {communicationStyles.map((item: Communication, index) => (
-                        <View key={index} style={tailwind`pr-2 w-full mb-2`}>
-                          <SingleInfoFull
-                            label={''}
-                            value={item.style.replace(/[\[\]"]/g, '')}
-                          />
-                        </View>
-                      ))}
-                    </View>
-                  </View>
-                )} */}
-
                 {loveLanguages.length > 0 && (
                   <View style={tailwind`mt-4`}>
                     <Text
@@ -674,88 +661,6 @@ const SingleProfileScreen = () => {
                     ))}
                   </View>
                 )}
-
-                {/* <View style={tailwind`mt-4`}>
-                  <Text
-                    style={tailwind`text-3xl font-bold text-green-900 mb-4`}>
-                    Attachment
-                  </Text>
-                  <View style={tailwind`flex flex-col`}>
-                    <View style={tailwind`flex flex-row items-center`}>
-                      <View style={tailwind`pr-2 w-1/2`}>
-                        <SingleInfoFull
-                          label="Closeness (Relationship)"
-                          value={attachment.close}
-                        />
-                      </View>
-                      <View style={tailwind`w-1/2`}>
-                        <SingleInfoFull
-                          label="Partners Neediness"
-                          value={attachment.partner}
-                        />
-                      </View>
-                    </View>
-                    <View style={tailwind`flex flex-row items-center mt-2`}>
-                      <View style={tailwind`pr-2 w-1/2`}>
-                        <SingleInfoFull
-                          label="Fear of Abandonment"
-                          value={attachment.fear}
-                        />
-                      </View>
-                      <View style={tailwind`w-1/2`}>
-                        <SingleInfoFull
-                          label="Independent vs Togehter"
-                          value={attachment.independent}
-                        />
-                      </View>
-                    </View>
-                    <View style={tailwind`flex flex-row items-center mt-2`}>
-                      <View style={tailwind`pr-2 w-1/2`}>
-                        <SingleInfoFull
-                          label="Response to Conflict"
-                          value={attachment.response}
-                        />
-                      </View>
-                    </View>
-                  </View>
-                </View> */}
-
-                {/* <View style={tailwind`mt-4`}>
-                  <Text
-                    style={tailwind`text-3xl font-bold text-green-900 mb-4`}>
-                    Emotions & Maturity
-                  </Text>
-                  <View style={tailwind`flex flex-col`}>
-                    <View style={tailwind`flex flex-row items-center`}>
-                      <View style={tailwind`pr-2 w-1/2`}>
-                        <SingleInfoFull
-                          label="Closeness (Relationship)"
-                          value={emotions.conflict}
-                        />
-                      </View>
-                      <View style={tailwind`w-1/2`}>
-                        <SingleInfoFull
-                          label="Fear of Abandonment"
-                          value={emotions.stress}
-                        />
-                      </View>
-                    </View>
-                    <View style={tailwind`flex flex-row items-center mt-2`}>
-                      <View style={tailwind`pr-2 w-1/2`}>
-                        <SingleInfoFull
-                          label="Partners Neediness"
-                          value={emotions.apology}
-                        />
-                      </View>
-                      <View style={tailwind`w-1/2`}>
-                        <SingleInfoFull
-                          label="Independent vs Togehter"
-                          value={emotions.emotion}
-                        />
-                      </View>
-                    </View>
-                  </View>
-                </View> */}
 
                 {values.length > 0 && (
                   <View style={tailwind`mt-4`}>

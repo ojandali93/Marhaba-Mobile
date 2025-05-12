@@ -16,6 +16,8 @@ import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import RemoteSelect from '../../Components/Select/RemoteSelect';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LongTextInput from '../../Components/Inputs/LongTextInput';
+import StandardInputBordered from '../../Components/Inputs/StandardInputBordered';
+import StandardSelect from '../../Components/Select/StandardSelect';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -24,9 +26,10 @@ const CareerScreen = () => {
 
   const [job, setJob] = useState<string>('');
   const [company, setCompoany] = useState<string>('');
+  const [industry, setIndustry] = useState<string>('');
+  const [relocateWork, setRelocateWork] = useState<string>('');
   const [site, setSite] = useState<string>('');
   const [education, setEducation] = useState<string>('');
-  const [fiveYear, setFiveYear] = useState<string>('');
 
   useFocusEffect(
     useCallback(() => {
@@ -35,11 +38,12 @@ const CareerScreen = () => {
   );
 
   const loadPreferences = async () => {
-    const storedJob = await AsyncStorage.getItem('job');
-    const storedCompany = await AsyncStorage.getItem('company');
-    const storeSite = await AsyncStorage.getItem('site');
-    const storedEducation = await AsyncStorage.getItem('education');
-    const storeFiveYear = await AsyncStorage.getItem('fiveYear');
+    const storedJob = await AsyncStorage.getItem('CE_Job');
+    const storedCompany = await AsyncStorage.getItem('CE_Company');
+    const storedIndustry = await AsyncStorage.getItem('CE_Industry');
+    const storedRelocateWork = await AsyncStorage.getItem('CE_RelocateWork');
+    const storedSite = await AsyncStorage.getItem('CE_Site');
+    const storedEducation = await AsyncStorage.getItem('CE_Education');
 
     if (storedJob) {
       setJob(storedJob);
@@ -47,19 +51,22 @@ const CareerScreen = () => {
     if (storedCompany) {
       setCompoany(storedCompany);
     }
-    if (storeSite) {
-      setSite(storeSite);
+    if (storedIndustry) {
+      setIndustry(storedIndustry);
+    }
+    if (storedRelocateWork) {
+      setRelocateWork(storedRelocateWork);
+    }
+    if (storedSite) {
+      setSite(storedSite);
     }
     if (storedEducation) {
       setEducation(storedEducation);
     }
-    if (storeFiveYear) {
-      setFiveYear(storeFiveYear);
-    }
   };
 
   const redirectToPersonalityScreen = () => {
-    if (job != '' && company != '') {
+    if (job !== '' && education !== '' && company !== '') {
       storeNextScreen();
     } else {
       Alert.alert('Requirements', 'Please fill out all of the fields');
@@ -67,12 +74,13 @@ const CareerScreen = () => {
   };
 
   const storeNextScreen = async () => {
-    await AsyncStorage.setItem('job', job);
-    await AsyncStorage.setItem('company', company);
-    await AsyncStorage.setItem('site', site);
-    await AsyncStorage.setItem('education', education);
-    await AsyncStorage.setItem('fiveYear', fiveYear);
-    navigation.navigate('Personality');
+    await AsyncStorage.setItem('CE_Job', job);
+    await AsyncStorage.setItem('CE_Company', company);
+    await AsyncStorage.setItem('CE_Industry', industry);
+    await AsyncStorage.setItem('CE_RelocateWork', relocateWork);
+    await AsyncStorage.setItem('CE_Site', site);
+    await AsyncStorage.setItem('CE_Education', education);
+    navigation.navigate('Future');
   };
 
   return (
@@ -81,11 +89,11 @@ const CareerScreen = () => {
         tailwind`flex-1 w-full h-full flex items-center`,
         {backgroundColor: themeColors.secondary},
       ]}>
-      <View style={tailwind`w-11/12 h-10/12 flex`}>
+      <View style={tailwind`w-11/12 h-10/12 flex pb-12`}>
         <View
           style={[
             tailwind`flex`,
-            {marginTop: screenHeight * 0.1}, // 20% of screen height
+            {marginTop: screenHeight * 0.06}, // 20% of screen height
           ]}>
           <View style={tailwind`mt-2`}>
             <Text
@@ -97,43 +105,52 @@ const CareerScreen = () => {
             </Text>
           </View>
         </View>
-        <View
-          style={[
-            tailwind`w-full flex flex-row items-center`,
-            {marginTop: screenHeight * 0.02},
-          ]}></View>
+        <View style={tailwind`w-full flex flex-row items-center`}></View>
         <ScrollView style={tailwind`w-full flex-1`}>
           <AithInputStandard
             fieldName="Current job"
             value={job}
             changeText={setJob}
             valid={true}
+            label="Current job"
           />
           <AithInputStandard
             fieldName="Current Company"
             value={company}
             changeText={setCompoany}
             valid={true}
+            label="Current Company"
           />
-          <RemoteSelect
-            fieldName="Site"
+          <StandardSelect
+            fieldName="Industry"
+            selected={industry}
+            onSelect={setIndustry}
+            optional
+            options={['Yes', 'No']}
+            label="Industry"
+          />
+          <StandardSelect
+            fieldName="Work Site"
             selected={site}
             onSelect={setSite}
             optional
+            options={['Yes', 'No']}
+            label="Work Site"
+          />
+          <StandardSelect
+            fieldName="Relocate Work"
+            selected={relocateWork}
+            onSelect={setRelocateWork}
+            optional
+            options={['Yes', 'No']}
+            label="Relocate Work"
           />
           <AithInputStandard
             fieldName="Education"
             value={education}
             changeText={setEducation}
             valid={true}
-            optional
-          />
-          <LongTextInput
-            fieldName="In 5 years..."
-            value={fiveYear}
-            changeText={setFiveYear}
-            optional
-            multiline
+            label="Education"
           />
         </ScrollView>
       </View>

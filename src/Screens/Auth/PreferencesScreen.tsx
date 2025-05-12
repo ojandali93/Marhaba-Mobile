@@ -19,6 +19,12 @@ import ReligiousSectSelect from '../../Components/Select/ReligiousSectSelect';
 import ReligionSelect from '../../Components/Select/ReligionSelect';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BackgroundSelect from '../../Components/Select/BackgroundSelect';
+import StandardSelect from '../../Components/Select/StandardSelect';
+import {
+  backgroundOptions,
+  religiousSectOptions,
+  religionOptions,
+} from '../../Utils/SelectOptions';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -44,14 +50,14 @@ const PreferencesScreen = () => {
   );
 
   const loadPreferences = async () => {
-    const storedGender = await AsyncStorage.getItem('prefGender');
-    const storedRadius = await AsyncStorage.getItem('preRadius');
-    const storedViews = await AsyncStorage.getItem('prefViews');
-    const storedSect = await AsyncStorage.getItem('prefSect');
-    const storedReligion = await AsyncStorage.getItem('prefReligion');
-    const storeAgeMin = await AsyncStorage.getItem('preAgeMin');
-    const storeAgeMax = await AsyncStorage.getItem('prefAgeMax');
-    const storeBackground = await AsyncStorage.getItem('prefBackground');
+    const storedGender = await AsyncStorage.getItem('PR_Gender');
+    const storedRadius = await AsyncStorage.getItem('PR_Radius');
+    const storedViews = await AsyncStorage.getItem('PR_Views');
+    const storedSect = await AsyncStorage.getItem('PR_Sect');
+    const storedReligion = await AsyncStorage.getItem('PR_Religion');
+    const storeAgeMin = await AsyncStorage.getItem('PR_AgeMin');
+    const storeAgeMax = await AsyncStorage.getItem('PR_AgeMax');
+    const storeBackground = await AsyncStorage.getItem('PR_Background');
 
     if (storedGender) {
       setGender(storedGender);
@@ -85,14 +91,14 @@ const PreferencesScreen = () => {
   };
 
   const storeNextScreen = async () => {
-    await AsyncStorage.setItem('prefGender', gender);
-    await AsyncStorage.setItem('preRadius', radius);
-    await AsyncStorage.setItem('prefViews', views);
-    await AsyncStorage.setItem('prefSect', sect);
-    await AsyncStorage.setItem('prefReligion', religion);
-    await AsyncStorage.setItem('prefBackground', JSON.stringify(background));
-    await AsyncStorage.setItem('preAgeMin', ageRange[0].toString());
-    await AsyncStorage.setItem('prefAgeMax', ageRange[1].toString());
+    await AsyncStorage.setItem('PR_Gender', gender);
+    await AsyncStorage.setItem('PR_Radius', radius);
+    await AsyncStorage.setItem('PR_Views', views);
+    await AsyncStorage.setItem('PR_Sect', sect);
+    await AsyncStorage.setItem('PR_Religion', religion);
+    await AsyncStorage.setItem('PR_Background', JSON.stringify(background));
+    await AsyncStorage.setItem('PR_AgeMin', ageRange[0].toString());
+    await AsyncStorage.setItem('PR_AgeMax', ageRange[1].toString());
     navigation.navigate('Photos');
   };
 
@@ -106,7 +112,7 @@ const PreferencesScreen = () => {
         <View
           style={[
             tailwind`flex`,
-            {marginTop: screenHeight * 0.1}, // 20% of screen height
+            {marginTop: screenHeight * 0.06}, // 20% of screen height
           ]}>
           <View style={tailwind`mt-2`}>
             <Text
@@ -114,15 +120,11 @@ const PreferencesScreen = () => {
                 tailwind`mt-2 text-3xl font-semibold`,
                 {color: themeColors.primary},
               ]}>
-              Preferences
+              Partner Preferences
             </Text>
           </View>
         </View>
-        <View
-          style={[
-            tailwind`w-full flex flex items-center`,
-            {marginTop: screenHeight * 0.02},
-          ]}></View>
+        <View style={tailwind`w-full flex flex items-center`}></View>
         <ScrollView style={tailwind`w-full flex-1`}>
           <AgeSliderSelect
             fieldName="Age Range"
@@ -131,39 +133,59 @@ const PreferencesScreen = () => {
             ageRange={ageRange}
             setAgeRange={setAgeRange}
           />
-          <GenderSelector
+          <StandardSelect
             fieldName="Gender"
             selected={gender}
             onSelect={setGender}
+            options={['Male', 'Female', 'Other']}
+            label="Gender"
           />
-          <DistanceSelect
+          <StandardSelect
             fieldName="Distance"
             selected={radius}
             onSelect={setRaidus}
+            options={[
+              'Close (50 miles)',
+              'Medium (100 miles)',
+              'Far (150 miles)',
+              'Everywhere (500+ miles)',
+            ]}
+            label="Distance"
           />
           <BackgroundSelect
             fieldName="Background"
-            options={[]}
+            options={backgroundOptions}
             selected={background}
             setSelected={setBackground}
             maxSelect={4}
           />
-          <ReligionSelect
+          <StandardSelect
             fieldName="Religion"
             selected={religion}
             onSelect={setReligion}
-            optional
+            options={religionOptions}
+            label="Religion"
           />
-          <ReligiousSectSelect
+          <StandardSelect
             fieldName="Religious Sect."
             selected={sect}
             onSelect={setSect}
+            options={religiousSectOptions}
+            label="Religious Sect."
             optional
           />
-          <ReligiousViewsSelect
+          <StandardSelect
             fieldName="Religious Views"
             selected={views}
             onSelect={setViews}
+            options={[
+              'Must align',
+              'Open to other religions',
+              'Open to other sects',
+              'Open to other practices',
+              'Prefer not to say',
+            ]}
+            label="Religious Views"
             optional
           />
         </ScrollView>
