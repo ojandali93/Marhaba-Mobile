@@ -86,66 +86,66 @@ const NoticiationsView = ({updateTab}: SettingsViewProps) => {
       </View>
       <View style={tailwind`flex-1`}>
         <View style={tailwind`flex-row items-center justify-between mb-1`}>
-          <Text style={tailwind`text-base font-semibold text-gray-800`}>
+          <Text style={tailwind`text-base font-semibold text-white`}>
             Messages
           </Text>
           <View style={{transform: [{scaleX: 0.8}, {scaleY: 0.8}]}}>
             <Switch
               value={messages}
               onValueChange={setMessages}
-              trackColor={{false: '#ccc', true: themeColors.primary}}
+              trackColor={{false: '#ccc', true: themeColors.primaryDark}}
               thumbColor={messages ? themeColors.primary : '#f4f3f4'}
             />
           </View>
         </View>
         <View style={tailwind`flex-row items-center justify-between mb-1`}>
-          <Text style={tailwind`text-base font-semibold text-gray-800`}>
+          <Text style={tailwind`text-base font-semibold text-white`}>
             Matches
           </Text>
           <View style={{transform: [{scaleX: 0.8}, {scaleY: 0.8}]}}>
             <Switch
               value={matches}
               onValueChange={setMatches}
-              trackColor={{false: '#ccc', true: themeColors.primary}}
+              trackColor={{false: '#ccc', true: themeColors.primaryDark}}
               thumbColor={matches ? themeColors.primary : '#f4f3f4'}
             />
           </View>
         </View>
         <View style={tailwind`flex-row items-center justify-between mb-1`}>
-          <Text style={tailwind`text-base font-semibold text-gray-800`}>
+          <Text style={tailwind`text-base font-semibold text-white`}>
             Likes
           </Text>
           <View style={{transform: [{scaleX: 0.8}, {scaleY: 0.8}]}}>
             <Switch
               value={likes}
               onValueChange={setLikes}
-              trackColor={{false: '#ccc', true: themeColors.primary}}
+              trackColor={{false: '#ccc', true: themeColors.primaryDark}}
               thumbColor={likes ? themeColors.primary : '#f4f3f4'}
             />
           </View>
         </View>
         <View style={tailwind`flex-row items-center justify-between mb-1`}>
-          <Text style={tailwind`text-base font-semibold text-gray-800`}>
+          <Text style={tailwind`text-base font-semibold text-white`}>
             Weekly Views
           </Text>
           <View style={{transform: [{scaleX: 0.8}, {scaleY: 0.8}]}}>
             <Switch
               value={weeklyViews}
               onValueChange={setWeeklyViews}
-              trackColor={{false: '#ccc', true: themeColors.primary}}
+              trackColor={{false: '#ccc', true: themeColors.primaryDark}}
               thumbColor={weeklyViews ? themeColors.primary : '#f4f3f4'}
             />
           </View>
         </View>
         <View style={tailwind`flex-row items-center justify-between mb-1`}>
-          <Text style={tailwind`text-base font-semibold text-gray-800`}>
+          <Text style={tailwind`text-base font-semibold text-white`}>
             Updates
           </Text>
           <View style={{transform: [{scaleX: 0.8}, {scaleY: 0.8}]}}>
             <Switch
               value={miscellanious}
               onValueChange={setMiscellanious}
-              trackColor={{false: '#ccc', true: themeColors.primary}}
+              trackColor={{false: '#ccc', true: themeColors.primaryDark}}
               thumbColor={miscellanious ? themeColors.primary : '#f4f3f4'}
             />
           </View>

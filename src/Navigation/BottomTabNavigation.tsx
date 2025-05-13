@@ -31,7 +31,7 @@ const BottomTabNavigation = () => {
 
   useEffect(() => {
     if (userId && profile?.admin) {
-      setIsAdmin(userId === '831a043d-ff7f-4d1a-81e5-86ddd48cfda8');
+      setIsAdmin(userId === 'c09a80ce-0af1-4d0c-806c-64ffaf5c8ac5');
     }
   }, [userId, profile]);
 

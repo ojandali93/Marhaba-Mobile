@@ -15,6 +15,7 @@ import EditSelect from '../Select/EditSelect';
 import EditTextInput from '../Select/EditTextInput';
 import axios from 'axios';
 import {useProfile} from '../../Context/ProfileContext';
+import {industries} from '../../Utils/SelectOptions';
 
 const EditCareetView = () => {
   const {profile, grabUserProfile} = useProfile();
@@ -22,14 +23,12 @@ const EditCareetView = () => {
   const [expandedAbout, setExpandedAbout] = useState(false);
   const [changeDetected, setChangeDetected] = useState(false);
 
-  const [job, setJob] = useState(profile?.Career[0].job || '');
-  const [company, setCompany] = useState(profile?.Career[0].company || '');
-  const [education, setEducation] = useState(
-    profile?.Career[0].education || '',
-  );
-  const [site, setSite] = useState(profile?.Career[0].site || '');
-  const [location, setLocation] = useState(profile?.Career[0].location || '');
-  const [fiveYear, setFiveYear] = useState(profile?.Career[0].fiveYear || '');
+  const [job, setJob] = useState<string>('');
+  const [company, setCompoany] = useState<string>('');
+  const [industry, setIndustry] = useState<string>('');
+  const [relocateWork, setRelocateWork] = useState<string>('');
+  const [site, setSite] = useState<string>('');
+  const [education, setEducation] = useState<string>('');
 
   useFocusEffect(
     useCallback(() => {
@@ -39,11 +38,11 @@ const EditCareetView = () => {
 
   const loadCoreViews = () => {
     setJob(profile?.Career[0].job);
-    setCompany(profile?.Career[0].company);
+    setCompoany(profile?.Career[0].company);
     setEducation(profile?.Career[0].education);
     setSite(profile?.Career[0].site);
-    setLocation(profile?.Career[0].location);
-    setFiveYear(profile?.Career[0].fiveYear);
+    setIndustry(profile?.Career[0].location);
+    setRelocateWork(profile?.Career[0].fiveYear);
   };
 
   const updateJob = async (newJob: string) => {
@@ -57,10 +56,10 @@ const EditCareetView = () => {
 
   const updateCompany = async (newValue: string) => {
     if (newValue !== company) {
-      setCompany(newValue);
+      setCompoany(newValue);
       setChangeDetected(true);
     } else {
-      setCompany(newValue);
+      setCompoany(newValue);
     }
   };
 
@@ -82,37 +81,41 @@ const EditCareetView = () => {
     }
   };
 
-  const updateLocation = async (newValue: string) => {
-    if (newValue !== location) {
-      setLocation(newValue);
+  const updateIndustry = async (newValue: string) => {
+    if (newValue !== industry) {
+      setIndustry(newValue);
       setChangeDetected(true);
     } else {
-      setLocation(newValue);
+      setIndustry(newValue);
     }
   };
 
-  const updateFiveYear = async (newValue: string) => {
-    if (newValue !== fiveYear) {
-      setFiveYear(newValue);
+  const updateRelocateWork = async (newValue: string) => {
+    console.log('Updating relocate work');
+    console.log(newValue);
+    if (newValue !== relocateWork) {
+      setRelocateWork(newValue);
       setChangeDetected(true);
     } else {
-      setFiveYear(newValue);
+      setRelocateWork(newValue);
     }
   };
 
   const updateUserProfile = async () => {
     try {
       if (changeDetected) {
+        console.log('Updating user profile');
+        console.log(job, company, site, relocateWork, education, industry);
         const response = await axios.put(
           'https://marhaba-server.onrender.com/api/account/updateCareer',
           {
-            userId: profile?.data?.userId,
-            job: job,
-            company: company,
-            education: education,
-            site: site,
-            location: location,
-            fiveYear: fiveYear,
+            userId: profile?.userId,
+            job,
+            company,
+            site,
+            relocate: relocateWork,
+            education,
+            industry,
           },
           {
             headers: {
@@ -177,40 +180,42 @@ const EditCareetView = () => {
         {expandedAbout && (
           <View
             style={[
-              tailwind`w-full flex flex-row items-center mb-5 mt-4 rounded-3`,
-              {backgroundColor: themeColors.darkSecondary},
+              tailwind`w-full flex flex-row items-center mb-5 mt-4 pb-3 rounded-2`,
+              {backgroundColor: themeColors.secondary},
             ]}>
             <View style={tailwind`w-full pr-1`}>
               <EditTextInput
-                fieldName="Current Job"
+                fieldName="Job"
                 selected={job}
                 onSelect={updateJob}
               />
               <EditTextInput
-                fieldName="Current Company"
+                fieldName="Company"
                 selected={company}
                 onSelect={updateCompany}
+              />
+              <EditSelect
+                fieldName="Industry"
+                selected={industry}
+                onSelect={updateIndustry}
+                options={industries}
+              />
+              <EditSelect
+                fieldName="Work Site"
+                selected={site}
+                onSelect={updateSite}
+                options={['Remote', 'On Site', 'Hybrid', 'Other']}
+              />
+              <EditSelect
+                fieldName="Relocate"
+                selected={relocateWork}
+                onSelect={updateRelocateWork}
+                options={['Yes', 'No', 'Maybe']}
               />
               <EditTextInput
                 fieldName="Education"
                 selected={education}
                 onSelect={updateEducation}
-              />
-              <EditSelect
-                fieldName="Site"
-                selected={site}
-                onSelect={updateSite}
-                options={['On Site', 'Remote', 'Hybrid', 'Other']}
-              />
-              <EditTextInput
-                fieldName="Location"
-                selected={location}
-                onSelect={updateLocation}
-              />
-              <EditTextInput
-                fieldName="Five Year Plan"
-                selected={fiveYear}
-                onSelect={updateFiveYear}
               />
             </View>
           </View>

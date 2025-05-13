@@ -177,10 +177,9 @@ const EitherOrEditView = () => {
       {expanded && (
         <ScrollView
           style={[
-            tailwind`mt-4 px-2 py-4 rounded-3`,
+            tailwind`mt-4 px-2 py-4 rounded-3 h-92`,
             {
-              marginTop: screenHeight * 0.02,
-              backgroundColor: themeColors.darkSecondary,
+              backgroundColor: themeColors.secondary,
             },
           ]}>
           {eitherOrQuestions.map((q, index) => {

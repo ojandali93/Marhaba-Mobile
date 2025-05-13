@@ -135,7 +135,7 @@ const CareerScreen = () => {
             selected={site}
             onSelect={setSite}
             optional
-            options={['Yes', 'No']}
+            options={['Remote', 'On Site', 'Hybrid', 'Other']}
             label="Work Site"
           />
           <StandardSelect

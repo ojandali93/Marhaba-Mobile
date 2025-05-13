@@ -108,7 +108,7 @@ const EditTraitsView = () => {
         <View
           style={[
             tailwind`px-2 pt-3 mb-3 mt-4 rounded-3`,
-            {backgroundColor: themeColors.darkSecondary},
+            {backgroundColor: themeColors.secondary},
           ]}>
           <View style={tailwind`px-5 pb-4`}>
             <Text style={tailwind`text-base text-gray-600`}>

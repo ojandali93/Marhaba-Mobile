@@ -105,8 +105,8 @@ const EditPromptsView = () => {
       {expanded && (
         <View
           style={[
-            tailwind`px-2 pb-4 mb-3 mt-4 rounded-3`,
-            {backgroundColor: themeColors.darkSecondary},
+            tailwind` pb-4 mb-3 mt-4 rounded-3`,
+            {backgroundColor: themeColors.secondary},
           ]}>
           {prompts.map((p, index) => (
             <EditTextInput

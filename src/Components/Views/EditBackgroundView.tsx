@@ -2,8 +2,10 @@ import {useFocusEffect} from '@react-navigation/native';
 import React, {useCallback, useState} from 'react';
 import {
   ActivityIndicator,
+  Alert,
   Dimensions,
   Image,
+  ScrollView,
   Text,
   TouchableOpacity,
   View,
@@ -16,16 +18,16 @@ import EditTextInput from '../Select/EditTextInput';
 import {heightsOptions} from '../../Utils/SelectOptions';
 import axios from 'axios';
 import {useProfile} from '../../Context/ProfileContext';
+import {backgroundOptions} from '../../Utils/SelectOptions';
 
-const EditProfileView = () => {
+const EditBackgroundView = () => {
   const {profile, grabUserProfile} = useProfile();
 
   const [expandProfile, setExpandProfile] = useState(false);
   const [changeDetected, setChangeDetected] = useState(false);
+  const [background, setBackground] = useState<string[]>([]);
 
-  const [name, setName] = useState(profile.name || '');
-  const [phone, setPhone] = useState(profile.dob || '');
-  const [height, setHeight] = useState(profile.height || '');
+  console.log('background: ', background.length);
 
   useFocusEffect(
     useCallback(() => {
@@ -34,47 +36,32 @@ const EditProfileView = () => {
   );
 
   const loadProfile = () => {
-    setName(profile?.name);
-    setPhone(profile?.About[0]?.phone);
-    setHeight(profile?.About[0]?.height);
+    setBackground(JSON.parse(profile?.About?.[0]?.background) || []);
   };
 
-  const updateName = async (newName: string) => {
-    if (newName !== name) {
-      setName(newName);
+  const updateBackground = (country: string) => {
+    const isSelected = background.includes(country);
+    if (isSelected) {
+      const newBackground = background.filter(c => c !== country);
+      setBackground(newBackground);
+      setChangeDetected(true);
+    } else if (background.length < 2) {
+      const newBackground = [...background, country];
+      setBackground(newBackground);
       setChangeDetected(true);
     } else {
-      setName(newName);
+      Alert.alert('Limit Reached', 'You can select up to 2 countries.');
     }
   };
 
-  const updatePhone = async (newName: string) => {
-    if (newName !== phone) {
-      setPhone(newName);
-      setChangeDetected(true);
-    } else {
-      setPhone(newName);
-    }
-  };
-
-  const updateHeight = async (newName: string) => {
-    if (newName !== height) {
-      setHeight(newName);
-      setChangeDetected(true);
-    } else {
-      setHeight(newName);
-    }
-  };
   const updateUserProfile = async () => {
     try {
       if (changeDetected) {
         const response = await axios.put(
-          'https://marhaba-server.onrender.com/api/account/updateProfile',
+          'https://marhaba-server.onrender.com/api/account/updateBackground',
           {
             userId: profile?.userId,
-            name: name,
-            phone: phone,
-            height: height,
+            background: JSON.stringify(background),
           },
           {
             headers: {
@@ -108,7 +95,7 @@ const EditProfileView = () => {
             {backgroundColor: themeColors.darkGrey},
           ]}>
           <Text style={tailwind`text-base font-semibold text-white`}>
-            Profile Info
+            Background
           </Text>
           {expandProfile ? (
             changeDetected ? (
@@ -137,34 +124,47 @@ const EditProfileView = () => {
       </TouchableOpacity>
       <View style={tailwind`flex-1`}>
         {expandProfile && (
-          <View
+          <ScrollView
             style={[
-              tailwind`w-full flex flex-row items-center mb-5 mt-4 pb-3 rounded-2`,
+              tailwind`w-full h-70 p-4 rounded-3 my-3`,
               {backgroundColor: themeColors.secondary},
             ]}>
-            <View style={tailwind`w-full pr-1`}>
-              <EditTextInput
-                fieldName="Name"
-                selected={name}
-                onSelect={updateName}
-              />
-              <EditTextInput
-                fieldName="Phone"
-                selected={phone}
-                onSelect={updatePhone}
-              />
-              <EditSelect
-                fieldName="Height"
-                selected={height}
-                onSelect={updateHeight}
-                options={heightsOptions}
-              />
+            <View style={tailwind`w-full flex flex-row items-center`}>
+              <View style={tailwind`flex-row flex-wrap`}>
+                {backgroundOptions.map((country, index) => {
+                  const isSelected = background.includes(country);
+                  return (
+                    <TouchableOpacity
+                      key={index}
+                      onPress={() => updateBackground(country)}
+                      style={[
+                        tailwind`px-2 py-1 m-1 rounded-full border`,
+                        {
+                          backgroundColor: isSelected
+                            ? themeColors.primary
+                            : themeColors.secondary,
+                          borderColor: themeColors.primary,
+                        },
+                      ]}>
+                      <Text
+                        style={[
+                          tailwind`text-base font-semibold`,
+                          {
+                            color: isSelected ? 'white' : themeColors.primary,
+                          },
+                        ]}>
+                        {country}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
             </View>
-          </View>
+          </ScrollView>
         )}
       </View>
     </View>
   );
 };
 
-export default EditProfileView;
+export default EditBackgroundView;

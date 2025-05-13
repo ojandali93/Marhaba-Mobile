@@ -13,19 +13,20 @@ import themeColors from '../../Utils/custonColors';
 import {Camera, ChevronsDown, ChevronsUp, X} from 'react-native-feather';
 import EditSelect from '../Select/EditSelect';
 import EditTextInput from '../Select/EditTextInput';
-import {heightsOptions} from '../../Utils/SelectOptions';
 import axios from 'axios';
 import {useProfile} from '../../Context/ProfileContext';
+import {religiousSectOptions, religionOptions} from '../../Utils/SelectOptions';
 
-const EditProfileView = () => {
+const EditReligion = () => {
   const {profile, grabUserProfile} = useProfile();
 
   const [expandProfile, setExpandProfile] = useState(false);
   const [changeDetected, setChangeDetected] = useState(false);
 
-  const [name, setName] = useState(profile.name || '');
-  const [phone, setPhone] = useState(profile.dob || '');
-  const [height, setHeight] = useState(profile.height || '');
+  const [religion, setReligion] = useState(profile.name || '');
+  const [sect, setSect] = useState(profile.dob || '');
+  const [practiicing, setPractiicing] = useState(profile.height || '');
+  const [openness, setOpenness] = useState(profile.height || '');
 
   useFocusEffect(
     useCallback(() => {
@@ -34,47 +35,59 @@ const EditProfileView = () => {
   );
 
   const loadProfile = () => {
-    setName(profile?.name);
-    setPhone(profile?.About[0]?.phone);
-    setHeight(profile?.About[0]?.height);
+    setReligion(profile?.Religion[0]?.religion);
+    setSect(profile?.Religion[0]?.sect);
+    setPractiicing(profile?.Religion[0]?.practiicing);
+    setOpenness(profile?.Religion[0]?.openness);
   };
 
-  const updateName = async (newName: string) => {
-    if (newName !== name) {
-      setName(newName);
+  const updateReligion = async (newReligion: string) => {
+    if (newReligion !== religion) {
+      setReligion(newReligion);
       setChangeDetected(true);
     } else {
-      setName(newName);
+      setReligion(newReligion);
     }
   };
 
-  const updatePhone = async (newName: string) => {
-    if (newName !== phone) {
-      setPhone(newName);
+  const updateSect = async (newSect: string) => {
+    if (newSect !== sect) {
+      setSect(newSect);
       setChangeDetected(true);
     } else {
-      setPhone(newName);
+      setSect(newSect);
     }
   };
 
-  const updateHeight = async (newName: string) => {
-    if (newName !== height) {
-      setHeight(newName);
+  const updatePractiicing = async (newPractiicing: string) => {
+    if (newPractiicing !== practiicing) {
+      setPractiicing(newPractiicing);
       setChangeDetected(true);
     } else {
-      setHeight(newName);
+      setPractiicing(newPractiicing);
     }
   };
+
+  const updateOpenness = async (newOpenness: string) => {
+    if (newOpenness !== openness) {
+      setOpenness(newOpenness);
+      setChangeDetected(true);
+    } else {
+      setOpenness(newOpenness);
+    }
+  };
+
   const updateUserProfile = async () => {
     try {
       if (changeDetected) {
         const response = await axios.put(
-          'https://marhaba-server.onrender.com/api/account/updateProfile',
+          'https://marhaba-server.onrender.com/api/account/updateReligion',
           {
             userId: profile?.userId,
-            name: name,
-            phone: phone,
-            height: height,
+            religion: religion,
+            sect: sect,
+            practicing: practiicing,
+            openness: openness,
           },
           {
             headers: {
@@ -108,7 +121,7 @@ const EditProfileView = () => {
             {backgroundColor: themeColors.darkGrey},
           ]}>
           <Text style={tailwind`text-base font-semibold text-white`}>
-            Profile Info
+            Religion
           </Text>
           {expandProfile ? (
             changeDetected ? (
@@ -143,21 +156,40 @@ const EditProfileView = () => {
               {backgroundColor: themeColors.secondary},
             ]}>
             <View style={tailwind`w-full pr-1`}>
-              <EditTextInput
-                fieldName="Name"
-                selected={name}
-                onSelect={updateName}
-              />
-              <EditTextInput
-                fieldName="Phone"
-                selected={phone}
-                onSelect={updatePhone}
+              <EditSelect
+                fieldName="Religion"
+                selected={religion}
+                onSelect={updateReligion}
+                options={religionOptions}
               />
               <EditSelect
-                fieldName="Height"
-                selected={height}
-                onSelect={updateHeight}
-                options={heightsOptions}
+                fieldName="Sect"
+                selected={sect}
+                onSelect={updateSect}
+                options={religiousSectOptions}
+              />
+              <EditSelect
+                fieldName="Practiicing"
+                selected={practiicing}
+                onSelect={updatePractiicing}
+                options={[
+                  'Very Practicing',
+                  'Somewhat Practicing',
+                  'Not Practicing',
+                  'Prefer not to say',
+                ]}
+              />
+              <EditSelect
+                fieldName="Openness"
+                selected={openness}
+                onSelect={updateOpenness}
+                options={[
+                  'Must align',
+                  'Open to other religions',
+                  'Open to other sects',
+                  'Open to other practices',
+                  'Prefer not to say',
+                ]}
               />
             </View>
           </View>
@@ -167,4 +199,4 @@ const EditProfileView = () => {
   );
 };
 
-export default EditProfileView;
+export default EditReligion;

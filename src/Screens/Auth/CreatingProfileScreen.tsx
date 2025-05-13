@@ -55,17 +55,19 @@ const CreatingProfileScreen = () => {
 
   const createProfile = async (userId: string) => {
     const email = await AsyncStorage.getItem('SU_email');
+    const name = await AsyncStorage.getItem('E_name');
 
     axios
       .post('https://marhaba-server.onrender.com/api/account/createProfile', {
         userId,
         email,
+        name,
         fcmToken: null,
         approved: 'review',
         tier: 1,
         longitude: null,
         latitude: null,
-        visibility: 'Online',
+        visibility: 'Public',
         agreements: true,
       })
       .then(response => {

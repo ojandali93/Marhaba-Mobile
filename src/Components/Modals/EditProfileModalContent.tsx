@@ -13,6 +13,13 @@ import EditCareetView from '../Views/EditCareetView';
 import EditPromptsView from '../Views/EditPromptsView';
 import EditTraitsView from '../Views/EditTraitsView';
 import EitherOrEditView from '../Views/EitherOrView';
+import EditBackgroundView from '../Views/EditBackgroundView';
+import EditIntent from '../Views/EditIntent';
+import EditHabits from '../Views/EditHabits';
+import EditReligion from '../Views/EditReligion';
+import EditCore from '../Views/EditCore';
+import EditRelationshipDynamics from '../Views/EditRelationshipDynamics';
+import EditFuture from '../Views/EditFuture';
 
 const EditProfileModalContent = ({
   updateTab,
@@ -40,16 +47,28 @@ const EditProfileModalContent = ({
         <EditProfileView />
       </View>
       <View style={tailwind`w-full flex flex-col`}>
-        <EditEssentialsView />
+        <EditBackgroundView />
       </View>
       <View style={tailwind`w-full flex flex-col`}>
-        <EditCoreViews />
+        <EditIntent />
       </View>
       <View style={tailwind`w-full flex flex-col`}>
-        <EditFutureView />
+        <EditHabits />
+      </View>
+      <View style={tailwind`w-full flex flex-col`}>
+        <EditReligion />
+      </View>
+      <View style={tailwind`w-full flex flex-col`}>
+        <EditCore />
+      </View>
+      <View style={tailwind`w-full flex flex-col`}>
+        <EditRelationshipDynamics />
       </View>
       <View style={tailwind`w-full flex flex-col`}>
         <EditCareetView />
+      </View>
+      <View style={tailwind`w-full flex flex-col`}>
+        <EditFuture />
       </View>
       <View style={tailwind`w-full flex flex-col`}>
         <EditPromptsView />

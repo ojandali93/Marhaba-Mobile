@@ -13,19 +13,26 @@ import themeColors from '../../Utils/custonColors';
 import {Camera, ChevronsDown, ChevronsUp, X} from 'react-native-feather';
 import EditSelect from '../Select/EditSelect';
 import EditTextInput from '../Select/EditTextInput';
-import {heightsOptions} from '../../Utils/SelectOptions';
+import {
+  intentionsOptions,
+  timelineOptions,
+  importanceMarriageOptions,
+  marriageStatusOptions,
+} from '../../Utils/SelectOptions';
 import axios from 'axios';
 import {useProfile} from '../../Context/ProfileContext';
 
-const EditProfileView = () => {
+const EditFuture = () => {
   const {profile, grabUserProfile} = useProfile();
 
   const [expandProfile, setExpandProfile] = useState(false);
   const [changeDetected, setChangeDetected] = useState(false);
 
-  const [name, setName] = useState(profile.name || '');
-  const [phone, setPhone] = useState(profile.dob || '');
-  const [height, setHeight] = useState(profile.height || '');
+  const [career, setCareer] = useState(profile.name || '');
+  const [finances, setFinances] = useState(profile.dob || '');
+  const [pace, setPace] = useState(profile.height || '');
+  const [location, setLocation] = useState(profile.height || '');
+  const [fiveYears, setFiveYears] = useState(profile.height || '');
 
   useFocusEffect(
     useCallback(() => {
@@ -34,47 +41,70 @@ const EditProfileView = () => {
   );
 
   const loadProfile = () => {
-    setName(profile?.name);
-    setPhone(profile?.About[0]?.phone);
-    setHeight(profile?.About[0]?.height);
+    setCareer(profile?.Future[0]?.career);
+    setFinances(profile?.Future[0]?.finances);
+    setPace(profile?.Future[0]?.pace);
+    setLocation(profile?.Future[0]?.location);
+    setFiveYears(profile?.Future[0]?.fiveYear);
   };
 
-  const updateName = async (newName: string) => {
-    if (newName !== name) {
-      setName(newName);
+  const updateCareer = async (newCareer: string) => {
+    if (newCareer !== career) {
+      setCareer(newCareer);
       setChangeDetected(true);
     } else {
-      setName(newName);
+      setCareer(newCareer);
     }
   };
 
-  const updatePhone = async (newName: string) => {
-    if (newName !== phone) {
-      setPhone(newName);
+  const updateFinances = async (newFinances: string) => {
+    if (newFinances !== finances) {
+      setFinances(newFinances);
       setChangeDetected(true);
     } else {
-      setPhone(newName);
+      setFinances(newFinances);
     }
   };
 
-  const updateHeight = async (newName: string) => {
-    if (newName !== height) {
-      setHeight(newName);
+  const updatePace = async (newPace: string) => {
+    if (newPace !== pace) {
+      setPace(newPace);
       setChangeDetected(true);
     } else {
-      setHeight(newName);
+      setPace(newPace);
     }
   };
+
+  const updateLocation = async (newLocation: string) => {
+    if (newLocation !== location) {
+      setLocation(newLocation);
+      setChangeDetected(true);
+    } else {
+      setLocation(newLocation);
+    }
+  };
+
+  const updateFiveYears = async (newFiveYears: string) => {
+    if (newFiveYears !== fiveYears) {
+      setFiveYears(newFiveYears);
+      setChangeDetected(true);
+    } else {
+      setFiveYears(newFiveYears);
+    }
+  };
+
   const updateUserProfile = async () => {
     try {
       if (changeDetected) {
         const response = await axios.put(
-          'https://marhaba-server.onrender.com/api/account/updateProfile',
+          'https://marhaba-server.onrender.com/api/account/updateIntent',
           {
             userId: profile?.userId,
-            name: name,
-            phone: phone,
-            height: height,
+            career: career,
+            finances: finances,
+            pace: pace,
+            location: location,
+            fiveYear: fiveYears,
           },
           {
             headers: {
@@ -108,7 +138,7 @@ const EditProfileView = () => {
             {backgroundColor: themeColors.darkGrey},
           ]}>
           <Text style={tailwind`text-base font-semibold text-white`}>
-            Profile Info
+            The Future
           </Text>
           {expandProfile ? (
             changeDetected ? (
@@ -143,21 +173,56 @@ const EditProfileView = () => {
               {backgroundColor: themeColors.secondary},
             ]}>
             <View style={tailwind`w-full pr-1`}>
-              <EditTextInput
-                fieldName="Name"
-                selected={name}
-                onSelect={updateName}
-              />
-              <EditTextInput
-                fieldName="Phone"
-                selected={phone}
-                onSelect={updatePhone}
+              <EditSelect
+                fieldName="Career Ambition"
+                selected={career}
+                onSelect={updateCareer}
+                options={[
+                  'Very Ambitious',
+                  'Balanced',
+                  'Flexible',
+                  'Simple Lifestyle',
+                  'Other',
+                ]}
               />
               <EditSelect
-                fieldName="Height"
-                selected={height}
-                onSelect={updateHeight}
-                options={heightsOptions}
+                fieldName="Financial Ambition"
+                selected={finances}
+                onSelect={updateFinances}
+                options={[
+                  'Very Ambitious',
+                  'Balanced',
+                  'Flexible',
+                  'Simple Lifestyle',
+                  'Other',
+                ]}
+              />
+              <EditSelect
+                fieldName="Pace"
+                selected={pace}
+                onSelect={updatePace}
+                options={['Fast', 'Moderate', 'Slow', 'Flexible', 'Other']}
+              />
+              <EditSelect
+                fieldName="Location"
+                selected={location}
+                onSelect={updateLocation}
+                options={[
+                  'Stay near family',
+                  'Open to relocating',
+                  'Desire to move abroad',
+                  'No strong preference',
+                  'Other',
+                ]}
+              />
+              <EditTextInput
+                fieldName="Five Years"
+                value={fiveYears}
+                changeText={setFiveYears}
+                valid={true}
+                label="5 Year Plan"
+                multiline
+                optional
               />
             </View>
           </View>
@@ -167,4 +232,4 @@ const EditProfileView = () => {
   );
 };
 
-export default EditProfileView;
+export default EditFuture;

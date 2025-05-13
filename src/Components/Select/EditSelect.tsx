@@ -19,7 +19,7 @@ const EditSelect = ({
   fieldName,
   selected,
   onSelect,
-  options
+  options,
 }: GenderPickerProps) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [tempSelection, setTempSelection] = useState(selected || options[0]);
@@ -32,12 +32,16 @@ const EditSelect = ({
       <TouchableOpacity
         onPress={() => setModalVisible(true)}
         style={tailwind`w-full justify-center px-4 py-2`}>
-        <View style={tailwind`w-full flex flex-row items-center justify-between`}>
-            <Text style={tailwind`text-base text-gray-800 italic`}>{fieldName}</Text>
+        <View
+          style={tailwind`w-full flex flex-row items-center justify-between`}>
+          <Text style={tailwind`text-base text-gray-800 italic`}>
+            {fieldName}
+          </Text>
         </View>
 
         {/* Display selected gender */}
-        <Text style={tailwind`text-lg text-gray-800 border-b-2 border-gray-700`}>
+        <Text
+          style={tailwind`text-base text-gray-800 w-full border-2 border-slate-600 rounded-2 px-2 py-2 mt-1`}>
           {selected || `Select ${fieldName}`}
         </Text>
       </TouchableOpacity>
