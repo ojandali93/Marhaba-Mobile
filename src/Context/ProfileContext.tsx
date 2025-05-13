@@ -87,6 +87,7 @@ export const ProfileProvider = ({children}: {children: React.ReactNode}) => {
         `https://marhaba-server.onrender.com/api/user/${userId}`,
       );
       if (response.data) {
+        console.log('response.data: ', JSON.stringify(response.data));
         setProfile(response.data.data[0]);
         setUserId(userId);
       }

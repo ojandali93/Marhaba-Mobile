@@ -149,9 +149,9 @@ const EitherOrEditView = () => {
         <View
           style={[
             tailwind`w-full flex flex-row items-center justify-between p-3 rounded-2`,
-            {backgroundColor: themeColors.darkSecondary},
+            {backgroundColor: themeColors.darkGrey},
           ]}>
-          <Text style={tailwind`text-base font-semibold text-gray-800`}>
+          <Text style={tailwind`text-base font-semibold text-white`}>
             Either / Or
           </Text>
           {expanded ? (
@@ -176,7 +176,13 @@ const EitherOrEditView = () => {
 
       {expanded && (
         <ScrollView
-          style={[tailwind`mt-4 px-2`, {marginTop: screenHeight * 0.02}]}>
+          style={[
+            tailwind`mt-4 px-2 py-4 rounded-3`,
+            {
+              marginTop: screenHeight * 0.02,
+              backgroundColor: themeColors.darkSecondary,
+            },
+          ]}>
           {eitherOrQuestions.map((q, index) => {
             const [value, setFunc, key] = questionStateMap[q.question];
             return (

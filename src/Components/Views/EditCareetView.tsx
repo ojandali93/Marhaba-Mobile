@@ -143,9 +143,9 @@ const EditCareetView = () => {
         <View
           style={[
             tailwind`w-full flex flex-row items-center justify-between p-3 rounded-2`,
-            {backgroundColor: themeColors.darkSecondary},
+            {backgroundColor: themeColors.darkGrey},
           ]}>
-          <Text style={tailwind`text-base font-semibold text-gray-800`}>
+          <Text style={tailwind`text-base font-semibold text-white`}>
             Career & Education
           </Text>
           {expandedAbout ? (
@@ -175,7 +175,11 @@ const EditCareetView = () => {
       </TouchableOpacity>
       <View style={tailwind`flex-1`}>
         {expandedAbout && (
-          <View style={tailwind`w-full flex flex-row items-center mb-5`}>
+          <View
+            style={[
+              tailwind`w-full flex flex-row items-center mb-5 mt-4 rounded-3`,
+              {backgroundColor: themeColors.darkSecondary},
+            ]}>
             <View style={tailwind`w-full pr-1`}>
               <EditTextInput
                 fieldName="Current Job"

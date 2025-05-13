@@ -64,9 +64,9 @@ const SettingsView = ({updateTab}: SettingsViewProps) => {
         onPress={() => setActiveModal('email')}
         style={[
           tailwind`flex-row justify-between items-center p-4 rounded-2`,
-          {backgroundColor: themeColors.darkSecondary},
+          {backgroundColor: themeColors.darkGrey},
         ]}>
-        <Text style={tailwind`text-base font-semibold text-gray-800`}>
+        <Text style={tailwind`text-base font-semibold text-white`}>
           Edit Email
         </Text>
         <ChevronsRight height={24} width={24} color={themeColors.primary} />
@@ -77,9 +77,9 @@ const SettingsView = ({updateTab}: SettingsViewProps) => {
         onPress={() => setActiveModal('password')}
         style={[
           tailwind`flex-row justify-between items-center p-4 mt-2 rounded-2`,
-          {backgroundColor: themeColors.darkSecondary},
+          {backgroundColor: themeColors.darkGrey},
         ]}>
-        <Text style={tailwind`text-base font-semibold text-gray-800`}>
+        <Text style={tailwind`text-base font-semibold text-white`}>
           Edit Password
         </Text>
         <ChevronsRight height={24} width={24} color={themeColors.primary} />
@@ -90,23 +90,10 @@ const SettingsView = ({updateTab}: SettingsViewProps) => {
         onPress={() => setActiveModal('phone')}
         style={[
           tailwind`flex-row justify-between items-center p-4 mt-2 rounded-2`,
-          {backgroundColor: themeColors.darkSecondary},
+          {backgroundColor: themeColors.darkGrey},
         ]}>
-        <Text style={tailwind`text-base font-semibold text-gray-800`}>
+        <Text style={tailwind`text-base font-semibold text-white`}>
           Edit Phone
-        </Text>
-        <ChevronsRight height={24} width={24} color={themeColors.primary} />
-      </TouchableOpacity>
-
-      {/* Verify Email */}
-      <TouchableOpacity
-        onPress={() => setActiveModal('verify')}
-        style={[
-          tailwind`flex-row justify-between items-center p-4 mt-2 rounded-2`,
-          {backgroundColor: themeColors.darkSecondary},
-        ]}>
-        <Text style={tailwind`text-base font-semibold text-gray-800`}>
-          Verify Email
         </Text>
         <ChevronsRight height={24} width={24} color={themeColors.primary} />
       </TouchableOpacity>
@@ -119,9 +106,9 @@ const SettingsView = ({updateTab}: SettingsViewProps) => {
         onPress={() => updateTab('blockedUsers')}
         style={[
           tailwind`flex-row justify-between items-center p-4 mt-2 rounded-2`,
-          {backgroundColor: themeColors.darkSecondary},
+          {backgroundColor: themeColors.darkGrey},
         ]}>
-        <Text style={tailwind`text-base font-semibold text-gray-800`}>
+        <Text style={tailwind`text-base font-semibold text-white`}>
           Blocked Users
         </Text>
         <ChevronsRight height={24} width={24} color={themeColors.primary} />
@@ -135,9 +122,9 @@ const SettingsView = ({updateTab}: SettingsViewProps) => {
         onPress={() => setActiveModal('billing')}
         style={[
           tailwind`flex-row justify-between items-center p-4 rounded-2`,
-          {backgroundColor: themeColors.darkSecondary},
+          {backgroundColor: themeColors.darkGrey},
         ]}>
-        <Text style={tailwind`text-base font-semibold text-gray-800`}>
+        <Text style={tailwind`text-base font-semibold text-white`}>
           Billing
         </Text>
         <ChevronsRight height={24} width={24} color={themeColors.primary} />
@@ -146,9 +133,9 @@ const SettingsView = ({updateTab}: SettingsViewProps) => {
         onPress={() => setActiveModal('pastTransactions')}
         style={[
           tailwind`flex-row justify-between items-center p-4 mt-2 rounded-2`,
-          {backgroundColor: themeColors.darkSecondary},
+          {backgroundColor: themeColors.darkGrey},
         ]}>
-        <Text style={tailwind`text-base font-semibold text-gray-800`}>
+        <Text style={tailwind`text-base font-semibold text-white`}>
           Past Transactions
         </Text>
         <ChevronsRight height={24} width={24} color={themeColors.primary} />
@@ -157,9 +144,9 @@ const SettingsView = ({updateTab}: SettingsViewProps) => {
         onPress={() => setActiveModal('restore')}
         style={[
           tailwind`flex-row justify-between items-center p-4 mt-2 rounded-2`,
-          {backgroundColor: themeColors.darkSecondary},
+          {backgroundColor: themeColors.darkGrey},
         ]}>
-        <Text style={tailwind`text-base font-semibold text-gray-800`}>
+        <Text style={tailwind`text-base font-semibold text-white`}>
           Restore Purchase
         </Text>
         <ChevronsRight height={24} width={24} color={themeColors.primary} />
@@ -173,20 +160,18 @@ const SettingsView = ({updateTab}: SettingsViewProps) => {
         onPress={() => updateTab('faq')}
         style={[
           tailwind`flex-row justify-between items-center p-4 rounded-2`,
-          {backgroundColor: themeColors.darkSecondary},
+          {backgroundColor: themeColors.darkGrey},
         ]}>
-        <Text style={tailwind`text-base font-semibold text-gray-800`}>
-          FAQ's
-        </Text>
+        <Text style={tailwind`text-base font-semibold text-white`}>FAQ's</Text>
         <ChevronsRight height={24} width={24} color={themeColors.primary} />
       </TouchableOpacity>
       <TouchableOpacity
         onPress={() => updateTab('contact')}
         style={[
           tailwind`flex-row justify-between items-center p-4 mt-2 rounded-2`,
-          {backgroundColor: themeColors.darkSecondary},
+          {backgroundColor: themeColors.darkGrey},
         ]}>
-        <Text style={tailwind`text-base font-semibold text-gray-800`}>
+        <Text style={tailwind`text-base font-semibold text-white`}>
           Contact Us
         </Text>
         <ChevronsRight height={24} width={24} color={themeColors.primary} />
@@ -195,9 +180,9 @@ const SettingsView = ({updateTab}: SettingsViewProps) => {
         onPress={() => updateTab('bug')}
         style={[
           tailwind`flex-row justify-between items-center p-4 mt-2 rounded-2`,
-          {backgroundColor: themeColors.darkSecondary},
+          {backgroundColor: themeColors.darkGrey},
         ]}>
-        <Text style={tailwind`text-base font-semibold text-gray-800`}>
+        <Text style={tailwind`text-base font-semibold text-white`}>
           Report A Bug
         </Text>
         <ChevronsRight height={24} width={24} color={themeColors.primary} />
@@ -212,9 +197,9 @@ const SettingsView = ({updateTab}: SettingsViewProps) => {
         }
         style={[
           tailwind`flex-row justify-between items-center p-4 mt-2 rounded-2`,
-          {backgroundColor: themeColors.darkSecondary},
+          {backgroundColor: themeColors.darkGrey},
         ]}>
-        <Text style={tailwind`text-base font-semibold text-gray-800`}>
+        <Text style={tailwind`text-base font-semibold text-white`}>
           Terms of Service
         </Text>
         <ChevronsRight height={24} width={24} color={themeColors.primary} />
@@ -228,9 +213,9 @@ const SettingsView = ({updateTab}: SettingsViewProps) => {
         }
         style={[
           tailwind`flex-row justify-between items-center p-4 mt-2 rounded-2`,
-          {backgroundColor: themeColors.darkSecondary},
+          {backgroundColor: themeColors.darkGrey},
         ]}>
-        <Text style={tailwind`text-base font-semibold text-gray-800`}>
+        <Text style={tailwind`text-base font-semibold text-white`}>
           Privacy Policy
         </Text>
         <ChevronsRight height={24} width={24} color={themeColors.primary} />
@@ -244,9 +229,9 @@ const SettingsView = ({updateTab}: SettingsViewProps) => {
         }
         style={[
           tailwind`flex-row justify-between items-center p-4 mt-2 rounded-2`,
-          {backgroundColor: themeColors.darkSecondary},
+          {backgroundColor: themeColors.darkGrey},
         ]}>
-        <Text style={tailwind`text-base font-semibold text-gray-800`}>
+        <Text style={tailwind`text-base font-semibold text-white`}>
           End User License Agreement (EULA)
         </Text>
         <ChevronsRight height={24} width={24} color={themeColors.primary} />

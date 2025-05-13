@@ -197,9 +197,9 @@ const EditPhotosView = () => {
         <View
           style={[
             tailwind`w-full flex flex-row items-center justify-between p-3 rounded-2`,
-            {backgroundColor: themeColors.darkSecondary},
+            {backgroundColor: themeColors.darkGrey},
           ]}>
-          <Text style={tailwind`text-base font-semibold text-gray-800`}>
+          <Text style={tailwind`text-base font-semibold text-white`}>
             Photos
           </Text>
           {expandPhotos ? (

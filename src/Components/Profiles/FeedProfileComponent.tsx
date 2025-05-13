@@ -100,63 +100,31 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
   if (!profile) return null;
 
   const user = profile;
+  const profileId = profile.userId;
   const about = user?.About?.[0] ?? {};
-  const anger = user?.Anger ?? {};
-  const attachment = user?.Attachment ?? {};
   const career = user?.Career?.[0] ?? {};
-  const communicationStyles = user?.Communication ?? [];
   const core = user?.Core[0] ?? [];
-  const emotions = user?.Emotions[0] ?? [];
   const future = user?.Future[0] ?? [];
-  const lifestyle = user?.Lifestyle[0] ?? [];
-  const loveLanguages = user?.Love ?? [];
+  const habits = user?.Habits[0] ?? [];
+  const intentions = user?.Intent[0] ?? [];
   const photos = user?.Photos ?? [];
   const preferences = user?.Preferences[0] ?? [];
   const prompts = user?.Prompts ?? [];
+  console.log('prompts', JSON.stringify(prompts));
+  const relationships = user?.Relationships[0] ?? [];
+  const religion = user?.Religion[0] ?? [];
   const survey = user?.Survey[0] ?? [];
-  const time = user?.Time ?? [];
   const tags = user?.Tags ?? [];
-  const values: Value[] = user?.Values ?? [];
-  const prompt = prompts?.[0];
-  const age = user?.dob ? getAgeFromDOB(user.dob) : '—';
-  const drink = about?.drink;
-  const name = user?.name ?? 'N/A';
-  const smoke = about?.smoke;
-  const hasKids = about?.hasKids;
-  let background: string[] = [];
+  const age = about?.dob ? getAgeFromDOB(about.dob) : '—';
 
-  try {
-    if (typeof about?.background === 'string') {
-      background = about.background.includes('[')
-        ? JSON.parse(about.background)
-        : about.background.split(',').map(s => s.trim());
-    } else if (Array.isArray(about?.background)) {
-      background = about.background;
-    }
-  } catch (e) {
-    console.warn('Failed to parse background:', about?.background, e);
-    background = [];
-  }
-  const religion = about?.religion;
-  const job = career?.job;
-  const company = career?.company;
-  const height = user?.height;
-  const lookingFor = about?.lookingFor;
-  const timeline = about?.timeline;
-  const sect = about?.sect;
-  const profileId = user?._id ?? user?.userId;
+  const background = JSON.parse(about?.background) ?? [];
+  const loveLanguages = JSON.parse(relationships.loveLanguages) ?? [];
 
   const photoUrl = photos?.[photoIndex]?.photoUrl;
 
   const handleImageTap = () => {
     if (photos.length <= 1) return;
     setPhotoIndex(prev => (prev + 1) % photos.length);
-  };
-
-  const handleOpenSuperlikeModal = () => {
-    if (isInteracting) return;
-    setShowFullProfile(false);
-    setIsModalVisible(true);
   };
 
   const handleSendSuperlike = () => {
@@ -265,7 +233,7 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
             <View
               key={idx}
               style={[
-                tailwind`mx-1 w-3 h-3 rounded-full`,
+                tailwind`mx-1 w-2 h-2 rounded-full`,
                 {
                   backgroundColor:
                     idx === photoIndex
@@ -295,7 +263,7 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                     tailwind`text-3xl font-bold text-white`,
                     {color: themeColors.primary},
                   ]}>
-                  {name} {`(${age})`}
+                  {about.name} {`(${age})`}
                 </Text>
                 <Text
                   style={[
@@ -320,18 +288,22 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
 
             <View style={tailwind` px-3`}>
               <Text style={tailwind`text-base text-white`}>
-                {height ? `${height} • ` : ''}
-                {religion ? `${religion}${sect ? ` (${sect})` : ''} • ` : ''}
-                {job ?? ''}
+                {about.height ? `${about.height} • ` : ''}
+                {religion.religion
+                  ? `${religion.religion}${
+                      religion.sect ? ` (${religion.sect})` : ''
+                    } • `
+                  : ''}
+                {career.job ?? ''}
               </Text>
             </View>
 
-            {(lookingFor || timeline) && (
-              <View style={tailwind`mt-1 px-3`}>
+            {(intentions.intentions || intentions.timeline) && (
+              <View style={tailwind`mt-1 px-3 pb-3`}>
                 <Text style={tailwind`font-semibold text-base text-white`}>
-                  {lookingFor}
-                  {lookingFor && timeline ? ' • ' : ''}
-                  {timeline}
+                  {intentions.intentions}
+                  {intentions.timeline ? ' • ' : ''}
+                  {intentions.timeline}
                 </Text>
               </View>
             )}
@@ -343,12 +315,12 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                 </Text>
               </View>
             )} */}
-            {prompt?.response && (
+            {prompts[0]?.response && (
               <View style={tailwind`mt-2 px-3 pb-3`}>
                 <Text
                   numberOfLines={1}
                   style={tailwind`font-semibold text-lg text-white`}>
-                  {`"${prompt.response}"`}
+                  {`"${prompts[0].response}"`}
                 </Text>
               </View>
             )}
@@ -356,7 +328,7 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
             <TouchableWithoutFeedback onPress={handleToggleFullProfile}>
               <View
                 style={[
-                  tailwind`flex flex-row items-center justify-center rounded-2 p-4`,
+                  tailwind`flex flex-row items-center justify-center p-4`,
                   {backgroundColor: themeColors.darkGrey},
                 ]}>
                 <ChevronsUp
@@ -488,12 +460,12 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                     tailwind`text-4xl font-bold`,
                     {color: themeColors.primary},
                   ]}>
-                  {name}
+                  {about.name}
                 </Text>
                 <View style={tailwind`mt-8 flex flex-col`}>
                   <View style={tailwind`flex flex-row items-center`}>
                     <View style={tailwind`pr-2 w-1/2`}>
-                      <SingleInfoFull label="Height" value={height} />
+                      <SingleInfoFull label="Height" value={about.height} />
                     </View>
                     <View style={tailwind`w-1/2`}>
                       <SingleInfoFull label="Age" value={`${age} years old`} />
@@ -503,24 +475,17 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                     <View style={tailwind`pr-2 w-1/2`}>
                       <SingleInfoFull
                         label="Looking For"
-                        value={lookingFor ? `${lookingFor}` : ''}
-                      />
-                    </View>
-                    <View style={tailwind`w-1/2`}>
-                      <SingleInfoFull label="Timeline" value={timeline} />
-                    </View>
-                  </View>
-                  <View style={tailwind`flex flex-row items-center mt-2`}>
-                    <View style={tailwind`pr-2 w-1/2`}>
-                      <SingleInfoFull
-                        label="Drinking"
-                        value={drink ? `${drink}` : 'Unknown'}
+                        value={
+                          intentions.intentions
+                            ? `${intentions.intentions}`
+                            : ''
+                        }
                       />
                     </View>
                     <View style={tailwind`w-1/2`}>
                       <SingleInfoFull
-                        label="Smoking"
-                        value={smoke ? `${smoke}` : 'Unknown'}
+                        label="Timeline"
+                        value={intentions.timeline}
                       />
                     </View>
                   </View>
@@ -542,17 +507,43 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                       />
                     </View>
                     <View style={tailwind`w-1/2`}>
-                      <SingleInfoFull label="Relocate" value={about.travel} />
+                      <SingleInfoFull
+                        label="Relocate"
+                        value={intentions.relocate}
+                      />
                     </View>
                   </View>
                   <View style={tailwind`flex flex-row items-center mt-2`}>
                     <View style={tailwind`pr-2 w-1/2`}>
-                      <SingleInfoFull label="Religion" value={religion} />
+                      <SingleInfoFull
+                        label="Religion"
+                        value={religion.religion}
+                      />
                     </View>
                     <View style={tailwind`w-1/2`}>
                       <SingleInfoFull
                         label="Sect"
-                        value={sect ? `${sect}` : 'Unknown'}
+                        value={religion.sect ? `${religion.sect}` : 'Unknown'}
+                      />
+                    </View>
+                  </View>
+                  <View style={tailwind`flex flex-row items-center mt-2`}>
+                    <View style={tailwind`pr-2 w-1/2`}>
+                      <SingleInfoFull
+                        label="Practicin"
+                        value={
+                          religion.practicing
+                            ? `${religion.practicing}`
+                            : 'Unknown'
+                        }
+                      />
+                    </View>
+                    <View style={tailwind`w-1/2`}>
+                      <SingleInfoFull
+                        label="Openness"
+                        value={
+                          religion.openness ? `${religion.openness}` : 'Unknown'
+                        }
                       />
                     </View>
                   </View>
@@ -561,7 +552,7 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                     <View style={tailwind`pr-2 w-full`}>
                       <SingleInfoFull
                         label="Career"
-                        value={`${job} @ ${company}`}
+                        value={`${career.job} @ ${career.company}`}
                       />
                     </View>
                   </View>
@@ -575,28 +566,44 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                       />
                     </View>
                   </View>
+                  {career.industry || career.site ? (
+                    <View style={tailwind`flex flex-row items-center mt-2`}>
+                      <View style={tailwind`pr-2 w-1/2`}>
+                        <SingleInfoFull
+                          label="Industry"
+                          value={career.industry ? career.industry : 'Unknown'}
+                        />
+                      </View>
+                      <View style={tailwind`w-1/2`}>
+                        <SingleInfoFull
+                          label="Site"
+                          value={career.site ? `${career.site}` : 'Unknown'}
+                        />
+                      </View>
+                    </View>
+                  ) : null}
                   {career.fiveYears ? (
                     <View style={tailwind`flex flex-row items-center mt-2`}>
                       <View style={tailwind`pr-2 w-full`}>
                         <SingleInfoFull
                           label="Five Years"
-                          value={career.fiveYears}
+                          value={future.fiveYears}
                         />
                       </View>
                     </View>
                   ) : null}
                 </View>
 
-                {prompts.filter((p: Prompt) => p.response)?.length > 0 && (
-                  <View style={tailwind`mt-4`}>
-                    <Text
-                      style={[
-                        tailwind`text-3xl font-bold mb-1`,
-                        {color: themeColors.primary},
-                      ]}>
-                      Prompts
-                    </Text>
-                    {prompts.map(
+                <View style={tailwind`mt-12`}>
+                  <Text
+                    style={[
+                      tailwind`text-3xl font-bold mb-4`,
+                      {color: themeColors.primary},
+                    ]}>
+                    Prompts
+                  </Text>
+                  {prompts.length > 0 &&
+                    prompts.map(
                       (item: Prompt, index) =>
                         item.response && (
                           <View style={tailwind`w-full mt-3`} key={index}>
@@ -607,13 +614,12 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                           </View>
                         ),
                     )}
-                  </View>
-                )}
+                </View>
 
-                <View style={tailwind`mt-4`}>
+                <View style={tailwind`mt-12`}>
                   <Text
                     style={[
-                      tailwind`text-3xl font-bold mb-4`,
+                      tailwind`text-3xl font-bold mb-6`,
                       {color: themeColors.primary},
                     ]}>
                     Core Values
@@ -640,69 +646,56 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                     </View>
                     <View style={tailwind`flex flex-row items-center mt-2`}>
                       <View style={tailwind`pr-2 w-1/2`}>
-                        <SingleInfoFull label="Honesty" value={core.honest} />
+                        <SingleInfoFull
+                          label="Conflicts"
+                          value={core.conflicts}
+                        />
                       </View>
                       <View style={tailwind`w-1/2`}>
-                        <SingleInfoFull label="Trust" value={core.trust} />
+                        <SingleInfoFull
+                          label="Decision Making"
+                          value={core.decisions}
+                        />
                       </View>
                     </View>
                     <View style={tailwind`flex flex-row items-center mt-2`}>
                       <View style={tailwind`pr-2 w-1/2`}>
                         <SingleInfoFull
-                          label="Transparent"
-                          value={core.transparent}
+                          label="Independence"
+                          value={core.independence}
                         />
                       </View>
                       <View style={tailwind`w-1/2`}>
-                        <SingleInfoFull label="Social" value={core.social} />
-                      </View>
-                    </View>
-                    <View style={tailwind`flex flex-row items-center mt-2`}>
-                      <View style={tailwind`pr-2 w-1/2`}>
                         <SingleInfoFull
                           label="Politics"
                           value={core.politics}
                         />
                       </View>
                     </View>
+                    {/* <View style={tailwind`flex flex-row items-center mt-2`}>
+                      <View style={tailwind`pr-2 w-1/2`}>
+                        <SingleInfoFull
+                          label="Politics"
+                          value={core.politics}
+                        />
+                      </View>
+                    </View> */}
                   </View>
                 </View>
 
-                {tags.length > 0 && (
-                  <View style={tailwind`mt-3`}>
-                    <Text
-                      style={[
-                        tailwind`text-3xl font-bold mb-4`,
-                        {color: themeColors.primary},
-                      ]}>
-                      Interests
-                    </Text>
-                    <ScrollView
-                      horizontal
-                      showsHorizontalScrollIndicator={false}
-                      contentContainerStyle={tailwind`flex-row mt-1`}>
-                      {tags.map((tag, idx) => (
-                        <View key={idx} style={tailwind`pr-2 mb-2`}>
-                          <SingleInfoFull label={''} value={tag.tag} />
-                        </View>
-                      ))}
-                    </ScrollView>
-                  </View>
-                )}
-
-                <View style={tailwind`mt-4`}>
+                <View style={tailwind`mt-12`}>
                   <Text
                     style={[
                       tailwind`text-3xl font-bold mb-4`,
                       {color: themeColors.primary},
                     ]}>
-                    Lifestyle
+                    Lifestyle Habits
                   </Text>
                   {profile.tier === 1 ? (
                     <TouchableOpacity
                       onPress={() => navigation.navigate('Profiles')}
                       style={[
-                        tailwind`px-5 py-4 rounded-lg`,
+                        tailwind`px-5 py-4 rounded-lg mb-6`,
                         {
                           backgroundColor: themeColors.darkGrey,
                         },
@@ -732,39 +725,47 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                     </TouchableOpacity>
                   ) : (
                     <View style={tailwind`flex flex-col`}>
-                      <View style={tailwind`flex flex-row items-center`}>
+                      <View style={tailwind`flex flex-row items-center mt-2`}>
                         <View style={tailwind`pr-2 w-1/2`}>
                           <SingleInfoFull
-                            label="Travelling"
-                            value={lifestyle.travel}
+                            label="Drinking"
+                            value={
+                              habits.drinking ? `${habits.drinking}` : 'Unknown'
+                            }
                           />
                         </View>
                         <View style={tailwind`w-1/2`}>
                           <SingleInfoFull
-                            label="Social"
-                            value={lifestyle.social}
+                            label="Smoking"
+                            value={
+                              habits.smoking ? `${habits.smoking}` : 'Unknown'
+                            }
                           />
                         </View>
                       </View>
                       <View style={tailwind`flex flex-row items-center mt-2`}>
                         <View style={tailwind`pr-2 w-1/2`}>
                           <SingleInfoFull
-                            label="Health"
-                            value={lifestyle.health}
+                            label="Sleep"
+                            value={habits.sleep ? `${habits.sleep}` : 'Unknown'}
                           />
                         </View>
                         <View style={tailwind`w-1/2`}>
                           <SingleInfoFull
-                            label="Finances"
-                            value={lifestyle.finances}
+                            label="Excercise"
+                            value={
+                              habits.excersize
+                                ? `${habits.excersize}`
+                                : 'Unknown'
+                            }
                           />
                         </View>
                       </View>
                       <View style={tailwind`flex flex-row items-center mt-2`}>
                         <View style={tailwind`pr-2 w-1/2`}>
                           <SingleInfoFull
-                            label="Living"
-                            value={lifestyle.living}
+                            label="Diet"
+                            value={habits.diet ? `${habits.diet}` : 'Unknown'}
                           />
                         </View>
                       </View>
@@ -772,8 +773,64 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                   )}
                 </View>
 
+                {tags.length > 0 && (
+                  <View style={tailwind`mt-12`}>
+                    <Text
+                      style={[
+                        tailwind`text-3xl font-bold mb-4`,
+                        {color: themeColors.primary},
+                      ]}>
+                      Interests
+                    </Text>
+                    {profile.tier === 1 ? (
+                      <TouchableOpacity
+                        onPress={() => navigation.navigate('Profiles')}
+                        style={[
+                          tailwind`px-5 py-4 rounded-lg mb-6`,
+                          {
+                            backgroundColor: themeColors.darkGrey,
+                          },
+                        ]}>
+                        <Text
+                          style={[
+                            tailwind`text-lg font-semibold text-center`,
+                            {color: 'white'},
+                          ]}>
+                          This section is locked.
+                        </Text>
+                        <Text
+                          style={[
+                            tailwind`text-base  text-center mt-1`,
+                            {color: 'white'},
+                          ]}>
+                          Upgrade to Pro to view full profile insights like
+                          lifestyle, career, and more.
+                        </Text>
+                        <Text
+                          style={[
+                            tailwind`text-lg font-bold text-yellow-800 text-center mt-2 underline`,
+                            {color: 'white'},
+                          ]}>
+                          Tap here to upgrade
+                        </Text>
+                      </TouchableOpacity>
+                    ) : (
+                      <ScrollView
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={tailwind`flex-row mt-1`}>
+                        {tags.map((tag, idx) => (
+                          <View key={idx} style={tailwind`pr-2 mb-2`}>
+                            <SingleInfoFull label={''} value={tag.tag} />
+                          </View>
+                        ))}
+                      </ScrollView>
+                    )}
+                  </View>
+                )}
+
                 {loveLanguages.length > 0 && (
-                  <View style={tailwind`mt-4`}>
+                  <View style={tailwind`mt-12`}>
                     <Text
                       style={[
                         tailwind`text-3xl font-bold mb-4`,
@@ -817,10 +874,7 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                       <>
                         {loveLanguages.map((item: LoveLanguage, index) => (
                           <View key={index} style={tailwind`pr-2 w-full mb-2`}>
-                            <SingleInfoFull
-                              label={''}
-                              value={item.language.replace(/[\[\]"]/g, '')}
-                            />
+                            <SingleInfoFull label={''} value={item} />
                           </View>
                         ))}
                       </>
@@ -828,63 +882,7 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                   </View>
                 )}
 
-                {values.length > 0 && (
-                  <View style={tailwind`mt-4`}>
-                    <Text
-                      style={[
-                        tailwind`text-3xl font-bold mb-4`,
-                        {color: themeColors.primary},
-                      ]}>
-                      Traits
-                    </Text>
-                    {profile.tier === 1 ? (
-                      <TouchableOpacity
-                        onPress={() => navigation.navigate('Profiles')}
-                        style={[
-                          tailwind`px-5 py-4 rounded-lg`,
-                          {
-                            backgroundColor: themeColors.darkGrey,
-                          },
-                        ]}>
-                        <Text
-                          style={[
-                            tailwind`text-lg font-semibold text-center`,
-                            {color: 'white'},
-                          ]}>
-                          This section is locked.
-                        </Text>
-                        <Text
-                          style={[
-                            tailwind`text-base  text-center mt-1`,
-                            {color: 'white'},
-                          ]}>
-                          Upgrade to Pro to view full profile insights like
-                          lifestyle, career, and more.
-                        </Text>
-                        <Text
-                          style={[
-                            tailwind`text-lg font-bold text-yellow-800 text-center mt-2 underline`,
-                            {color: 'white'},
-                          ]}>
-                          Tap here to upgrade
-                        </Text>
-                      </TouchableOpacity>
-                    ) : (
-                      <View style={tailwind`flex flex-row flex-wrap`}>
-                        {values.map((item: Value, index) => (
-                          <View key={index} style={tailwind`pr-2 w-1/2 mb-2`}>
-                            <SingleInfoFull
-                              label={''}
-                              value={item.value.replace(/[\[\]"]/g, '')}
-                            />
-                          </View>
-                        ))}
-                      </View>
-                    )}
-                  </View>
-                )}
-
-                <View style={tailwind`mt-4`}>
+                <View style={tailwind`mt-12`}>
                   <Text
                     style={[
                       tailwind`text-3xl font-bold mb-4`,
@@ -925,21 +923,7 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                       </Text>
                     </TouchableOpacity>
                   ) : (
-                    <View style={tailwind`flex flex-col mb-6`}>
-                      <View style={tailwind`flex flex-row items-center`}>
-                        <View style={tailwind`pr-2 w-1/2`}>
-                          <SingleInfoFull
-                            label="Desired Marriage"
-                            value={future.marriage}
-                          />
-                        </View>
-                        <View style={tailwind`w-1/2`}>
-                          <SingleInfoFull
-                            label="Children"
-                            value={future.children}
-                          />
-                        </View>
-                      </View>
+                    <View style={tailwind`flex flex-col mb-4`}>
                       <View style={tailwind`flex flex-row items-center mt-2`}>
                         <View style={tailwind`pr-2 w-1/2`}>
                           <SingleInfoFull
@@ -965,6 +949,14 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                           <SingleInfoFull
                             label="Long Term Living"
                             value={future.live}
+                          />
+                        </View>
+                      </View>
+                      <View style={tailwind`flex flex-row items-center mt-2`}>
+                        <View style={tailwind`pr-2 w-full`}>
+                          <SingleInfoFull
+                            label="5 Year Plan"
+                            value={future.fiveYears}
                           />
                         </View>
                       </View>

@@ -36,9 +36,9 @@ const MenuView = ({updateTab}: MenuViewProps) => {
         onPress={() => updateTab('editProfile')}
         style={[
           tailwind`flex-row justify-between items-center p-4 rounded-2`,
-          {backgroundColor: themeColors.darkSecondary},
+          {backgroundColor: themeColors.darkGrey},
         ]}>
-        <Text style={tailwind`text-base font-semibold text-gray-800`}>
+        <Text style={tailwind`text-base font-semibold text-white`}>
           Edit Profile
         </Text>
         <ChevronsRight height={24} width={24} color={themeColors.primary} />
@@ -47,9 +47,9 @@ const MenuView = ({updateTab}: MenuViewProps) => {
         onPress={() => updateTab('settings')}
         style={[
           tailwind`flex-row justify-between items-center p-4 rounded-2 mt-2`,
-          {backgroundColor: themeColors.darkSecondary},
+          {backgroundColor: themeColors.darkGrey},
         ]}>
-        <Text style={tailwind`text-base font-semibold text-gray-800`}>
+        <Text style={tailwind`text-base font-semibold text-white`}>
           Settings
         </Text>
         <ChevronsRight height={24} width={24} color={themeColors.primary} />
@@ -58,7 +58,7 @@ const MenuView = ({updateTab}: MenuViewProps) => {
         onPress={() => updateTab('upgrade')}
         style={[
           tailwind`flex-row justify-between items-center p-4 rounded-2 mt-2`,
-          {backgroundColor: themeColors.darkSecondary},
+          {backgroundColor: themeColors.darkGrey},
         ]}>
         <Text
           style={[
@@ -74,7 +74,7 @@ const MenuView = ({updateTab}: MenuViewProps) => {
           onPress={() => updateTab('Viewed')}
           style={[
             tailwind`flex-row justify-between items-center p-4 rounded-2 mt-2`,
-            {backgroundColor: themeColors.darkSecondary},
+            {backgroundColor: themeColors.darkGrey},
           ]}>
           <Text style={tailwind`text-base font-semibold`}>Recently Viewed</Text>
           <ChevronsRight height={24} width={24} color={themeColors.primary} />
@@ -84,13 +84,13 @@ const MenuView = ({updateTab}: MenuViewProps) => {
         onPress={() => updateTab('visibility')}
         style={[
           tailwind`flex-row justify-between items-center p-4 rounded-2 mt-2`,
-          {backgroundColor: themeColors.darkSecondary},
+          {backgroundColor: themeColors.darkGrey},
         ]}>
-        <Text style={tailwind`text-base font-semibold text-gray-800`}>
+        <Text style={tailwind`text-base font-semibold text-white`}>
           Visibility
         </Text>
         <View style={tailwind`flex-row items-center gap-2`}>
-          <Text style={tailwind`text-base font-semibold text-gray-800`}>
+          <Text style={tailwind`text-base font-semibold text-white`}>
             {profile.visibility}
           </Text>
           <ChevronsRight height={24} width={24} color={themeColors.primary} />
@@ -100,9 +100,9 @@ const MenuView = ({updateTab}: MenuViewProps) => {
         onPress={() => updateTab('notifications')}
         style={[
           tailwind`flex-row justify-between items-center p-4 rounded-2 mt-2`,
-          {backgroundColor: themeColors.darkSecondary},
+          {backgroundColor: themeColors.darkGrey},
         ]}>
-        <Text style={tailwind`text-base font-semibold text-gray-800`}>
+        <Text style={tailwind`text-base font-semibold text-white`}>
           Notifications
         </Text>
         <ChevronsRight height={24} width={24} color={themeColors.primary} />
@@ -111,7 +111,7 @@ const MenuView = ({updateTab}: MenuViewProps) => {
         onPress={logout}
         style={[
           tailwind`flex-row justify-between items-center p-4 rounded-2 mt-2`,
-          {backgroundColor: themeColors.darkSecondary},
+          {backgroundColor: themeColors.darkGrey},
         ]}>
         <Text style={tailwind`text-base font-bold text-red-600`}>Logout</Text>
         <ChevronsRight height={24} width={24} color={themeColors.primary} />
@@ -119,7 +119,7 @@ const MenuView = ({updateTab}: MenuViewProps) => {
       <View
         style={[
           tailwind`flex-row justify-between items-center p-4 rounded-2 mt-2 mb-2`,
-          {backgroundColor: themeColors.darkSecondary},
+          {backgroundColor: themeColors.darkGrey},
         ]}>
         <Text style={tailwind`text-base font-bold text-red-600`}>
           Delete Account

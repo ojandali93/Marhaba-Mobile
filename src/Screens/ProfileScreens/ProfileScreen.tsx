@@ -83,14 +83,14 @@ const ProfileScreen = () => {
       </View>
       <View
         style={[
-          tailwind`absolute left-0 right-0 bottom-19 ${
+          tailwind`absolute left-0 right-0 bottom-19 rounded-t-2 ${
             activeTab === 'editProfile' ||
             activeTab === 'upgrade' ||
             activeTab === 'Viewed'
               ? 'h-10/12'
               : 'h-5/12'
           }`,
-          {backgroundColor: themeColors.secondary},
+          {backgroundColor: themeColors.darkGrey},
         ]}>
         {activeTab === 'profile' && (
           <>
@@ -101,18 +101,20 @@ const ProfileScreen = () => {
                   tailwind`text-3xl font-bold`,
                   {color: themeColors.primary},
                 ]}>
-                {profile.name} ({getAgeFromDOB(profile.dob)})
+                {profile.name} ({getAgeFromDOB(profile.About[0].dob)})
               </Text>
               <Text style={tailwind`text-3xl font-semibold`}>
                 {countryFlagMap[profile.About[0].background] ?? ''}
               </Text>
             </View>
             <View style={tailwind`px-4`}>
-              <Text style={tailwind`text-base text-gray-800`}>
-                {profile.height ? `${profile.height} • ` : ''}
-                {profile.About[0].religion
-                  ? `${profile.About[0].religion}${
-                      profile.About[0].sect ? ` (${profile.About[0].sect})` : ''
+              <Text style={tailwind`text-base text-white`}>
+                {profile.About[0].height ? `${profile.About[0].height} • ` : ''}
+                {profile.Religion[0].religion
+                  ? `${profile.Religion[0].religion}${
+                      profile.Religion[0].sect
+                        ? ` (${profile.Religion[0].sect})`
+                        : ''
                     } • `
                   : ''}
                 {profile.Career[0].job ?? ''}

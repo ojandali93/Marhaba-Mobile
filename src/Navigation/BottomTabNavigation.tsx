@@ -35,7 +35,12 @@ const BottomTabNavigation = () => {
     }
   }, [userId, profile]);
 
-  const transparentScreens = ['Feeds', 'SingleProfile', 'SingleProfileSearch'];
+  const transparentScreens = [
+    'Feeds',
+    'SingleProfile',
+    'SingleProfileSearch',
+    'Profiles',
+  ];
 
   const getTabBarStyle = route => {
     const focusedRoute = getFocusedRouteNameFromRoute(route) ?? route.name;
@@ -51,7 +56,7 @@ const BottomTabNavigation = () => {
       height: 76,
       paddingTop: 10,
       backgroundColor: transparentScreens.includes(focusedRoute)
-        ? 'rgba(0, 0, 0, 0.5)'
+        ? themeColors.darkGrey
         : themeColors.darkSecondary,
     };
   };

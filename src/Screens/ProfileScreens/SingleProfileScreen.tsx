@@ -49,39 +49,25 @@ const SingleProfileScreen = () => {
   const [customReason, setCustomReason] = useState('');
 
   const user = profile;
+  const profileId = profile.userId;
   const about = user?.About?.[0] ?? {};
-  const anger = user?.Anger ?? {};
-  const attachment = user?.Attachment ?? {};
   const career = user?.Career?.[0] ?? {};
-  const communicationStyles = user?.Communication ?? [];
   const core = user?.Core[0] ?? [];
-  const emotions = user?.Emotions[0] ?? [];
   const future = user?.Future[0] ?? [];
-  const lifestyle = user?.Lifestyle[0] ?? [];
-  const loveLanguages = user?.Love ?? [];
+  const habits = user?.Habits[0] ?? [];
+  const intentions = user?.Intent[0] ?? [];
   const photos = user?.Photos ?? [];
   const preferences = user?.Preferences[0] ?? [];
   const prompts = user?.Prompts ?? [];
+  console.log('prompts', JSON.stringify(prompts));
+  const relationships = user?.Relationships[0] ?? [];
+  const religion = user?.Religion[0] ?? [];
   const survey = user?.Survey[0] ?? [];
-  const time = user?.Time ?? [];
   const tags = user?.Tags ?? [];
-  const values: Value[] = user?.Values ?? [];
-  const prompt = prompts?.[0];
-  const age = user?.dob ? getAgeFromDOB(user.dob) : '—';
-  const drink = about?.drink;
-  const name = user?.name ?? 'N/A';
-  const smoke = about?.smoke;
-  const hasKids = about?.hasKids;
-  const backgroundArray = about?.background;
-  const background = JSON.parse(backgroundArray);
-  const religion = about?.religion;
-  const job = career?.job;
-  const company = career?.company;
-  const height = user?.height;
-  const lookingFor = about?.lookingFor;
-  const timeline = about?.timeline;
-  const sect = about?.sect;
-  const profileId = user?._id ?? user?.userId;
+  const age = about?.dob ? getAgeFromDOB(about.dob) : '—';
+
+  const background = JSON.parse(about?.background) ?? [];
+  const loveLanguages = JSON.parse(relationships.loveLanguages) ?? [];
 
   const photoUrl = photos?.[photoIndex]?.photoUrl;
 
@@ -264,14 +250,6 @@ const SingleProfileScreen = () => {
 
   return (
     <View style={tailwind`flex-1 relative`}>
-      <TouchableOpacity
-        onPress={() => navigation.goBack()}
-        style={[
-          tailwind`absolute z-20 top-16 left-4 p-2 rounded-full`,
-          {backgroundColor: themeColors.darkSecondaryOpacity},
-        ]}>
-        <ChevronsLeft height={30} width={30} color={themeColors.primary} />
-      </TouchableOpacity>
       <TouchableWithoutFeedback onPress={handleImageTap}>
         {photoUrl ? (
           <Image
@@ -283,70 +261,101 @@ const SingleProfileScreen = () => {
           <View style={tailwind`absolute w-full h-full bg-gray-300`} />
         )}
       </TouchableWithoutFeedback>
+      {photos.length > 1 && (
+        <View
+          style={tailwind`absolute top-22 w-full flex-row justify-center z-30`}>
+          {photos.map((_, idx) => (
+            <View
+              key={idx}
+              style={[
+                tailwind`mx-1 w-2 h-2 rounded-full`,
+                {
+                  backgroundColor:
+                    idx === photoIndex
+                      ? themeColors.primary
+                      : themeColors.darkGrey,
+                  opacity: idx === photoIndex ? 1 : 0.5,
+                },
+              ]}
+            />
+          ))}
+        </View>
+      )}
 
       {!showFullProfile ? (
         <>
-          <View
+          <TouchableOpacity
+            onPress={handleToggleFullProfile}
             style={[
-              tailwind`absolute bottom-19 left-0 right-0`,
+              tailwind`absolute bottom-39 left-0 right-0 rounded-t-2`,
               {backgroundColor: themeColors.darkGrey},
             ]}>
             <View
-              style={tailwind`flex-row justify-between items-center p-4 pb-2`}>
+              style={tailwind`flex-row justify-between items-center p-3 pb-2`}>
               <View style={tailwind`flex-row justify-between w-full items-end`}>
                 <Text
                   style={[
-                    tailwind`text-3xl font-bold`,
+                    tailwind`text-3xl font-bold text-white`,
                     {color: themeColors.primary},
                   ]}>
-                  {name} {`(${age})`}
+                  {about.name} {`(${age})`}
                 </Text>
-                <View style={tailwind`flex-row flex-wrap items-center`}>
-                  {background.map((bg: string, index: number) => (
-                    <Text
-                      key={index}
-                      style={[
-                        tailwind`text-3xl font-semibold mr-2`,
-                        {color: themeColors.primary},
-                      ]}>
-                      {countryFlagMap[bg] ?? ''}
-                    </Text>
-                  ))}
-                </View>
+                <Text
+                  style={[
+                    tailwind`text-3xl font-semibold`,
+                    {color: themeColors.primary},
+                  ]}>
+                  <View style={tailwind`flex-row flex-wrap items-center`}>
+                    {background.map((bg: string, index: number) => (
+                      <Text
+                        key={index}
+                        style={[
+                          tailwind`text-3xl font-semibold mr-2`,
+                          {color: themeColors.primary},
+                        ]}>
+                        {countryFlagMap[bg] ?? ''}
+                      </Text>
+                    ))}
+                  </View>
+                </Text>
               </View>
             </View>
 
-            <View style={tailwind` px-4`}>
+            <View style={tailwind` px-3`}>
               <Text style={tailwind`text-base text-white`}>
-                {height ? `${height} • ` : ''}
-                {religion ? `${religion}${sect ? ` (${sect})` : ''} • ` : ''}
-                {job ?? ''}
+                {about.height ? `${about.height} • ` : ''}
+                {religion.religion
+                  ? `${religion.religion}${
+                      religion.sect ? ` (${religion.sect})` : ''
+                    } • `
+                  : ''}
+                {career.job ?? ''}
               </Text>
             </View>
 
-            {(lookingFor || timeline) && (
-              <View style={tailwind`mt-1 px-4`}>
+            {(intentions.intentions || intentions.timeline) && (
+              <View style={tailwind`mt-1 px-3 pb-3`}>
                 <Text style={tailwind`font-semibold text-base text-white`}>
-                  {lookingFor}
-                  {lookingFor && timeline ? ' • ' : ''}
-                  {timeline}
+                  {intentions.intentions}
+                  {intentions.timeline ? ' • ' : ''}
+                  {intentions.timeline}
                 </Text>
               </View>
             )}
-
-            {/* {prompt?.prompt && (
-              <View style={tailwind`mt-2 px-4`}>
+            {/* 
+            {prompt?.prompt && (
+              <View style={tailwind`mt-2 px-3`}>
                 <Text style={tailwind`text-lg italic text-white`}>
                   {prompt.prompt}
                 </Text>
               </View>
             )} */}
-            {prompt?.response && (
-              <View style={tailwind`mt-2 px-4 pb-3`}>
+            {prompts[0]?.response && (
+              <View style={tailwind`mt-2 px-3 pb-3`}>
                 <Text
                   numberOfLines={1}
                   style={tailwind`font-semibold text-lg text-white`}>
-                  {`"${prompt.response}"`}
+                  {`"${prompts[0].response}"`}
                 </Text>
               </View>
             )}
@@ -354,7 +363,7 @@ const SingleProfileScreen = () => {
             <TouchableWithoutFeedback onPress={handleToggleFullProfile}>
               <View
                 style={[
-                  tailwind`flex flex-row items-center justify-center rounded-2 p-4`,
+                  tailwind`flex flex-row items-center justify-center p-4`,
                   {backgroundColor: themeColors.darkGrey},
                 ]}>
                 <ChevronsUp
@@ -372,11 +381,83 @@ const SingleProfileScreen = () => {
                 />
               </View>
             </TouchableWithoutFeedback>
-          </View>
+          </TouchableOpacity>
+          {/* <View
+            style={tailwind`absolute z-20 bottom-19 left-0 right-0 flex flex-row items-center justify-center`}>
+            <View
+              style={[
+                tailwind`w-full flex flex-row items-center justify-center py-4`,
+                {backgroundColor: themeColors.darkGrey},
+              ]}>
+              <TouchableOpacity
+                onPress={handleDislikeProfile}
+                style={[
+                  tailwind`p-3 rounded-full shadow-lg`,
+                  {backgroundColor: isInteracting ? '#fca5a5' : '#f87171'},
+                ]}>
+                <X height={24} width={24} color={'white'} strokeWidth={3} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleSendSuperlike}
+                style={[
+                  tailwind`p-3 rounded-2 shadow-lg mx-4 px-6`,
+                  {
+                    backgroundColor: isInteracting
+                      ? '#6ee7b7'
+                      : themeColors.primary,
+                  },
+                ]}>
+                <Text style={tailwind`text-white text-lg font-semibold`}>
+                  Send Message
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleLikeProfile}
+                style={tailwind`p-3 rounded-full shadow-lg bg-emerald-500`}>
+                <Check height={24} width={24} color={'white'} strokeWidth={3} />
+              </TouchableOpacity>
+            </View>
+          </View> */}
         </>
       ) : (
         <>
-          <View style={tailwind`absolute z-20 bottom-19 left-0 right-0`}>
+          {/* <View
+            style={tailwind`absolute z-20 bottom-19 left-0 right-0  flex flex-row items-center justify-center`}>
+            <View
+              style={[
+                tailwind`w-full flex flex-row items-center justify-center  py-4`,
+                {backgroundColor: themeColors.darkGrey},
+              ]}>
+              <TouchableOpacity
+                onPress={handleDislikeProfile}
+                style={[
+                  tailwind`p-3 rounded-full shadow-lg`,
+                  {backgroundColor: isInteracting ? '#fca5a5' : '#f87171'},
+                ]}>
+                <X height={24} width={24} color={'white'} strokeWidth={3} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleReportProfile}
+                style={[
+                  tailwind`p-3 rounded-2 shadow-lg mx-4 px-6`,
+                  {
+                    backgroundColor: isInteracting
+                      ? '#6ee7b7'
+                      : themeColors.primary,
+                  },
+                ]}>
+                <Text style={tailwind`text-white text-lg font-semibold`}>
+                  Send Message
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleLikeProfile}
+                style={tailwind`p-3 rounded-full shadow-lg bg-emerald-500`}>
+                <Check height={24} width={24} color={'white'} strokeWidth={3} />
+              </TouchableOpacity>
+            </View>
+          </View> */}
+          <View style={tailwind`absolute z-20 bottom-39 left-0 right-0`}>
             <TouchableWithoutFeedback onPress={handleToggleFullProfile}>
               <View
                 style={[
@@ -401,7 +482,7 @@ const SingleProfileScreen = () => {
           </View>
           <View
             style={[
-              tailwind`absolute top-36 bottom-19 left-0 right-0 pb-14`,
+              tailwind`absolute top-16 bottom-39 left-0 right-0  pb-14`,
               {backgroundColor: themeColors.darkGrey},
             ]}>
             <ScrollView
@@ -414,12 +495,12 @@ const SingleProfileScreen = () => {
                     tailwind`text-4xl font-bold`,
                     {color: themeColors.primary},
                   ]}>
-                  {name}
+                  {about.name}
                 </Text>
                 <View style={tailwind`mt-8 flex flex-col`}>
                   <View style={tailwind`flex flex-row items-center`}>
                     <View style={tailwind`pr-2 w-1/2`}>
-                      <SingleInfoFull label="Height" value={height} />
+                      <SingleInfoFull label="Height" value={about.height} />
                     </View>
                     <View style={tailwind`w-1/2`}>
                       <SingleInfoFull label="Age" value={`${age} years old`} />
@@ -429,24 +510,17 @@ const SingleProfileScreen = () => {
                     <View style={tailwind`pr-2 w-1/2`}>
                       <SingleInfoFull
                         label="Looking For"
-                        value={lookingFor ? `${lookingFor}` : ''}
-                      />
-                    </View>
-                    <View style={tailwind`w-1/2`}>
-                      <SingleInfoFull label="Timeline" value={timeline} />
-                    </View>
-                  </View>
-                  <View style={tailwind`flex flex-row items-center mt-2`}>
-                    <View style={tailwind`pr-2 w-1/2`}>
-                      <SingleInfoFull
-                        label="Drinking"
-                        value={drink ? `${drink}` : 'Unknown'}
+                        value={
+                          intentions.intentions
+                            ? `${intentions.intentions}`
+                            : ''
+                        }
                       />
                     </View>
                     <View style={tailwind`w-1/2`}>
                       <SingleInfoFull
-                        label="Smoking"
-                        value={smoke ? `${smoke}` : 'Unknown'}
+                        label="Timeline"
+                        value={intentions.timeline}
                       />
                     </View>
                   </View>
@@ -468,17 +542,43 @@ const SingleProfileScreen = () => {
                       />
                     </View>
                     <View style={tailwind`w-1/2`}>
-                      <SingleInfoFull label="Relocate" value={about.travel} />
+                      <SingleInfoFull
+                        label="Relocate"
+                        value={intentions.relocate}
+                      />
                     </View>
                   </View>
                   <View style={tailwind`flex flex-row items-center mt-2`}>
                     <View style={tailwind`pr-2 w-1/2`}>
-                      <SingleInfoFull label="Religion" value={religion} />
+                      <SingleInfoFull
+                        label="Religion"
+                        value={religion.religion}
+                      />
                     </View>
                     <View style={tailwind`w-1/2`}>
                       <SingleInfoFull
                         label="Sect"
-                        value={sect ? `${sect}` : 'Unknown'}
+                        value={religion.sect ? `${religion.sect}` : 'Unknown'}
+                      />
+                    </View>
+                  </View>
+                  <View style={tailwind`flex flex-row items-center mt-2`}>
+                    <View style={tailwind`pr-2 w-1/2`}>
+                      <SingleInfoFull
+                        label="Practicin"
+                        value={
+                          religion.practicing
+                            ? `${religion.practicing}`
+                            : 'Unknown'
+                        }
+                      />
+                    </View>
+                    <View style={tailwind`w-1/2`}>
+                      <SingleInfoFull
+                        label="Openness"
+                        value={
+                          religion.openness ? `${religion.openness}` : 'Unknown'
+                        }
                       />
                     </View>
                   </View>
@@ -487,7 +587,7 @@ const SingleProfileScreen = () => {
                     <View style={tailwind`pr-2 w-full`}>
                       <SingleInfoFull
                         label="Career"
-                        value={`${job} @ ${company}`}
+                        value={`${career.job} @ ${career.company}`}
                       />
                     </View>
                   </View>
@@ -501,28 +601,44 @@ const SingleProfileScreen = () => {
                       />
                     </View>
                   </View>
+                  {career.industry || career.site ? (
+                    <View style={tailwind`flex flex-row items-center mt-2`}>
+                      <View style={tailwind`pr-2 w-1/2`}>
+                        <SingleInfoFull
+                          label="Industry"
+                          value={career.industry ? career.industry : 'Unknown'}
+                        />
+                      </View>
+                      <View style={tailwind`w-1/2`}>
+                        <SingleInfoFull
+                          label="Site"
+                          value={career.site ? `${career.site}` : 'Unknown'}
+                        />
+                      </View>
+                    </View>
+                  ) : null}
                   {career.fiveYears ? (
                     <View style={tailwind`flex flex-row items-center mt-2`}>
                       <View style={tailwind`pr-2 w-full`}>
                         <SingleInfoFull
                           label="Five Years"
-                          value={career.fiveYears}
+                          value={future.fiveYears}
                         />
                       </View>
                     </View>
                   ) : null}
                 </View>
 
-                {prompts.filter((p: Prompt) => p.response)?.length > 0 && (
-                  <View style={tailwind`mt-4`}>
-                    <Text
-                      style={[
-                        tailwind`text-3xl font-bold mb-1`,
-                        {color: themeColors.primary},
-                      ]}>
-                      Prompts
-                    </Text>
-                    {prompts.map(
+                <View style={tailwind`mt-12`}>
+                  <Text
+                    style={[
+                      tailwind`text-3xl font-bold mb-4`,
+                      {color: themeColors.primary},
+                    ]}>
+                    Prompts
+                  </Text>
+                  {prompts.length > 0 &&
+                    prompts.map(
                       (item: Prompt, index) =>
                         item.response && (
                           <View style={tailwind`w-full mt-3`} key={index}>
@@ -533,13 +649,12 @@ const SingleProfileScreen = () => {
                           </View>
                         ),
                     )}
-                  </View>
-                )}
+                </View>
 
-                <View style={tailwind`mt-4`}>
+                <View style={tailwind`mt-12`}>
                   <Text
                     style={[
-                      tailwind`text-3xl font-bold mb-4`,
+                      tailwind`text-3xl font-bold mb-6`,
                       {color: themeColors.primary},
                     ]}>
                     Core Values
@@ -566,126 +681,135 @@ const SingleProfileScreen = () => {
                     </View>
                     <View style={tailwind`flex flex-row items-center mt-2`}>
                       <View style={tailwind`pr-2 w-1/2`}>
-                        <SingleInfoFull label="Honesty" value={core.honest} />
+                        <SingleInfoFull
+                          label="Conflicts"
+                          value={core.conflicts}
+                        />
                       </View>
                       <View style={tailwind`w-1/2`}>
-                        <SingleInfoFull label="Trust" value={core.trust} />
+                        <SingleInfoFull
+                          label="Decision Making"
+                          value={core.decisions}
+                        />
                       </View>
                     </View>
                     <View style={tailwind`flex flex-row items-center mt-2`}>
                       <View style={tailwind`pr-2 w-1/2`}>
                         <SingleInfoFull
-                          label="Transparent"
-                          value={core.transparent}
+                          label="Independence"
+                          value={core.independence}
                         />
                       </View>
                       <View style={tailwind`w-1/2`}>
-                        <SingleInfoFull label="Social" value={core.social} />
-                      </View>
-                    </View>
-                    <View style={tailwind`flex flex-row items-center mt-2`}>
-                      <View style={tailwind`pr-2 w-1/2`}>
                         <SingleInfoFull
                           label="Politics"
                           value={core.politics}
                         />
                       </View>
                     </View>
+                    {/* <View style={tailwind`flex flex-row items-center mt-2`}>
+                      <View style={tailwind`pr-2 w-1/2`}>
+                        <SingleInfoFull
+                          label="Politics"
+                          value={core.politics}
+                        />
+                      </View>
+                    </View> */}
                   </View>
                 </View>
 
-                <View style={tailwind`mt-4`}>
+                <View style={tailwind`mt-12`}>
                   <Text
                     style={[
                       tailwind`text-3xl font-bold mb-4`,
                       {color: themeColors.primary},
                     ]}>
-                    Lifestyle
+                    Lifestyle Habits
                   </Text>
-                  <View style={tailwind`flex flex-col`}>
-                    <View style={tailwind`flex flex-row items-center`}>
-                      <View style={tailwind`pr-2 w-1/2`}>
-                        <SingleInfoFull
-                          label="Travelling"
-                          value={lifestyle.travel}
-                        />
-                      </View>
-                      <View style={tailwind`w-1/2`}>
-                        <SingleInfoFull
-                          label="Social"
-                          value={lifestyle.social}
-                        />
-                      </View>
-                    </View>
-                    <View style={tailwind`flex flex-row items-center mt-2`}>
-                      <View style={tailwind`pr-2 w-1/2`}>
-                        <SingleInfoFull
-                          label="Health"
-                          value={lifestyle.health}
-                        />
-                      </View>
-                      <View style={tailwind`w-1/2`}>
-                        <SingleInfoFull
-                          label="Finances"
-                          value={lifestyle.finances}
-                        />
-                      </View>
-                    </View>
-                    <View style={tailwind`flex flex-row items-center mt-2`}>
-                      <View style={tailwind`pr-2 w-1/2`}>
-                        <SingleInfoFull
-                          label="Living"
-                          value={lifestyle.living}
-                        />
-                      </View>
-                    </View>
-                  </View>
-                </View>
-
-                {loveLanguages.length > 0 && (
-                  <View style={tailwind`mt-4`}>
-                    <Text
+                  {profile.tier === 1 ? (
+                    <TouchableOpacity
+                      onPress={() => navigation.navigate('Profiles')}
                       style={[
-                        tailwind`text-3xl font-bold mb-4`,
-                        {color: themeColors.primary},
+                        tailwind`px-5 py-4 rounded-lg mb-6`,
+                        {
+                          backgroundColor: themeColors.darkGrey,
+                        },
                       ]}>
-                      Love Languages
-                    </Text>
-                    {loveLanguages.map((item: LoveLanguage, index) => (
-                      <View key={index} style={tailwind`pr-2 w-full mb-2`}>
-                        <SingleInfoFull
-                          label={''}
-                          value={item.language.replace(/[\[\]"]/g, '')}
-                        />
-                      </View>
-                    ))}
-                  </View>
-                )}
-
-                {values.length > 0 && (
-                  <View style={tailwind`mt-4`}>
-                    <Text
-                      style={[
-                        tailwind`text-3xl font-bold mb-4`,
-                        {color: themeColors.primary},
-                      ]}>
-                      Traits
-                    </Text>
-                    <View style={tailwind`flex flex-row flex-wrap`}>
-                      {values.map((item: Value, index) => (
-                        <View key={index} style={tailwind`pr-2 w-1/2 mb-2`}>
+                      <Text
+                        style={[
+                          tailwind`text-lg font-semibold text-center`,
+                          {color: 'white'},
+                        ]}>
+                        This section is locked.
+                      </Text>
+                      <Text
+                        style={[
+                          tailwind`text-base  text-center mt-1`,
+                          {color: 'white'},
+                        ]}>
+                        Upgrade to Pro to view full profile insights like
+                        lifestyle, career, and more.
+                      </Text>
+                      <Text
+                        style={[
+                          tailwind`text-lg font-bold text-yellow-800 text-center mt-2 underline`,
+                          {color: 'white'},
+                        ]}>
+                        Tap here to upgrade
+                      </Text>
+                    </TouchableOpacity>
+                  ) : (
+                    <View style={tailwind`flex flex-col`}>
+                      <View style={tailwind`flex flex-row items-center mt-2`}>
+                        <View style={tailwind`pr-2 w-1/2`}>
                           <SingleInfoFull
-                            label={''}
-                            value={item.value.replace(/[\[\]"]/g, '')}
+                            label="Drinking"
+                            value={
+                              habits.drinking ? `${habits.drinking}` : 'Unknown'
+                            }
                           />
                         </View>
-                      ))}
+                        <View style={tailwind`w-1/2`}>
+                          <SingleInfoFull
+                            label="Smoking"
+                            value={
+                              habits.smoking ? `${habits.smoking}` : 'Unknown'
+                            }
+                          />
+                        </View>
+                      </View>
+                      <View style={tailwind`flex flex-row items-center mt-2`}>
+                        <View style={tailwind`pr-2 w-1/2`}>
+                          <SingleInfoFull
+                            label="Sleep"
+                            value={habits.sleep ? `${habits.sleep}` : 'Unknown'}
+                          />
+                        </View>
+                        <View style={tailwind`w-1/2`}>
+                          <SingleInfoFull
+                            label="Excercise"
+                            value={
+                              habits.excersize
+                                ? `${habits.excersize}`
+                                : 'Unknown'
+                            }
+                          />
+                        </View>
+                      </View>
+                      <View style={tailwind`flex flex-row items-center mt-2`}>
+                        <View style={tailwind`pr-2 w-1/2`}>
+                          <SingleInfoFull
+                            label="Diet"
+                            value={habits.diet ? `${habits.diet}` : 'Unknown'}
+                          />
+                        </View>
+                      </View>
                     </View>
-                  </View>
-                )}
+                  )}
+                </View>
 
                 {tags.length > 0 && (
-                  <View style={tailwind`mt-3`}>
+                  <View style={tailwind`mt-12`}>
                     <Text
                       style={[
                         tailwind`text-3xl font-bold mb-4`,
@@ -693,20 +817,107 @@ const SingleProfileScreen = () => {
                       ]}>
                       Interests
                     </Text>
-                    <ScrollView
-                      horizontal
-                      showsHorizontalScrollIndicator={false}
-                      contentContainerStyle={tailwind`flex-row mt-1`}>
-                      {tags.map((tag, idx) => (
-                        <View key={idx} style={tailwind`pr-2 mb-2`}>
-                          <SingleInfoFull label={''} value={tag.tag} />
-                        </View>
-                      ))}
-                    </ScrollView>
+                    {profile.tier === 1 ? (
+                      <TouchableOpacity
+                        onPress={() => navigation.navigate('Profiles')}
+                        style={[
+                          tailwind`px-5 py-4 rounded-lg mb-6`,
+                          {
+                            backgroundColor: themeColors.darkGrey,
+                          },
+                        ]}>
+                        <Text
+                          style={[
+                            tailwind`text-lg font-semibold text-center`,
+                            {color: 'white'},
+                          ]}>
+                          This section is locked.
+                        </Text>
+                        <Text
+                          style={[
+                            tailwind`text-base  text-center mt-1`,
+                            {color: 'white'},
+                          ]}>
+                          Upgrade to Pro to view full profile insights like
+                          lifestyle, career, and more.
+                        </Text>
+                        <Text
+                          style={[
+                            tailwind`text-lg font-bold text-yellow-800 text-center mt-2 underline`,
+                            {color: 'white'},
+                          ]}>
+                          Tap here to upgrade
+                        </Text>
+                      </TouchableOpacity>
+                    ) : (
+                      <ScrollView
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={tailwind`flex-row mt-1`}>
+                        {tags.map((tag, idx) => (
+                          <View key={idx} style={tailwind`pr-2 mb-2`}>
+                            <SingleInfoFull label={''} value={tag.tag} />
+                          </View>
+                        ))}
+                      </ScrollView>
+                    )}
                   </View>
                 )}
 
-                <View style={tailwind`mt-4`}>
+                {loveLanguages.length > 0 && (
+                  <View style={tailwind`mt-12`}>
+                    <Text
+                      style={[
+                        tailwind`text-3xl font-bold mb-4`,
+                        {color: themeColors.primary},
+                      ]}>
+                      Love Languages
+                    </Text>
+                    {profile.tier === 1 ? (
+                      <TouchableOpacity
+                        onPress={() => navigation.navigate('Profiles')}
+                        style={[
+                          tailwind`px-5 py-4 rounded-lg`,
+                          {
+                            backgroundColor: themeColors.darkGrey,
+                          },
+                        ]}>
+                        <Text
+                          style={[
+                            tailwind`text-lg font-semibold text-center`,
+                            {color: 'white'},
+                          ]}>
+                          This section is locked.
+                        </Text>
+                        <Text
+                          style={[
+                            tailwind`text-base  text-center mt-1`,
+                            {color: 'white'},
+                          ]}>
+                          Upgrade to Pro to view full profile insights like
+                          lifestyle, career, and more.
+                        </Text>
+                        <Text
+                          style={[
+                            tailwind`text-lg font-bold text-yellow-800 text-center mt-2 underline`,
+                            {color: 'white'},
+                          ]}>
+                          Tap here to upgrade
+                        </Text>
+                      </TouchableOpacity>
+                    ) : (
+                      <>
+                        {loveLanguages.map((item: LoveLanguage, index) => (
+                          <View key={index} style={tailwind`pr-2 w-full mb-2`}>
+                            <SingleInfoFull label={''} value={item} />
+                          </View>
+                        ))}
+                      </>
+                    )}
+                  </View>
+                )}
+
+                <View style={tailwind`mt-12`}>
                   <Text
                     style={[
                       tailwind`text-3xl font-bold mb-4`,
@@ -714,50 +925,78 @@ const SingleProfileScreen = () => {
                     ]}>
                     Future Goals
                   </Text>
-                  <View style={tailwind`flex flex-col mb-6`}>
-                    <View style={tailwind`flex flex-row items-center`}>
-                      <View style={tailwind`pr-2 w-1/2`}>
-                        <SingleInfoFull
-                          label="Desired Marriage"
-                          value={future.marriage}
-                        />
+                  {profile.tier === 1 ? (
+                    <TouchableOpacity
+                      onPress={() => navigation.navigate('Profiles')}
+                      style={[
+                        tailwind`px-5 py-4 rounded-lg mb-6`,
+                        {
+                          backgroundColor: themeColors.darkGrey,
+                        },
+                      ]}>
+                      <Text
+                        style={[
+                          tailwind`text-lg font-semibold text-center`,
+                          {color: 'white'},
+                        ]}>
+                        This section is locked.
+                      </Text>
+                      <Text
+                        style={[
+                          tailwind`text-base  text-center mt-1`,
+                          {color: 'white'},
+                        ]}>
+                        Upgrade to Pro to view full profile insights like
+                        lifestyle, career, and more.
+                      </Text>
+                      <Text
+                        style={[
+                          tailwind`text-lg font-bold text-yellow-800 text-center mt-2 underline`,
+                          {color: 'white'},
+                        ]}>
+                        Tap here to upgrade
+                      </Text>
+                    </TouchableOpacity>
+                  ) : (
+                    <View style={tailwind`flex flex-col mb-4`}>
+                      <View style={tailwind`flex flex-row items-center mt-2`}>
+                        <View style={tailwind`pr-2 w-1/2`}>
+                          <SingleInfoFull
+                            label="Career Ambition"
+                            value={future.career}
+                          />
+                        </View>
+                        <View style={tailwind`w-1/2`}>
+                          <SingleInfoFull
+                            label="Financial Ambition"
+                            value={future.finances}
+                          />
+                        </View>
                       </View>
-                      <View style={tailwind`w-1/2`}>
-                        <SingleInfoFull
-                          label="Children"
-                          value={future.children}
-                        />
+                      <View style={tailwind`flex flex-row items-center mt-2`}>
+                        <View style={tailwind`pr-2 w-1/2`}>
+                          <SingleInfoFull
+                            label="Pace of Life"
+                            value={future.pace}
+                          />
+                        </View>
+                        <View style={tailwind`w-1/2`}>
+                          <SingleInfoFull
+                            label="Long Term Living"
+                            value={future.live}
+                          />
+                        </View>
+                      </View>
+                      <View style={tailwind`flex flex-row items-center mt-2`}>
+                        <View style={tailwind`pr-2 w-full`}>
+                          <SingleInfoFull
+                            label="5 Year Plan"
+                            value={future.fiveYears}
+                          />
+                        </View>
                       </View>
                     </View>
-                    <View style={tailwind`flex flex-row items-center mt-2`}>
-                      <View style={tailwind`pr-2 w-1/2`}>
-                        <SingleInfoFull
-                          label="Career Ambition"
-                          value={future.career}
-                        />
-                      </View>
-                      <View style={tailwind`w-1/2`}>
-                        <SingleInfoFull
-                          label="Financial Ambition"
-                          value={future.finances}
-                        />
-                      </View>
-                    </View>
-                    <View style={tailwind`flex flex-row items-center mt-2`}>
-                      <View style={tailwind`pr-2 w-1/2`}>
-                        <SingleInfoFull
-                          label="Pace of Life"
-                          value={future.pace}
-                        />
-                      </View>
-                      <View style={tailwind`w-1/2`}>
-                        <SingleInfoFull
-                          label="Long Term Living"
-                          value={future.live}
-                        />
-                      </View>
-                    </View>
-                  </View>
+                  )}
                 </View>
                 <View style={tailwind` mb-4`}>
                   <TouchableOpacity

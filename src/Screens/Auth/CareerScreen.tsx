@@ -18,6 +18,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import LongTextInput from '../../Components/Inputs/LongTextInput';
 import StandardInputBordered from '../../Components/Inputs/StandardInputBordered';
 import StandardSelect from '../../Components/Select/StandardSelect';
+import {industries} from '../../Utils/SelectOptions';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -126,7 +127,7 @@ const CareerScreen = () => {
             selected={industry}
             onSelect={setIndustry}
             optional
-            options={['Yes', 'No']}
+            options={industries}
             label="Industry"
           />
           <StandardSelect

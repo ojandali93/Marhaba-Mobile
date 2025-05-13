@@ -144,9 +144,9 @@ const EditProfileView = () => {
         <View
           style={[
             tailwind`w-full flex flex-row items-center justify-between p-3 rounded-2`,
-            {backgroundColor: themeColors.darkSecondary},
+            {backgroundColor: themeColors.darkGrey},
           ]}>
-          <Text style={tailwind`text-base font-semibold text-gray-800`}>
+          <Text style={tailwind`text-base font-semibold text-white`}>
             Profile Info
           </Text>
           {expandProfile ? (
@@ -176,7 +176,11 @@ const EditProfileView = () => {
       </TouchableOpacity>
       <View style={tailwind`flex-1`}>
         {expandProfile && (
-          <View style={tailwind`w-full flex flex-row items-center mb-5`}>
+          <View
+            style={[
+              tailwind`w-full flex flex-row items-center mb-5 mt-4 rounded-2`,
+              {backgroundColor: themeColors.darkSecondary},
+            ]}>
             <View style={tailwind`w-full pr-1`}>
               <EditTextInput
                 fieldName="Name"

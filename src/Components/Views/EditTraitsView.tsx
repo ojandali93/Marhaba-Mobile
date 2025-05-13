@@ -79,9 +79,9 @@ const EditTraitsView = () => {
         <View
           style={[
             tailwind`w-full flex flex-row items-center justify-between p-3 rounded-2`,
-            {backgroundColor: themeColors.darkSecondary},
+            {backgroundColor: themeColors.darkGrey},
           ]}>
-          <Text style={tailwind`text-base font-semibold text-gray-800`}>
+          <Text style={tailwind`text-base font-semibold text-white`}>
             Hobbies & Traits
           </Text>
           {expandedAbout ? (
@@ -105,8 +105,12 @@ const EditTraitsView = () => {
       </TouchableOpacity>
 
       {expandedAbout && (
-        <>
-          <View style={tailwind`px-5 pb-2`}>
+        <View
+          style={[
+            tailwind`px-2 pt-3 mb-3 mt-4 rounded-3`,
+            {backgroundColor: themeColors.darkSecondary},
+          ]}>
+          <View style={tailwind`px-5 pb-4`}>
             <Text style={tailwind`text-base text-gray-600`}>
               Selected {traits.length}/8 — select at least 3
             </Text>
@@ -125,7 +129,7 @@ const EditTraitsView = () => {
                           backgroundColor: themeColors.primary,
                           borderColor: themeColors.primary,
                         }
-                      : {borderColor: '#ccc'},
+                      : {borderColor: themeColors.primary},
                   ]}>
                   <Text
                     style={tailwind`text-base ${
@@ -137,7 +141,7 @@ const EditTraitsView = () => {
               );
             })}
           </View>
-        </>
+        </View>
       )}
     </View>
   );

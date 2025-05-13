@@ -566,4 +566,46 @@ const marriageStatusOptions = [
   'Prefer not to say',
 ];
 
-module.exports = {marriageStatusOptions, importanceMarriageOptions, traitsAndHobbies, eitherOrQuestions, faqs, heightsOptions, lookingForOptions, timelineOptions, backgroundOptions, religionOptions, religiousSectOptions, religiousViewsOptions, tutorialScreens, intentionsOptions, timelineOptions}
+const industries = [
+  "Technology",
+  "Finance",
+  "Healthcare",
+  "Education",
+  "Legal Services",
+  "Engineering",
+  "Construction",
+  "Real Estate",
+  "Hospitality",
+  "Retail",
+  "Transportation",
+  "Logistics & Supply Chain",
+  "Government",
+  "Nonprofit",
+  "Military",
+  "Arts & Entertainment",
+  "Media & Publishing",
+  "Marketing & Advertising",
+  "Consulting",
+  "Telecommunications",
+  "Manufacturing",
+  "Energy & Utilities",
+  "Aerospace & Defense",
+  "Agriculture",
+  "Food & Beverage",
+  "Automotive",
+  "Fashion & Apparel",
+  "Insurance",
+  "Sports & Recreation",
+  "Beauty & Wellness",
+  "Religious Services",
+  "Customer Service",
+  "Human Resources",
+  "Science & Research",
+  "Environmental Services",
+  "Cybersecurity",
+  "Biotech",
+  "Startups",
+  "Other"
+];
+
+module.exports = {industries, marriageStatusOptions, importanceMarriageOptions, traitsAndHobbies, eitherOrQuestions, faqs, heightsOptions, lookingForOptions, timelineOptions, backgroundOptions, religionOptions, religiousSectOptions, religiousViewsOptions, tutorialScreens, intentionsOptions, timelineOptions}

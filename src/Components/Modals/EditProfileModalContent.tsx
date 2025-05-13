@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import React, {useState} from 'react';
+import {Text, TouchableOpacity, View} from 'react-native';
 import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
-import { ChevronsDown, ChevronsLeft } from 'react-native-feather';
+import {ChevronsDown, ChevronsLeft} from 'react-native-feather';
 import EditPhotosView from '../Views/EditPhotosView';
 import EditProfileView from '../Views/EditProfileView';
 import EditEssentialsView from '../Views/EditEssentialsView';
@@ -14,8 +14,11 @@ import EditPromptsView from '../Views/EditPromptsView';
 import EditTraitsView from '../Views/EditTraitsView';
 import EitherOrEditView from '../Views/EitherOrView';
 
-const EditProfileModalContent = ({updateTab}: {updateTab: (tab: string) => void}) => {
-
+const EditProfileModalContent = ({
+  updateTab,
+}: {
+  updateTab: (tab: string) => void;
+}) => {
   return (
     <View style={tailwind`flex-1 mb-3`}>
       <TouchableOpacity
@@ -31,34 +34,31 @@ const EditProfileModalContent = ({updateTab}: {updateTab: (tab: string) => void}
         </Text>
       </TouchableOpacity>
       <View style={tailwind`w-full flex flex-col`}>
-        <EditPhotosView/>
+        <EditPhotosView />
       </View>
       <View style={tailwind`w-full flex flex-col`}>
-        <EditProfileView/>
+        <EditProfileView />
       </View>
       <View style={tailwind`w-full flex flex-col`}>
-        <EditEssentialsView/>
+        <EditEssentialsView />
       </View>
       <View style={tailwind`w-full flex flex-col`}>
-        <EditCoreViews/>
+        <EditCoreViews />
       </View>
       <View style={tailwind`w-full flex flex-col`}>
-        <EditLifestyleView/>
+        <EditFutureView />
       </View>
       <View style={tailwind`w-full flex flex-col`}>
-        <EditFutureView/>
+        <EditCareetView />
       </View>
       <View style={tailwind`w-full flex flex-col`}>
-        <EditCareetView/>
+        <EditPromptsView />
       </View>
       <View style={tailwind`w-full flex flex-col`}>
-        <EditPromptsView/>
+        <EditTraitsView />
       </View>
       <View style={tailwind`w-full flex flex-col`}>
-        <EditTraitsView/>
-      </View>
-      <View style={tailwind`w-full flex flex-col`}>
-        <EitherOrEditView/>
+        <EitherOrEditView />
       </View>
     </View>
   );

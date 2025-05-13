@@ -77,9 +77,9 @@ const EditPromptsView = () => {
         <View
           style={[
             tailwind`w-full flex flex-row items-center justify-between p-3 rounded-2`,
-            {backgroundColor: themeColors.darkSecondary},
+            {backgroundColor: themeColors.darkGrey},
           ]}>
-          <Text style={tailwind`text-base font-semibold text-gray-800`}>
+          <Text style={tailwind`text-base font-semibold text-white`}>
             Prompts
           </Text>
           {expanded ? (
@@ -103,7 +103,11 @@ const EditPromptsView = () => {
       </TouchableOpacity>
 
       {expanded && (
-        <View style={tailwind`px-2 pb-4`}>
+        <View
+          style={[
+            tailwind`px-2 pb-4 mb-3 mt-4 rounded-3`,
+            {backgroundColor: themeColors.darkSecondary},
+          ]}>
           {prompts.map((p, index) => (
             <EditTextInput
               key={p.id}
