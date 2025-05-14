@@ -56,25 +56,18 @@ const PromptSelect = ({fieldName, selected, onSelect}: GenderPickerProps) => {
       <TouchableOpacity
         onPress={() => setModalVisible(true)}
         style={[
-          tailwind`w-full h-14 justify-center px-4 rounded-2 border-2`,
+          tailwind`w-full justify-center rounded-2 mt-1`,
           {
             borderColor: themeColors.primary,
             backgroundColor: themeColors.secondary,
-            marginTop: screenHeight * 0.015,
           },
         ]}>
-        {/* Floating label */}
-        <View style={tailwind`absolute left-3 top--3.5`}>
-          <Text
-            style={[
-              tailwind`text-sm font-semibold px-1`,
-              {backgroundColor: themeColors.secondary, color: 'grey'},
-            ]}>
-            {fieldName}
-          </Text>
+        <View style={tailwind``}>
+          <Text style={tailwind`italic text-base px-2 pb-1`}>{fieldName}</Text>
         </View>
-        <Text style={tailwind`text-base text-gray-800`}>
-          {selected || 'Select Prompt'}
+        <Text
+          style={tailwind`text-base text-gray-800 w-full border-2 border-slate-600 rounded-2 px-2 py-2`}>
+          {selected || `Select ${fieldName}`}
         </Text>
       </TouchableOpacity>
 

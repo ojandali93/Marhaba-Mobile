@@ -87,6 +87,7 @@ const SearchScreent = () => {
 
   useEffect(() => {
     if (preferencesLoaded) {
+      console.log('preferencesLoaded', preferencesLoaded);
       fetchUsers();
     }
   }, [preferencesLoaded]);
@@ -104,9 +105,7 @@ const SearchScreent = () => {
   const initializeFilters = () => {
     const preferences = profile.Preferences?.[0];
     if (!preferences) return;
-
-    setAgeMin(preferences.ageMin || 18);
-    setAgeMax(preferences.ageMax || 100);
+    console.log('preferences', preferences);
     setGender(preferences.gender || 'male');
     setDistance(preferences.distance || 'Close (50 miles)');
     setBackground(toArray(preferences.background));
@@ -123,7 +122,6 @@ const SearchScreent = () => {
     setAgeRange([preferences.ageMin, preferences.ageMax] || [18, 100]);
     setPreferencesLoaded(true);
   };
-
   const toArray = (value: any): string[] => {
     if (!value) return [];
     if (Array.isArray(value)) return value;
@@ -142,7 +140,25 @@ const SearchScreent = () => {
   };
 
   const fetchUsers = async () => {
+    console.log('distance', distance);
     const currentDistance = DISTANCE_MAP[distance];
+    console.log('currentDistance', currentDistance);
+
+    console.log('age min', ageMin);
+    console.log('age max', ageMax);
+    console.log('gender', gender);
+    console.log('background', background);
+    console.log('religion', religion);
+    console.log('sect', sect);
+    console.log('views', views);
+    console.log('smoke', smoke);
+    console.log('drink', drink);
+    console.log('hasKids', hasKids);
+    console.log('wantsKids', wantsKids);
+    console.log('lookingFor', lookingFor);
+    console.log('timeline', timeline);
+    console.log('relocate', relocate);
+
     try {
       const response = await axios.post(
         'https://marhaba-server.onrender.com/api/user/filterProfiles',

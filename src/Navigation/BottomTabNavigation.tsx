@@ -9,6 +9,7 @@ import {
   MessageSquare,
   Shield,
   User,
+  FileText,
 } from 'react-native-feather';
 import tailwind from 'twrnc';
 import themeColors from '../Utils/custonColors';
@@ -21,6 +22,7 @@ import SearchStackNavigation from './SearchStackNavigation';
 import AdminReviewScreen from '../Screens/HomeScreens/AdminReviewScreen';
 import {useProfile} from '../Context/ProfileContext';
 import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
+import LoadDtabaseScreen from '../Screens/HomeScreens/LoadDtabaseScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -137,17 +139,30 @@ const BottomTabNavigation = () => {
         })}
       />
       {isAdmin && (
-        <Tab.Screen
-          name="Admin"
-          component={AdminReviewScreen}
-          options={({route}) => ({
-            tabBarIcon: ({focused}) => (
-              <View style={tailwind`items-center`}>
-                {renderIcon(Shield, focused)}
-              </View>
-            ),
-          })}
-        />
+        <>
+          <Tab.Screen
+            name="Admin"
+            component={AdminReviewScreen}
+            options={({route}) => ({
+              tabBarIcon: ({focused}) => (
+                <View style={tailwind`items-center`}>
+                  {renderIcon(Shield, focused)}
+                </View>
+              ),
+            })}
+          />
+          {/* <Tab.Screen
+            name="Database"
+            component={LoadDtabaseScreen}
+            options={({route}) => ({
+              tabBarIcon: ({focused}) => (
+                <View style={tailwind`items-center`}>
+                  {renderIcon(FileText, focused)}
+                </View>
+              ),
+            })}
+          /> */}
+        </>
       )}
       <Tab.Screen
         name="Profiles"

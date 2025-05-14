@@ -34,16 +34,14 @@ const StandardInputBordered: React.FC<standardInput> = ({
   return (
     <View
       style={[
-        tailwind`w-full flex justify-center pl-3.5 py-3 rounded-2 border-2`,
+        tailwind`w-full flex justify-center`,
         {
-          borderColor: themeColors.primary,
           backgroundColor: themeColors.secondary,
-          marginTop: screenHeight * 0.015,
         },
       ]}>
       <View
         style={tailwind`w-full flex flex-row justify-between items-center mb-1.5`}>
-        <Text style={tailwind`text-sm font-semibold text-gray-600`}>
+        <Text style={tailwind`text-base italic text-gray-600 px-2`}>
           {fieldName}
         </Text>
         {remove && (
@@ -52,7 +50,7 @@ const StandardInputBordered: React.FC<standardInput> = ({
           </TouchableOpacity>
         )}
       </View>
-      <View style={tailwind`pr-3`}>
+      <View style={tailwind`px-3 border-2 border-slate-600 rounded-2`}>
         <TextInput
           value={value}
           onChangeText={changeValue}

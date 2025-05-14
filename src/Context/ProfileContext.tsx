@@ -81,13 +81,11 @@ export const ProfileProvider = ({children}: {children: React.ReactNode}) => {
     useState<boolean>(false);
 
   const grabUserProfile = async (userId: string) => {
-    console.log('grabUserProfile: ', userId);
     try {
       const response = await axios.get(
         `https://marhaba-server.onrender.com/api/user/${userId}`,
       );
       if (response.data) {
-        console.log('response.data: ', JSON.stringify(response.data));
         setProfile(response.data.data[0]);
         setUserId(userId);
       }
@@ -183,8 +181,6 @@ export const ProfileProvider = ({children}: {children: React.ReactNode}) => {
       longitude: number;
     },
   ) => {
-    console.log('addLocation: ', location);
-    console.log('userId: ', userId);
     await AsyncStorage.setItem('location', JSON.stringify(location));
     setLocation(location);
     try {
@@ -198,7 +194,6 @@ export const ProfileProvider = ({children}: {children: React.ReactNode}) => {
       );
 
       if (response.data?.success) {
-        console.log('Location updated successfully');
         return;
       } else {
         console.error('Error updating location:', response.data?.message);
@@ -236,7 +231,6 @@ export const ProfileProvider = ({children}: {children: React.ReactNode}) => {
       }
       Geolocation.getCurrentPosition(
         position => {
-          console.log('position: ', position);
           addLocation(userId, position?.coords);
         },
         error => console.log(error),
@@ -247,14 +241,44 @@ export const ProfileProvider = ({children}: {children: React.ReactNode}) => {
     }
   };
 
+  const convertDistanceLabelToMiles = (label: string): number => {
+    switch (label) {
+      case 'Close (50 miles)':
+        return 50;
+      case 'Medium (100 miles)':
+        return 100;
+      case 'Far (150 miles)':
+        return 150;
+      case 'Everywhere (500+ miles)':
+        return 500;
+      default:
+        return 50; // fallback to default
+    }
+  };
+
   const grabUserMatches = async () => {
+    const distanceLabel = profile.Preferences[0].distance;
+    const distance = convertDistanceLabelToMiles(distanceLabel);
+    const latitude = profile.latitude;
+    const longitude = profile.longitude;
+    const ageMin = profile.Preferences[0].ageMin;
+    const ageMax = profile.Preferences[0].ageMax;
+    const gender = profile.Preferences[0].gender;
     try {
-      const response = await axios.get(
-        `https://marhaba-server.onrender.com/api/user/allUsers`,
+      const response = await axios.post(
+        `https://marhaba-server.onrender.com/api/user/getMatches`,
+        {
+          userId,
+          distance,
+          latitude,
+          longitude,
+          ageMin,
+          ageMax,
+          gender,
+        },
       );
       if (response.data) {
-        setAllProfiles(response.data.data);
-        setMatchedProfiles(response.data.data);
+        setMatchedProfiles(response.data.matches);
       }
     } catch (error) {
       console.error('No Matches Found:', error);

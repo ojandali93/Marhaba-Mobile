@@ -8,6 +8,7 @@ import {
   Platform,
   ScrollView,
   SafeAreaView,
+  Keyboard,
 } from 'react-native';
 import axios from 'axios';
 import tailwind from 'twrnc';
@@ -26,6 +27,9 @@ const ChatScreen = ({route}) => {
   const jwtToken = profile?.jwtToken;
   const {conversation} = route.params;
   const navigation = useNavigation();
+
+  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
+
   const conversationId = conversation.id;
 
   const otherUser =
@@ -36,6 +40,20 @@ const ChatScreen = ({route}) => {
   const [messages, setMessages] = useState([]);
   const [textMessage, setTextMessage] = useState('');
   const scrollViewRef = useRef();
+
+  useEffect(() => {
+    const showSub = Keyboard.addListener('keyboardDidShow', () =>
+      setIsKeyboardOpen(true),
+    );
+    const hideSub = Keyboard.addListener('keyboardDidHide', () =>
+      setIsKeyboardOpen(false),
+    );
+
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
 
   // Fetch existing messages
   useEffect(() => {
@@ -172,12 +190,15 @@ const ChatScreen = ({route}) => {
         </ScrollView>
 
         <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          keyboardVerticalOffset={60}>
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
           <View
             style={[
-              tailwind`flex-row items-center border-t border-gray-700 p-3`,
-              {backgroundColor: themeColors.secondary},
+              tailwind`flex-row items-center border-t border-gray-700 p-3 ${
+                isKeyboardOpen ? 'mb-0' : 'mb-10'
+              }`,
+              {
+                backgroundColor: themeColors.secondary,
+              },
             ]}>
             <TextInput
               value={textMessage}

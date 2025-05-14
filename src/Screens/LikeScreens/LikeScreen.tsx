@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import tailwind from 'twrnc';
-import {Check, Heart, X} from 'react-native-feather';
+import {Check, Heart, MessageSquare, X} from 'react-native-feather';
 
 import themeColors from '../../Utils/custonColors';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
@@ -67,6 +67,7 @@ const LikeScreen = () => {
       );
 
       if (response.data) {
+        console.log('liked profiles', response.data.data);
         setInteractions(response.data.data);
       } else {
         setInteractions([]);
@@ -114,6 +115,23 @@ const LikeScreen = () => {
     }
   };
 
+  const handleRejectLike = async (interactionId: string) => {
+    try {
+      const response = await axios.delete(
+        `https://marhaba-server.onrender.com/api/user/removeInteraction/${interactionId}`,
+      );
+
+      if (response.data) {
+        fetchLikes(false);
+      } else {
+        console.log('No likes found or invalid data format.');
+      }
+    } catch (error) {
+      console.error('❌ Error approving likes:', error);
+      setError('Failed to load likes. Please try again later.');
+    }
+  };
+
   const createConversation = async (userId2: string) => {
     try {
       const response = await axios.post(
@@ -135,10 +153,6 @@ const LikeScreen = () => {
       console.error('❌ Error approving likes:', error);
       setError('Failed to load likes. Please try again later.');
     }
-  };
-
-  const handleRejectLike = (interactionId: string) => {
-    console.log('Rejected like:', interactionId);
   };
 
   const handleViewProfile = (userProfile: any) => {
@@ -175,15 +189,40 @@ const LikeScreen = () => {
           )}
           {profile?.tier === 3 && (
             <>
-              <View
-                style={tailwind`absolute z-20 bottom-2 left-2 p-2 bg-red-400 rounded-full`}>
-                <X height={28} width={28} color={'white'} strokeWidth={2} />
-              </View>
-              <TouchableOpacity
-                onPress={() => handleApproveLike(item._id, item.liker._id)}
-                style={tailwind`absolute bottom-2 right-2 p-2 bg-green-400 rounded-full`}>
-                <Check height={28} width={28} color={'white'} strokeWidth={2} />
-              </TouchableOpacity>
+              {item.approved === false ? (
+                <>
+                  <TouchableOpacity
+                    onPress={() => handleRejectLike(item.id)}
+                    style={tailwind`absolute z-20 bottom-2 left-2 p-2 bg-red-400 rounded-full`}>
+                    <X height={28} width={28} color={'white'} strokeWidth={2} />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => handleApproveLike(item._id, item.liker._id)}
+                    style={tailwind`absolute bottom-2 right-2 p-2 bg-green-400 rounded-full`}>
+                    <Check
+                      height={28}
+                      width={28}
+                      color={'white'}
+                      strokeWidth={2}
+                    />
+                  </TouchableOpacity>
+                </>
+              ) : (
+                <>
+                  <TouchableOpacity
+                    onPress={() => {
+                      navigation.navigate('Conversations');
+                    }}
+                    style={tailwind`absolute z-20 bottom-2 left-2 p-3 bg-neutral-400 rounded-full`}>
+                    <MessageSquare
+                      height={20}
+                      width={20}
+                      color={'white'}
+                      strokeWidth={2}
+                    />
+                  </TouchableOpacity>
+                </>
+              )}
             </>
           )}
         </View>

@@ -287,7 +287,7 @@ const SingleProfileScreen = () => {
           <TouchableOpacity
             onPress={handleToggleFullProfile}
             style={[
-              tailwind`absolute bottom-39 left-0 right-0 rounded-t-2`,
+              tailwind`absolute bottom-19 left-0 right-0 rounded-t-2`,
               {backgroundColor: themeColors.darkGrey},
             ]}>
             <View
@@ -457,11 +457,12 @@ const SingleProfileScreen = () => {
               </TouchableOpacity>
             </View>
           </View> */}
-          <View style={tailwind`absolute z-20 bottom-39 left-0 right-0`}>
+          <View
+            style={tailwind`absolute z-20 bottom-19 left-0 right-0 rounded-t-2`}>
             <TouchableWithoutFeedback onPress={handleToggleFullProfile}>
               <View
                 style={[
-                  tailwind`flex flex-row items-center justify-center rounded-2 p-4`,
+                  tailwind`flex flex-row items-center justify-center p-4`,
                   {backgroundColor: themeColors.darkGrey},
                 ]}>
                 <ChevronsDown
@@ -469,7 +470,7 @@ const SingleProfileScreen = () => {
                   width={24}
                   color={themeColors.primary}
                 />
-                <Text style={tailwind`text-lg font-semibold text-white px-4`}>
+                <Text style={tailwind`text-lg font-semibold text-white px-4 `}>
                   Less Details
                 </Text>
                 <ChevronsDown
@@ -482,7 +483,7 @@ const SingleProfileScreen = () => {
           </View>
           <View
             style={[
-              tailwind`absolute top-16 bottom-39 left-0 right-0  pb-14`,
+              tailwind`absolute top-16 bottom-19 left-0 right-0  pb-14 rounded-t-2`,
               {backgroundColor: themeColors.darkGrey},
             ]}>
             <ScrollView

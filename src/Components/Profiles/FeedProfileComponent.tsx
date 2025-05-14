@@ -110,7 +110,6 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
   const photos = user?.Photos ?? [];
   const preferences = user?.Preferences[0] ?? [];
   const prompts = user?.Prompts ?? [];
-  console.log('prompts', JSON.stringify(prompts));
   const relationships = user?.Relationships[0] ?? [];
   const religion = user?.Religion[0] ?? [];
   const survey = user?.Survey[0] ?? [];

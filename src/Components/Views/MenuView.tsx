@@ -1,10 +1,11 @@
 import React from 'react';
-import {Text, TouchableOpacity, View} from 'react-native';
+import {Alert, Text, TouchableOpacity, View} from 'react-native';
 import {ChevronsRight} from 'react-native-feather';
 import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
 import {useProfile} from '../../Context/ProfileContext';
 import {useNavigation} from '@react-navigation/native';
+import axios from 'axios';
 interface MenuViewProps {
   updateTab: (tab: string) => void;
 }
@@ -28,6 +29,39 @@ const MenuView = ({updateTab}: MenuViewProps) => {
     } catch (err) {
       console.error('❌ Logout exception:', err);
     }
+  };
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      'Delete Account',
+      'Are you sure you want to delete your account? All your data will be lost.',
+      [
+        {text: 'Cancel', style: 'cancel'},
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              const response = await axios.delete(
+                'https://marhaba-server.onrender.com/api/account/delete',
+                {data: {userId: profile.userId}}, // `data` key is required for DELETE body
+              );
+              if (response.data?.success) {
+                console.log('✅ Account successfully deleted');
+                await removeSession();
+                await removeUserId();
+                await removeProfile();
+              } else {
+                Alert.alert('Error', 'Failed to delete account.');
+              }
+            } catch (error) {
+              console.error('❌ Delete account error:', error);
+              Alert.alert('Error', 'An unexpected error occurred.');
+            }
+          },
+        },
+      ],
+    );
   };
 
   return (
@@ -69,14 +103,16 @@ const MenuView = ({updateTab}: MenuViewProps) => {
         </Text>
         <ChevronsRight height={24} width={24} color={themeColors.primary} />
       </TouchableOpacity>
-      {profile.tier === 1 && (
+      {profile.tier === 3 && (
         <TouchableOpacity
           onPress={() => updateTab('Viewed')}
           style={[
             tailwind`flex-row justify-between items-center p-4 rounded-2 mt-2`,
             {backgroundColor: themeColors.darkGrey},
           ]}>
-          <Text style={tailwind`text-base font-semibold`}>Recently Viewed</Text>
+          <Text style={tailwind`text-base font-semibold text-white`}>
+            Recently Viewed
+          </Text>
           <ChevronsRight height={24} width={24} color={themeColors.primary} />
         </TouchableOpacity>
       )}
@@ -116,7 +152,8 @@ const MenuView = ({updateTab}: MenuViewProps) => {
         <Text style={tailwind`text-base font-bold text-red-600`}>Logout</Text>
         <ChevronsRight height={24} width={24} color={themeColors.primary} />
       </TouchableOpacity>
-      <View
+      <TouchableOpacity
+        onPress={handleDeleteAccount}
         style={[
           tailwind`flex-row justify-between items-center p-4 rounded-2 mt-2 mb-2`,
           {backgroundColor: themeColors.darkGrey},
@@ -125,7 +162,7 @@ const MenuView = ({updateTab}: MenuViewProps) => {
           Delete Account
         </Text>
         <ChevronsRight height={24} width={24} color={themeColors.primary} />
-      </View>
+      </TouchableOpacity>
     </View>
   );
 };

@@ -242,13 +242,25 @@ const AdminReviewScreen = () => {
                 <View style={tailwind`w-full flex flex-row justify-between`}>
                   <Text>UserId:</Text>
                   <Text style={tailwind`text-gray-700 mb-2`}>
-                    {profile.About?.[0].userId}
+                    {profile.userId}
                   </Text>
                 </View>
                 <View style={tailwind`w-full flex flex-row justify-between`}>
                   <Text>Looking For:</Text>
                   <Text style={tailwind`text-gray-700 mb-2`}>
-                    {profile.About?.[0].lookingFor}
+                    {profile.Intent?.[0].intentions}
+                  </Text>
+                </View>
+                <View style={tailwind`w-full flex flex-row justify-between`}>
+                  <Text>Timeline:</Text>
+                  <Text style={tailwind`text-gray-700 mb-2`}>
+                    {profile.Intent?.[0].timeline}
+                  </Text>
+                </View>
+                <View style={tailwind`w-full flex flex-row justify-between`}>
+                  <Text>Travel:</Text>
+                  <Text style={tailwind`text-gray-700 mb-2`}>
+                    {profile.Intent?.[0].relocate}
                   </Text>
                 </View>
                 <View style={tailwind`w-full flex flex-row justify-between`}>
@@ -260,55 +272,43 @@ const AdminReviewScreen = () => {
                 <View style={tailwind`w-full flex flex-row justify-between`}>
                   <Text>Religion:</Text>
                   <Text style={tailwind`text-gray-700 mb-2`}>
-                    {profile.About?.[0].religion}
+                    {profile.Religion?.[0].religion}
                   </Text>
                 </View>
                 <View style={tailwind`w-full flex flex-row justify-between`}>
                   <Text>Sect:</Text>
                   <Text style={tailwind`text-gray-700 mb-2`}>
-                    {profile.About?.[0].sect}
+                    {profile.Religion?.[0].sect}
                   </Text>
                 </View>
                 <View style={tailwind`w-full flex flex-row justify-between`}>
                   <Text>Views:</Text>
                   <Text style={tailwind`text-gray-700 mb-2`}>
-                    {profile.About?.[0].views}
+                    {profile.Religion?.[0].practicing || 'Not Specified'}
                   </Text>
                 </View>
                 <View style={tailwind`w-full flex flex-row justify-between`}>
                   <Text>Smoke:</Text>
                   <Text style={tailwind`text-gray-700 mb-2`}>
-                    {profile.About?.[0].smoke}
+                    {profile.Habits?.[0].smoking}
                   </Text>
                 </View>
                 <View style={tailwind`w-full flex flex-row justify-between`}>
                   <Text>Drink:</Text>
                   <Text style={tailwind`text-gray-700 mb-2`}>
-                    {profile.About?.[0].drink}
+                    {profile.Habits?.[0].drinking}
                   </Text>
                 </View>
                 <View style={tailwind`w-full flex flex-row justify-between`}>
                   <Text>Has Kids:</Text>
                   <Text style={tailwind`text-gray-700 mb-2`}>
-                    {profile.About?.[0].hasKids}
+                    {profile.Habits?.[0].hasKids}
                   </Text>
                 </View>
                 <View style={tailwind`w-full flex flex-row justify-between`}>
                   <Text>Wants Kids:</Text>
                   <Text style={tailwind`text-gray-700 mb-2`}>
-                    {profile.About?.[0].wantsKids}
-                  </Text>
-                </View>
-                <View style={tailwind`w-full flex flex-row justify-between`}>
-                  <Text>Timeline:</Text>
-                  <Text style={tailwind`text-gray-700 mb-2`}>
-                    {profile.About?.[0].timeline}
-                  </Text>
-                </View>
-                <View style={tailwind`w-full flex flex-row justify-between`}>
-                  <Text>Travel:</Text>
-                  <Text style={tailwind`text-gray-700 mb-2`}>
-                    {profile.About?.[0].travel}
+                    {profile.Habits?.[0].wantsKids}
                   </Text>
                 </View>
                 <Text style={tailwind`font-bold text-lg py-2`}>Prompts:</Text>
