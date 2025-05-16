@@ -94,24 +94,51 @@ const LikeScreen = () => {
     fetchLikes(true);
   }, [fetchLikes]);
 
-  const handleApproveLike = async (interactionId: string, userId2: string) => {
+  const handleApproveLike = async (interactionId: any, userId2: string) => {
+    console.log('🔄 Approving like interaction:', interactionId);
+
     try {
+      // 1. Approve the interaction
       const response = await axios.put(
         `https://marhaba-server.onrender.com/api/user/approved`,
         {
-          id: interactionId,
+          id: interactionId.id,
         },
       );
 
       if (response.data) {
-        fetchLikes(false);
+        fetchLikes(false); // refresh
         createConversation(userId2);
+
+        // 2. Check if liker wants match notifications
+        const liker = interactionId.likerProfile;
+        const wantsMatchNotifications =
+          liker?.Notifications?.[0]?.matches === true;
+        const apnToken = liker?.apnToken;
+
+        if (wantsMatchNotifications && apnToken) {
+          try {
+            await axios.post(
+              'https://marhaba-server.onrender.com/api/notifications/send',
+              {
+                token: apnToken,
+                title: 'New Match!',
+                body: 'You have a new match!',
+              },
+            );
+            console.log('📤 Match notification sent to liker');
+          } catch (err) {
+            console.error('❌ Failed to send push notification:', err);
+          }
+        } else {
+          console.log('⚠️ User has match notifications turned off or no token');
+        }
       } else {
-        console.log('No likes found or invalid data format.');
+        console.warn('⚠️ No data returned from approval endpoint.');
       }
     } catch (error) {
-      console.error('❌ Error approving likes:', error);
-      setError('Failed to load likes. Please try again later.');
+      console.error('❌ Error approving like:', error);
+      setError('Failed to approve like. Please try again later.');
     }
   };
 
@@ -197,7 +224,9 @@ const LikeScreen = () => {
                     <X height={28} width={28} color={'white'} strokeWidth={2} />
                   </TouchableOpacity>
                   <TouchableOpacity
-                    onPress={() => handleApproveLike(item._id, item.liker._id)}
+                    onPress={() =>
+                      handleApproveLike(item, item.likerProfile.userId)
+                    }
                     style={tailwind`absolute bottom-2 right-2 p-2 bg-green-400 rounded-full`}>
                     <Check
                       height={28}

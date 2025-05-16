@@ -6,6 +6,7 @@ import themeColors from '../../Utils/custonColors';
 import {useProfile} from '../../Context/ProfileContext';
 import {useNavigation} from '@react-navigation/native';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 interface MenuViewProps {
   updateTab: (tab: string) => void;
 }
@@ -26,6 +27,13 @@ const MenuView = ({updateTab}: MenuViewProps) => {
       removeUserId();
       removeProfile();
       checkAuthenticated();
+      await axios.post(
+        'https://marhaba-server.onrender.com/api/notifications/store-device-token',
+        {
+          userId: profile.userId,
+          token: '',
+        },
+      );
     } catch (err) {
       console.error('❌ Logout exception:', err);
     }

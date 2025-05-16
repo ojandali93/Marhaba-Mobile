@@ -124,12 +124,38 @@ const AdminReviewScreen = () => {
     });
   };
 
-  const handleApprove = async userId => {
+  const handleApprove = async (userId, profile) => {
+    console.log('Profile:', JSON.stringify(profile));
+    const profileToken = profile.apnToken;
+    console.log('Profile Token:', profileToken);
+
     try {
       await axios.post(
         `https://marhaba-server.onrender.com/api/admin/approveProfile`,
         {userId},
       );
+
+      if (profileToken) {
+        try {
+          await axios.post(
+            'https://marhaba-server.onrender.com/api/notifications/send',
+            {
+              token: profileToken,
+              title: 'Account Approved!',
+              body: 'Your Marhabah profile has been approved. You can now start matching!',
+            },
+          );
+          console.log('📤 Approval notification sent');
+        } catch (notificationError) {
+          console.error(
+            '❌ Failed to send approval notification:',
+            notificationError,
+          );
+        }
+      } else {
+        console.warn('⚠️ No APNs token available for this profile');
+      }
+
       Alert.alert('Approved');
       fetchPendingProfiles();
     } catch (err) {
@@ -137,12 +163,15 @@ const AdminReviewScreen = () => {
     }
   };
 
-  const handleReject = async (profileId: string) => {
+  const handleReject = async (profileId: string, profile: any) => {
     const idKey = String(profileId);
 
     console.log('🔴 Notes:', notes);
     console.log('🔴 Flagged Images:', flaggedImages);
     console.log('🔴 Flagged Prompts:', flaggedPrompts);
+    console.log('Profile:', JSON.stringify(profile));
+    const profileToken = profile.apnToken;
+    console.log('Profile Token:', profileToken);
 
     const flaggedPhotosArray = flaggedImages?.[idKey] ?? [];
     const flaggedPromptsArray = flaggedPrompts?.[idKey] ?? [];
@@ -163,6 +192,26 @@ const AdminReviewScreen = () => {
               : null,
         },
       );
+      if (profileToken) {
+        try {
+          await axios.post(
+            'https://marhaba-server.onrender.com/api/notifications/send',
+            {
+              token: profileToken,
+              title: 'Account Rejected!',
+              body: 'Your Marhabah profile requires some changes. Please update and resubmit!',
+            },
+          );
+          console.log('📤 Rejection notification sent');
+        } catch (notificationError) {
+          console.error(
+            '❌ Failed to send approval notification:',
+            notificationError,
+          );
+        }
+      } else {
+        console.warn('⚠️ No APNs token available for this profile');
+      }
       Alert.alert('Rejected');
       setPendingProfiles([]);
       fetchPendingProfiles();
@@ -365,12 +414,12 @@ const AdminReviewScreen = () => {
                 </View>
                 <View style={tailwind`flex-row justify-between mt-3`}>
                   <TouchableOpacity
-                    onPress={() => handleApprove(profile.userId)}
+                    onPress={() => handleApprove(profile.userId, profile)}
                     style={tailwind`bg-green-600 px-4 py-2 rounded`}>
                     <Text style={tailwind`text-white`}>Approve</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
-                    onPress={() => handleReject(profile.userId)}
+                    onPress={() => handleReject(profile.userId, profile)}
                     style={tailwind`bg-red-600 px-4 py-2 rounded`}>
                     <Text style={tailwind`text-white`}>Reject</Text>
                   </TouchableOpacity>

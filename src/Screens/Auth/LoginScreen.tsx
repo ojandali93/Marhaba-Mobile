@@ -19,6 +19,8 @@ import Icon from '../../Assets/marhaba-icon-full-white.png';
 import Logo from '../../Assets/marhaba-name-only-blue.png';
 import {useProfile} from '../../Context/ProfileContext';
 import AuthLoginInput from '../../Components/Inputs/AuthLoginInput';
+import PushNotificationIOS from '@react-native-community/push-notification-ios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -53,6 +55,20 @@ const LoginScreen = () => {
         return;
       }
 
+      const deviceToken = await AsyncStorage.getItem('APN_TOKEN_KEY');
+
+      console.log('deviceToken', deviceToken);
+      console.log('userId', userId);
+
+      await axios.post(
+        'https://marhaba-server.onrender.com/api/notifications/store-device-token',
+        {
+          userId,
+          token: deviceToken,
+        },
+      );
+
+      // 📥 Grab user data and finish login
       grabUserProfileData(session, userId);
       setLoading(false);
     } catch (error) {

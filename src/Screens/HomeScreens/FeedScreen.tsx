@@ -7,6 +7,7 @@ import {
   View,
   ActivityIndicator,
   Alert,
+  Modal,
 } from 'react-native';
 import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
@@ -33,6 +34,8 @@ const FeedScreen = () => {
   const [likes, setLikes] = useState<number>(0);
   const [superLikes, setSuperLikes] = useState<number>(0);
   const [showFullProfile, setShowFullProfile] = useState<boolean>(false);
+  const [showMatchModal, setShowMatchModal] = useState<boolean>(false);
+  const [matchedProfile, setMatchedProfile] = useState<any>(null);
   const [showTutorial, setShowTutorial] = useState(false);
 
   const getDistanceInMiles = (
@@ -75,6 +78,10 @@ const FeedScreen = () => {
       })();
     }
   }, [profile]);
+
+  const handleToggleFullProfile = () => {
+    setShowFullProfile(!showFullProfile);
+  };
 
   useEffect(() => {
     setShowTutorial(!!profile?.tutorial);
@@ -211,6 +218,22 @@ const FeedScreen = () => {
           createConversation(profileId);
           setMatchedProfile(profile);
           setShowMatchModal(true);
+          const notificationsProfile = profile.Notifications[0];
+          if (notificationsProfile.matches) {
+            try {
+              await axios.post(
+                'https://marhaba-server.onrender.com/api/notifications/send',
+                {
+                  token: profile.apnToken, // this is the *receiver* of the like
+                  title: 'New Match!',
+                  body: 'You have a new match!',
+                },
+              );
+              console.log('📤 Notification sent to liked profile');
+            } catch (err) {
+              console.error('❌ Failed to send push notification:', err);
+            }
+          }
           return;
         }
 
@@ -230,10 +253,26 @@ const FeedScreen = () => {
         );
 
         if (response.data?.success) {
-          console.log(`✅ Liked profile: ${profileId}`);
+          console.log(`✅ Liked profile: ${profile.apnToken}`);
           createViewed(profileId);
           fetchUsage();
           removeTopProfile();
+          const notificationsProfile = profile.Notifications[0];
+          if (notificationsProfile.likes) {
+            try {
+              await axios.post(
+                'https://marhaba-server.onrender.com/api/notifications/send',
+                {
+                  token: profile.apnToken, // this is the *receiver* of the like
+                  title: 'New Like!',
+                  body: 'Someone liked your profile!',
+                },
+              );
+              console.log('📤 Notification sent to liked profile');
+            } catch (err) {
+              console.error('❌ Failed to send push notification:', err);
+            }
+          }
         }
       } catch (error) {
         console.error(`❌ Error liking profile ${profileId}:`, error);
@@ -286,6 +325,22 @@ const FeedScreen = () => {
           createConversation(profileId);
           setMatchedProfile(profile);
           setShowMatchModal(true);
+          const notificationsProfile = profile.Notifications[0];
+          if (notificationsProfile.matches) {
+            try {
+              await axios.post(
+                'https://marhaba-server.onrender.com/api/notifications/send',
+                {
+                  token: profile.apnToken, // this is the *receiver* of the like
+                  title: 'New Match!',
+                  body: 'You have a new match!',
+                },
+              );
+              console.log('📤 Notification sent to liked profile');
+            } catch (err) {
+              console.error('❌ Failed to send push notification:', err);
+            }
+          }
           return;
         }
 
@@ -309,6 +364,22 @@ const FeedScreen = () => {
           createViewed(profileId);
           fetchUsage();
           removeTopProfile();
+          const notificationsProfile = profile.Notifications[0];
+          if (notificationsProfile.likes) {
+            try {
+              await axios.post(
+                'https://marhaba-server.onrender.com/api/notifications/send',
+                {
+                  token: profile.apnToken, // this is the *receiver* of the like
+                  title: 'New Super Like!',
+                  body: 'Someone super liked your profile!',
+                },
+              );
+              console.log('📤 Notification sent to liked profile');
+            } catch (err) {
+              console.error('❌ Failed to send push notification:', err);
+            }
+          }
         }
       } catch (error) {
         console.error(`❌ Error super liking profile ${profileId}:`, error);
@@ -427,6 +498,65 @@ const FeedScreen = () => {
         setShowFullProfile={setShowFullProfile}
         handleToggleFullProfile={() => setShowFullProfile(prev => !prev)}
       />
+
+      <Modal
+        transparent
+        visible={showMatchModal}
+        animationType="fade"
+        onRequestClose={() => setShowMatchModal(false)}>
+        <View
+          style={tailwind`flex-1 bg-black bg-opacity-60 justify-center items-center px-6`}>
+          <View
+            style={[
+              tailwind`rounded-lg p-5 items-center justify-center h-9/12 w-full`,
+              {backgroundColor: themeColors.secondary},
+            ]}>
+            <Text style={tailwind`text-4xl font-bold text-green-800 mb-2`}>
+              You & {matchedProfile?.name}
+            </Text>
+            <Text style={tailwind`text-3xl font-bold text-green-800 mb-2`}>
+              Connected!
+            </Text>
+            {matchedProfile?.Photos?.[0]?.photoUrl && (
+              <Image
+                source={{uri: matchedProfile.Photos[0].photoUrl}}
+                style={tailwind`w-11/12 h-7/12 rounded-8 mb-4`}
+              />
+            )}
+            <Text style={tailwind`text-base text-center`}>
+              You and {matchedProfile?.name} have liked each other!
+            </Text>
+            <Text style={tailwind`text-base mb-4 text-center`}>
+              You can now start a conversation!
+            </Text>
+            <View style={tailwind`flex-col justify-between w-full`}>
+              <TouchableOpacity
+                onPress={() => {
+                  setShowMatchModal(false);
+                  removeTopProfile();
+                  navigation.navigate('Conversations'); // <-- Use the name of your Messages tab here
+                }}
+                style={tailwind`bg-green-700 px-4 py-4 rounded-md`}>
+                <Text
+                  style={tailwind`text-white text-center font-semibold text-base`}>
+                  Message
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setShowMatchModal(false);
+                  removeTopProfile(); // go to next profile
+                }}
+                style={tailwind`p-4 rounded-md`}>
+                <Text
+                  style={tailwind`text-black text-center font-semibold text-base`}>
+                  Next Profile
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
 
       <TutorialModal
         visible={showTutorial}

@@ -22,31 +22,8 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
-<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-<string>We use your location to show nearby matches.</string>
-<key>NSLocationWhenInUseUsageDescription</key>
-<string>We use your location to show nearby matches.</string>
-<key>NSLocationAlwaysUsageDescription</key>
-<string>We use your location to show nearby matches.</string>
-<key>UIBackgroundModes</key>
-<array>
-  <string>remote-notification</string>
-</array>
-
-<key>FirebaseAppDelegateProxyEnabled</key>
-<false/>
-
-<key>NSAppTransportSecurity</key>
-<dict>
-  <key>NSAllowsArbitraryLoads</key>
-  <true/>
-</dict>
-
-<key>NSUserTrackingUsageDescription</key>
-<string>This identifier will be used to deliver personalized ads to you.</string>
-
-<key>UIRemoteNotificationTypes</key>
-<string>Alert, Badge, Sound</string>
+	<key>FirebaseAppDelegateProxyEnabled</key>
+	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -56,14 +33,22 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>We use your location to show nearby matches.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>We use your location to show nearby matches.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>This identifier will be used to deliver personalized ads to you.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
+	<key>UIRemoteNotificationTypes</key>
+	<string>Alert, Badge, Sound</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>arm64</string>

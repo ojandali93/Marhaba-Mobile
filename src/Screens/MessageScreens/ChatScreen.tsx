@@ -55,6 +55,45 @@ const ChatScreen = ({route}) => {
     };
   }, []);
 
+  useEffect(() => {
+    // Set chat as active when screen is mounted
+    const markChatActive = async () => {
+      try {
+        await axios.post(
+          'https://marhaba-server.onrender.com/api/conversation/active',
+          {
+            userId,
+            conversationId,
+          },
+        );
+        console.log('✅ Active chat set');
+      } catch (err) {
+        console.error('❌ Failed to set active chat:', err);
+      }
+    };
+
+    // Set chat as inactive when screen unmounts
+    const markChatInactive = async () => {
+      try {
+        await axios.post(
+          'https://marhaba-server.onrender.com/api/conversation/inactive',
+          {
+            userId,
+          },
+        );
+        console.log('📴 Chat marked inactive');
+      } catch (err) {
+        console.error('❌ Failed to set inactive chat:', err);
+      }
+    };
+
+    markChatActive();
+
+    return () => {
+      markChatInactive();
+    };
+  }, [conversationId]);
+
   // Fetch existing messages
   useEffect(() => {
     const fetchMessages = async () => {
@@ -111,9 +150,15 @@ const ChatScreen = ({route}) => {
     };
   }, [conversationId, jwtToken, userId]);
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
+    console.log('the other user: ', otherUser);
     const socket = getSocket();
     if (!textMessage.trim() || !socket?.connected) return;
+
+    const previewText =
+      textMessage.length > 20
+        ? textMessage.slice(0, 20).trim() + '...'
+        : textMessage;
 
     const newMessage = {
       conversationId,
@@ -124,6 +169,37 @@ const ChatScreen = ({route}) => {
     };
 
     socket.emit('sendMessage', newMessage);
+
+    try {
+      // ✅ Step 1: Get other user's profile
+      const res = await axios.get(
+        `https://marhaba-server.onrender.com/api/user/${otherUser.userId}`,
+      );
+      const recipientProfile = res.data?.data[0];
+      console.log('recipientProfile: ', recipientProfile);
+      // ✅ Step 2: Check their notification setting and activeChat status
+      const wantsMessages = recipientProfile?.Notifications?.[0]?.messages;
+      const isNotInChat = recipientProfile?.activeChat !== conversationId;
+      console.log('wantsMessages: ', wantsMessages);
+      console.log('isNotInChat: ', isNotInChat);
+
+      if (wantsMessages && isNotInChat) {
+        // ✅ Step 3: Send the push
+        await axios.post(
+          'https://marhaba-server.onrender.com/api/notifications/send',
+          {
+            token: recipientProfile.apnToken,
+            title: `New Message: ${profile.name}`,
+            body: `${previewText}`,
+          },
+        );
+        console.log('📤 Message notification sent');
+      } else {
+        console.log('🔕 Skipped push – user is actively in chat or opted out');
+      }
+    } catch (err) {
+      console.error('❌ Failed to fetch profile or send push:', err);
+    }
     setTextMessage('');
   };
 

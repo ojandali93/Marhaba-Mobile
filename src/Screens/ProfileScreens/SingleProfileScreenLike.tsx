@@ -48,6 +48,9 @@ const SingleProfileScreen = () => {
   const [selectedReason, setSelectedReason] = useState('');
   const [customReason, setCustomReason] = useState('');
 
+  const [showMatchModal, setShowMatchModal] = useState<boolean>(false);
+  const [matchedProfile, setMatchedProfile] = useState<any>(null);
+
   const user = profile;
   const profileId = profile.userId;
   const about = user?.About?.[0] ?? {};
@@ -121,6 +124,34 @@ const SingleProfileScreen = () => {
     setSuperlikeMessage('');
   };
 
+  const updateMatchStatus = async (interactionId: number) => {
+    try {
+      await axios.put(`https://marhaba-server.onrender.com/api/user/approved`, {
+        id: interactionId,
+      });
+      console.log(`✅ Approved match`);
+    } catch (error) {
+      console.error(`❌ Error approving match:`, error);
+    }
+  };
+
+  const createConversation = async (profileId: string) => {
+    try {
+      await axios.post(
+        `https://marhaba-server.onrender.com/api/conversation/create`,
+        {
+          userId: userId,
+          userId2: profileId,
+          lastMessage: '',
+          updatedAt: new Date().toISOString(),
+        },
+      );
+      console.log(`✅ Created conversation with ${profileId}`);
+    } catch (error) {
+      console.error(`❌ Error creating conversation with ${profileId}:`, error);
+    }
+  };
+
   const dislikeProfile = async (profileId: string) => {
     console.log(`disliked profile: ${profileId}`);
     navigation.popToTop();
@@ -134,8 +165,45 @@ const SingleProfileScreen = () => {
         `https://marhaba-server.onrender.com/api/user/matchStatus/${userId}/${profileId}`,
       );
 
-      if (checkRes.data) {
-        navigation.goBack();
+      const existingInteraction = checkRes.data?.data[0];
+
+      if (existingInteraction) {
+        const updatedRes = await axios.put(
+          `https://marhaba-server.onrender.com/api/user/updateInteraction`,
+          {
+            id: existingInteraction.id,
+            userId: existingInteraction.userId,
+            targetUserId: existingInteraction.targetUserId,
+            userInteraction: existingInteraction.userInteraction,
+            targetInteraction: 'liked',
+            viewed: true,
+            approved: true,
+            viewed_at: new Date().toISOString(),
+            approved_at: new Date().toISOString(),
+            message: null,
+          },
+        );
+
+        updateMatchStatus(existingInteraction.id);
+        createConversation(profileId);
+        setMatchedProfile(profile);
+        setShowMatchModal(true);
+        const notificationsProfile = profile.Notifications[0];
+        if (notificationsProfile.matches) {
+          try {
+            await axios.post(
+              'https://marhaba-server.onrender.com/api/notifications/send',
+              {
+                token: profile.apnToken, // this is the *receiver* of the like
+                title: 'New Match!',
+                body: 'You have a new match!',
+              },
+            );
+            console.log('📤 Notification sent to liked profile');
+          } catch (err) {
+            console.error('❌ Failed to send push notification:', err);
+          }
+        }
         return;
       }
 
@@ -153,6 +221,19 @@ const SingleProfileScreen = () => {
 
       if (response.data?.success) {
         navigation.popToTop();
+        try {
+          await axios.post(
+            'https://marhaba-server.onrender.com/api/notifications/send',
+            {
+              token: profile.apnToken, // this is the *receiver* of the like
+              title: 'New Like!',
+              body: 'Someone liked your profile!',
+            },
+          );
+          console.log('📤 Notification sent to liked profile');
+        } catch (err) {
+          console.error('❌ Failed to send push notification:', err);
+        }
       }
     } catch (error) {
       console.error(`❌ Error liking profile ${profileId}:`, error);
@@ -171,8 +252,45 @@ const SingleProfileScreen = () => {
         `https://marhaba-server.onrender.com/api/user/matchStatus/${userId}/${profileId}`,
       );
 
-      if (checkRes.data?.data.legnth > 0) {
-        navigation.backToTop();
+      const existingInteraction = checkRes.data?.data[0];
+
+      if (existingInteraction) {
+        const updatedRes = await axios.put(
+          `https://marhaba-server.onrender.com/api/user/updateInteraction`,
+          {
+            id: existingInteraction.id,
+            userId: existingInteraction.userId,
+            targetUserId: existingInteraction.targetUserId,
+            userInteraction: existingInteraction.userInteraction,
+            targetInteraction: 'super',
+            viewed: true,
+            approved: true,
+            viewed_at: new Date().toISOString(),
+            approved_at: new Date().toISOString(),
+            message: message,
+          },
+        );
+
+        updateMatchStatus(existingInteraction.id);
+        createConversation(profileId);
+        setMatchedProfile(profile);
+        setShowMatchModal(true);
+        const notificationsProfile = profile.Notifications[0];
+        if (notificationsProfile.matches) {
+          try {
+            await axios.post(
+              'https://marhaba-server.onrender.com/api/notifications/send',
+              {
+                token: profile.apnToken, // this is the *receiver* of the like
+                title: 'New Match!',
+                body: 'You have a new match!',
+              },
+            );
+            console.log('📤 Notification sent to liked profile');
+          } catch (err) {
+            console.error('❌ Failed to send push notification:', err);
+          }
+        }
         return;
       }
 
@@ -1203,6 +1321,52 @@ const SingleProfileScreen = () => {
             </View>
           </KeyboardAvoidingView>
         </TouchableWithoutFeedback>
+      </Modal>
+      <Modal
+        transparent
+        visible={showMatchModal}
+        animationType="fade"
+        onRequestClose={() => setShowMatchModal(false)}>
+        <View
+          style={tailwind`flex-1 bg-black bg-opacity-60 justify-center items-center px-6`}>
+          <View
+            style={[
+              tailwind`rounded-lg p-5 items-center justify-center h-9/12 w-full`,
+              {backgroundColor: themeColors.secondary},
+            ]}>
+            <Text style={tailwind`text-4xl font-bold text-green-800 mb-2`}>
+              You & {matchedProfile?.name}
+            </Text>
+            <Text style={tailwind`text-3xl font-bold text-green-800 mb-2`}>
+              Connected!
+            </Text>
+            {matchedProfile?.Photos?.[0]?.photoUrl && (
+              <Image
+                source={{uri: matchedProfile.Photos[0].photoUrl}}
+                style={tailwind`w-11/12 h-7/12 rounded-8 mb-4`}
+              />
+            )}
+            <Text style={tailwind`text-base text-center`}>
+              You and {matchedProfile?.name} have liked each other!
+            </Text>
+            <Text style={tailwind`text-base mb-4 text-center`}>
+              You can now start a conversation!
+            </Text>
+            <View style={tailwind`flex-col justify-between w-full`}>
+              <TouchableOpacity
+                onPress={() => {
+                  setShowMatchModal(false);
+                  navigation.goBack(); // <-- Use the name of your Messages tab here
+                }}
+                style={tailwind`bg-green-700 px-4 py-4 rounded-md`}>
+                <Text
+                  style={tailwind`text-white text-center font-semibold text-base`}>
+                  Continue
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
       </Modal>
     </View>
   );
