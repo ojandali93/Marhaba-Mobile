@@ -100,7 +100,7 @@ const LifestyleHabitsScreen = () => {
     await AsyncStorage.setItem('LFH_Sleep', sleep);
     await AsyncStorage.setItem('LFH_Exercise', exercise);
     await AsyncStorage.setItem('LFH_Diet', diet);
-    navigation.navigate('Religion');
+    navigation.navigate('Accept');
   };
 
   return (
@@ -116,7 +116,8 @@ const LifestyleHabitsScreen = () => {
             tailwind`flex`,
             {marginTop: screenHeight * 0.06}, // 20% of screen height
           ]}>
-          <View style={tailwind`mt-2`}>
+          <View
+            style={tailwind`mt-2 flex flex-row justify-between items-center`}>
             <Text
               style={[
                 tailwind`mt-2 text-3xl font-semibold`,
@@ -124,6 +125,16 @@ const LifestyleHabitsScreen = () => {
               ]}>
               Lifestyle Habits
             </Text>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('Accept')}
+              style={[
+                tailwind`mt-2 text-lg font-semibold`,
+                {color: themeColors.primary},
+              ]}>
+              <Text style={tailwind`text-base font-semibold text-red-500`}>
+                Skip
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
         <View style={tailwind`w-full flex justify-center`}></View>

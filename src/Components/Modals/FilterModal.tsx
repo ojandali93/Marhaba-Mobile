@@ -16,6 +16,8 @@ import AgeRangeSelectBorderless from '../Select/AgeRangeSelectBorderless';
 import BackgroundSelector from '../Select/BackgroundSelector';
 import ReligionSelector from '../Select/ReligionSelector';
 import SectSelector from '../Select/SectSelector';
+import {useProfile} from '../../Context/ProfileContext';
+import {useNavigation} from '@react-navigation/native';
 
 const religiousViews = [
   'Very Practicing',
@@ -119,6 +121,8 @@ const FilterModal: React.FC<FilterModalProps> = ({
   timeline,
   setTimeline,
 }) => {
+  const {profile} = useProfile();
+  const navigation = useNavigation();
   return (
     <Modal visible={visible} animationType="slide" transparent={true}>
       <View style={tailwind`flex-1 bg-black bg-opacity-50 justify-end`}>
@@ -200,17 +204,87 @@ const FilterModal: React.FC<FilterModalProps> = ({
               style={tailwind`text-gray-600 font-bold text-lg italic mb-3 mt-5`}>
               Religion (Max 2)
             </Text>
-            <View style={tailwind`w-full h-42`}>
-              <ReligionSelector selected={religion} setSelected={setReligion} />
-            </View>
-
+            {profile?.tier === 2 || profile?.tier === 3 ? (
+              <View style={tailwind`w-full h-42`}>
+                <ReligionSelector
+                  selected={religion}
+                  setSelected={setReligion}
+                />
+              </View>
+            ) : (
+              <TouchableOpacity
+                onPress={() => navigation.navigate('Profiles')}
+                style={[
+                  tailwind`px-5 py-4 rounded-lg mb-6`,
+                  {
+                    backgroundColor: themeColors.darkSecondary,
+                  },
+                ]}>
+                <Text
+                  style={[
+                    tailwind`text-lg font-semibold text-center`,
+                    {color: 'black'},
+                  ]}>
+                  This section is locked.
+                </Text>
+                <Text
+                  style={[
+                    tailwind`text-base  text-center mt-1`,
+                    {color: 'black'},
+                  ]}>
+                  Upgrade to Pro to view full profile insights like lifestyle,
+                  career, and more.
+                </Text>
+                <Text
+                  style={[
+                    tailwind`text-lg font-bold text-yellow-800 text-center mt-2 underline`,
+                    {color: 'black'},
+                  ]}>
+                  Tap here to upgrade
+                </Text>
+              </TouchableOpacity>
+            )}
             <Text
               style={tailwind`text-gray-600 font-bold text-base italic mb-2 mt-5`}>
               Sect (Max 2)
             </Text>
-            <View style={tailwind`w-full h-42`}>
-              <SectSelector selected={sect} setSelected={setSect} />
-            </View>
+            {profile?.tier === 2 || profile?.tier === 3 ? (
+              <View style={tailwind`w-full h-42`}>
+                <SectSelector selected={sect} setSelected={setSect} />
+              </View>
+            ) : (
+              <TouchableOpacity
+                onPress={() => navigation.navigate('Profiles')}
+                style={[
+                  tailwind`px-5 py-4 rounded-lg mb-6`,
+                  {
+                    backgroundColor: themeColors.darkSecondary,
+                  },
+                ]}>
+                <Text
+                  style={[
+                    tailwind`text-lg font-semibold text-center`,
+                    {color: 'black'},
+                  ]}>
+                  This section is locked.
+                </Text>
+                <Text
+                  style={[
+                    tailwind`text-base  text-center mt-1`,
+                    {color: 'black'},
+                  ]}>
+                  Upgrade to Pro to view full profile insights like lifestyle,
+                  career, and more.
+                </Text>
+                <Text
+                  style={[
+                    tailwind`text-lg font-bold text-yellow-800 text-center mt-2 underline`,
+                    {color: 'black'},
+                  ]}>
+                  Tap here to upgrade
+                </Text>
+              </TouchableOpacity>
+            )}
             {/* Add more filters here like background, religion, etc. */}
 
             <Text
@@ -218,266 +292,517 @@ const FilterModal: React.FC<FilterModalProps> = ({
               Religious Views (Max 2)
             </Text>
 
-            <View style={tailwind`w-full flex-row flex-wrap justify-between`}>
-              {religiousViews.map((view, index) => {
-                const isSelected = views.includes(view);
-                return (
-                  <TouchableOpacity
-                    key={index}
-                    onPress={() => {
-                      if (isSelected) {
-                        setViews(views.filter(v => v !== view));
-                      } else if (views.length < 2) {
-                        setViews([...views, view]);
-                      }
-                    }}
-                    style={[
-                      tailwind`px-4 py-2 mb-2 rounded-lg w-[48%]`,
-                      {
-                        backgroundColor: isSelected
-                          ? themeColors.primary
-                          : themeColors.secondaryHighlight,
-                        borderColor: isSelected ? themeColors.primary : '#ccc',
-                      },
-                    ]}>
-                    <Text
-                      style={tailwind`text-base font-medium ${
-                        isSelected ? 'text-white' : 'text-gray-800'
-                      }`}>
-                      {view}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-
-            <Text
-              style={tailwind`text-gray-600 font-bold text-lg italic mb-3 mt-5`}>
-              Drinking (Max 2)
-            </Text>
-
-            <View style={tailwind`w-full flex-row flex-wrap justify-between`}>
-              {drinks.map((view, index) => {
-                const isSelected = drink.includes(view);
-                return (
-                  <TouchableOpacity
-                    key={index}
-                    onPress={() => {
-                      if (isSelected) {
-                        setDrink(drink.filter(v => v !== view));
-                      } else if (drink.length < 2) {
-                        setDrink([...drink, view]);
-                      }
-                    }}
-                    style={[
-                      tailwind`px-4 py-2 mb-2 rounded-lg w-[48%]`,
-                      {
-                        backgroundColor: isSelected
-                          ? themeColors.primary
-                          : themeColors.secondaryHighlight,
-                        borderColor: isSelected ? themeColors.primary : '#ccc',
-                      },
-                    ]}>
-                    <Text
-                      style={tailwind`text-base font-medium ${
-                        isSelected ? 'text-white' : 'text-gray-800'
-                      }`}>
-                      {view}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-
-            <Text
-              style={tailwind`text-gray-600 font-bold text-lg italic mb-3 mt-5`}>
-              Smoking (Max 2)
-            </Text>
-
-            <View style={tailwind`w-full flex-row flex-wrap justify-between`}>
-              {smokes.map((view, index) => {
-                const isSelected = smoke.includes(view);
-                return (
-                  <TouchableOpacity
-                    key={index}
-                    onPress={() => {
-                      if (isSelected) {
-                        setSmoke(smoke.filter(v => v !== view));
-                      } else if (smoke.length < 2) {
-                        setSmoke([...smoke, view]);
-                      }
-                    }}
-                    style={[
-                      tailwind`px-4 py-2 mb-2 rounded-lg w-[48%]`,
-                      {
-                        backgroundColor: isSelected
-                          ? themeColors.primary
-                          : themeColors.secondaryHighlight,
-                        borderColor: isSelected ? themeColors.primary : '#ccc',
-                      },
-                    ]}>
-                    <Text
-                      style={tailwind`text-base font-medium ${
-                        isSelected ? 'text-white' : 'text-gray-800'
-                      }`}>
-                      {view}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-
-            <Text
-              style={tailwind`text-gray-600 font-bold text-lg italic mb-3 mt-5`}>
-              Has Children
-            </Text>
-
-            <View style={tailwind`w-full flex-row flex-wrap justify-between`}>
-              {hasKidsOptions.map((view, index) => {
-                const isSelected = hasKids.includes(view);
-                return (
-                  <TouchableOpacity
-                    key={index}
-                    onPress={() => {
-                      if (isSelected) {
-                        setHasKids(hasKids.filter(v => v !== view));
-                      } else if (hasKids.length < 1) {
-                        setHasKids([...hasKids, view]);
-                      }
-                    }}
-                    style={[
-                      tailwind`px-4 py-2 mb-2 rounded-lg w-[48%]`,
-                      {
-                        backgroundColor: isSelected
-                          ? themeColors.primary
-                          : themeColors.secondaryHighlight,
-                        borderColor: isSelected ? themeColors.primary : '#ccc',
-                      },
-                    ]}>
-                    <Text
-                      style={tailwind`text-base font-medium ${
-                        isSelected ? 'text-white' : 'text-gray-800'
-                      }`}>
-                      {view}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-
-            <Text
-              style={tailwind`text-gray-600 font-bold text-lg italic mb-3 mt-5`}>
-              Wants Children
-            </Text>
-
-            <View style={tailwind`w-full flex-row flex-wrap justify-between`}>
-              {wantsKidsOptions.map((view, index) => {
-                const isSelected = wantsKids.includes(view);
-                return (
-                  <TouchableOpacity
-                    key={index}
-                    onPress={() => {
-                      if (isSelected) {
-                        setWantsKids(wantsKids.filter(v => v !== view));
-                      } else if (wantsKids.length < 1) {
-                        setWantsKids([...wantsKids, view]);
-                      }
-                    }}
-                    style={[
-                      tailwind`px-4 py-2 mb-2 rounded-lg  w-[48%]`,
-                      {
-                        backgroundColor: isSelected
-                          ? themeColors.primary
-                          : themeColors.secondaryHighlight,
-                        borderColor: isSelected ? themeColors.primary : '#ccc',
-                      },
-                    ]}>
-                    <Text
-                      style={tailwind`text-base font-medium ${
-                        isSelected ? 'text-white' : 'text-gray-800'
-                      }`}>
-                      {view}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
+            {profile?.tier === 3 ? (
+              <View style={tailwind`w-full flex-row flex-wrap justify-between`}>
+                {religiousViews.map((view, index) => {
+                  const isSelected = views.includes(view);
+                  return (
+                    <TouchableOpacity
+                      key={index}
+                      onPress={() => {
+                        if (isSelected) {
+                          setViews(views.filter(v => v !== view));
+                        } else if (views.length < 2) {
+                          setViews([...views, view]);
+                        }
+                      }}
+                      style={[
+                        tailwind`px-4 py-2 mb-2 rounded-lg w-[48%]`,
+                        {
+                          backgroundColor: isSelected
+                            ? themeColors.primary
+                            : themeColors.secondaryHighlight,
+                          borderColor: isSelected
+                            ? themeColors.primary
+                            : '#ccc',
+                        },
+                      ]}>
+                      <Text
+                        style={tailwind`text-base font-medium ${
+                          isSelected ? 'text-white' : 'text-gray-800'
+                        }`}>
+                        {view}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            ) : (
+              <TouchableOpacity
+                onPress={() => navigation.navigate('Profiles')}
+                style={[
+                  tailwind`px-5 py-4 rounded-lg mb-6`,
+                  {
+                    backgroundColor: themeColors.darkSecondary,
+                  },
+                ]}>
+                <Text
+                  style={[
+                    tailwind`text-lg font-semibold text-center`,
+                    {color: 'black'},
+                  ]}>
+                  This section is locked.
+                </Text>
+                <Text
+                  style={[
+                    tailwind`text-base  text-center mt-1`,
+                    {color: 'black'},
+                  ]}>
+                  Upgrade to Pro+ to view full profile insights like lifestyle,
+                  career, and more.
+                </Text>
+                <Text
+                  style={[
+                    tailwind`text-lg font-bold text-yellow-800 text-center mt-2 underline`,
+                    {color: 'black'},
+                  ]}>
+                  Tap here to upgrade
+                </Text>
+              </TouchableOpacity>
+            )}
 
             <Text
               style={tailwind`text-gray-600 font-bold text-lg italic mb-3 mt-5`}>
               Looking For (Max 2)
             </Text>
-
-            <View style={tailwind`w-full flex-row flex-wrap justify-between`}>
-              {looking.map((view, index) => {
-                const isSelected = lookingFor.includes(view);
-                return (
-                  <TouchableOpacity
-                    key={index}
-                    onPress={() => {
-                      if (isSelected) {
-                        setLookingFor(lookingFor.filter(v => v !== view));
-                      } else if (lookingFor.length < 2) {
-                        setLookingFor([...lookingFor, view]);
-                      }
-                    }}
-                    style={[
-                      tailwind`px-4 py-2 mb-2 rounded-lg w-full`,
-                      {
-                        backgroundColor: isSelected
-                          ? themeColors.primary
-                          : themeColors.secondaryHighlight,
-                        borderColor: isSelected ? themeColors.primary : '#ccc',
-                      },
-                    ]}>
-                    <Text
-                      style={tailwind`text-base font-medium ${
-                        isSelected ? 'text-white' : 'text-gray-800'
-                      }`}>
-                      {view}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
+            {profile?.tier === 2 || profile?.tier === 3 ? (
+              <View style={tailwind`w-full flex-row flex-wrap justify-between`}>
+                {looking.map((view, index) => {
+                  const isSelected = lookingFor.includes(view);
+                  return (
+                    <TouchableOpacity
+                      key={index}
+                      onPress={() => {
+                        if (isSelected) {
+                          setLookingFor(lookingFor.filter(v => v !== view));
+                        } else if (lookingFor.length < 2) {
+                          setLookingFor([...lookingFor, view]);
+                        }
+                      }}
+                      style={[
+                        tailwind`px-4 py-2 mb-2 rounded-lg w-full`,
+                        {
+                          backgroundColor: isSelected
+                            ? themeColors.primary
+                            : themeColors.secondaryHighlight,
+                          borderColor: isSelected
+                            ? themeColors.primary
+                            : '#ccc',
+                        },
+                      ]}>
+                      <Text
+                        style={tailwind`text-base font-medium ${
+                          isSelected ? 'text-white' : 'text-gray-800'
+                        }`}>
+                        {view}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            ) : (
+              <TouchableOpacity
+                onPress={() => navigation.navigate('Profiles')}
+                style={[
+                  tailwind`px-5 py-4 rounded-lg mb-6`,
+                  {
+                    backgroundColor: themeColors.darkSecondary,
+                  },
+                ]}>
+                <Text
+                  style={[
+                    tailwind`text-lg font-semibold text-center`,
+                    {color: 'black'},
+                  ]}>
+                  This section is locked.
+                </Text>
+                <Text
+                  style={[
+                    tailwind`text-base  text-center mt-1`,
+                    {color: 'black'},
+                  ]}>
+                  Upgrade to Pro to view full profile insights like lifestyle,
+                  career, and more.
+                </Text>
+                <Text
+                  style={[
+                    tailwind`text-lg font-bold text-yellow-800 text-center mt-2 underline`,
+                    {color: 'black'},
+                  ]}>
+                  Tap here to upgrade
+                </Text>
+              </TouchableOpacity>
+            )}
 
             <Text
               style={tailwind`text-gray-600 font-bold text-lg italic mb-3 mt-5`}>
               Timeline (Max 2)
             </Text>
 
-            <View style={tailwind`w-full flex-row flex-wrap justify-between`}>
-              {timelineOptions.map((view, index) => {
-                const isSelected = timeline.includes(view);
-                return (
-                  <TouchableOpacity
-                    key={index}
-                    onPress={() => {
-                      if (isSelected) {
-                        setTimeline(timeline.filter(v => v !== view));
-                      } else if (timeline.length < 2) {
-                        setTimeline([...timeline, view]);
-                      }
-                    }}
-                    style={[
-                      tailwind`px-4 py-2 mb-2 rounded-lg w-full`,
-                      {
-                        backgroundColor: isSelected
-                          ? themeColors.primary
-                          : themeColors.secondaryHighlight,
-                        borderColor: isSelected ? themeColors.primary : '#ccc',
-                      },
-                    ]}>
-                    <Text
-                      style={tailwind`text-base font-medium ${
-                        isSelected ? 'text-white' : 'text-gray-800'
-                      }`}>
-                      {view}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
+            {profile?.tier === 3 ? (
+              <View style={tailwind`w-full flex-row flex-wrap justify-between`}>
+                {timelineOptions.map((view, index) => {
+                  const isSelected = timeline.includes(view);
+                  return (
+                    <TouchableOpacity
+                      key={index}
+                      onPress={() => {
+                        if (isSelected) {
+                          setTimeline(timeline.filter(v => v !== view));
+                        } else if (timeline.length < 2) {
+                          setTimeline([...timeline, view]);
+                        }
+                      }}
+                      style={[
+                        tailwind`px-4 py-2 mb-2 rounded-lg w-full`,
+                        {
+                          backgroundColor: isSelected
+                            ? themeColors.primary
+                            : themeColors.secondaryHighlight,
+                          borderColor: isSelected
+                            ? themeColors.primary
+                            : '#ccc',
+                        },
+                      ]}>
+                      <Text
+                        style={tailwind`text-base font-medium ${
+                          isSelected ? 'text-white' : 'text-gray-800'
+                        }`}>
+                        {view}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            ) : (
+              <TouchableOpacity
+                onPress={() => navigation.navigate('Profiles')}
+                style={[
+                  tailwind`px-5 py-4 rounded-lg mb-6`,
+                  {
+                    backgroundColor: themeColors.darkSecondary,
+                  },
+                ]}>
+                <Text
+                  style={[
+                    tailwind`text-lg font-semibold text-center`,
+                    {color: 'black'},
+                  ]}>
+                  This section is locked.
+                </Text>
+                <Text
+                  style={[
+                    tailwind`text-base  text-center mt-1`,
+                    {color: 'black'},
+                  ]}>
+                  Upgrade to Pro+ to view full profile insights like lifestyle,
+                  career, and more.
+                </Text>
+                <Text
+                  style={[
+                    tailwind`text-lg font-bold text-yellow-800 text-center mt-2 underline`,
+                    {color: 'black'},
+                  ]}>
+                  Tap here to upgrade
+                </Text>
+              </TouchableOpacity>
+            )}
+
+            <Text
+              style={tailwind`text-gray-600 font-bold text-lg italic mb-3 mt-5`}>
+              Drinking (Max 2)
+            </Text>
+
+            {profile?.tier === 3 ? (
+              <View style={tailwind`w-full flex-row flex-wrap justify-between`}>
+                {drinks.map((view, index) => {
+                  const isSelected = drink.includes(view);
+                  return (
+                    <TouchableOpacity
+                      key={index}
+                      onPress={() => {
+                        if (isSelected) {
+                          setDrink(drink.filter(v => v !== view));
+                        } else if (drink.length < 2) {
+                          setDrink([...drink, view]);
+                        }
+                      }}
+                      style={[
+                        tailwind`px-4 py-2 mb-2 rounded-lg w-[48%]`,
+                        {
+                          backgroundColor: isSelected
+                            ? themeColors.primary
+                            : themeColors.secondaryHighlight,
+                          borderColor: isSelected
+                            ? themeColors.primary
+                            : '#ccc',
+                        },
+                      ]}>
+                      <Text
+                        style={tailwind`text-base font-medium ${
+                          isSelected ? 'text-white' : 'text-gray-800'
+                        }`}>
+                        {view}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            ) : (
+              <TouchableOpacity
+                onPress={() => navigation.navigate('Profiles')}
+                style={[
+                  tailwind`px-5 py-4 rounded-lg mb-6`,
+                  {
+                    backgroundColor: themeColors.darkSecondary,
+                  },
+                ]}>
+                <Text
+                  style={[
+                    tailwind`text-lg font-semibold text-center`,
+                    {color: 'black'},
+                  ]}>
+                  This section is locked.
+                </Text>
+                <Text
+                  style={[
+                    tailwind`text-base  text-center mt-1`,
+                    {color: 'black'},
+                  ]}>
+                  Upgrade to Pro+ to view full profile insights like lifestyle,
+                  career, and more.
+                </Text>
+                <Text
+                  style={[
+                    tailwind`text-lg font-bold text-yellow-800 text-center mt-2 underline`,
+                    {color: 'black'},
+                  ]}>
+                  Tap here to upgrade
+                </Text>
+              </TouchableOpacity>
+            )}
+
+            <Text
+              style={tailwind`text-gray-600 font-bold text-lg italic mb-3 mt-5`}>
+              Smoking (Max 2)
+            </Text>
+
+            {profile?.tier === 3 ? (
+              <View style={tailwind`w-full flex-row flex-wrap justify-between`}>
+                {smokes.map((view, index) => {
+                  const isSelected = smoke.includes(view);
+                  return (
+                    <TouchableOpacity
+                      key={index}
+                      onPress={() => {
+                        if (isSelected) {
+                          setSmoke(smoke.filter(v => v !== view));
+                        } else if (smoke.length < 2) {
+                          setSmoke([...smoke, view]);
+                        }
+                      }}
+                      style={[
+                        tailwind`px-4 py-2 mb-2 rounded-lg w-[48%]`,
+                        {
+                          backgroundColor: isSelected
+                            ? themeColors.primary
+                            : themeColors.secondaryHighlight,
+                          borderColor: isSelected
+                            ? themeColors.primary
+                            : '#ccc',
+                        },
+                      ]}>
+                      <Text
+                        style={tailwind`text-base font-medium ${
+                          isSelected ? 'text-white' : 'text-gray-800'
+                        }`}>
+                        {view}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            ) : (
+              <TouchableOpacity
+                onPress={() => navigation.navigate('Profiles')}
+                style={[
+                  tailwind`px-5 py-4 rounded-lg mb-6`,
+                  {
+                    backgroundColor: themeColors.darkSecondary,
+                  },
+                ]}>
+                <Text
+                  style={[
+                    tailwind`text-lg font-semibold text-center`,
+                    {color: 'black'},
+                  ]}>
+                  This section is locked.
+                </Text>
+                <Text
+                  style={[
+                    tailwind`text-base  text-center mt-1`,
+                    {color: 'black'},
+                  ]}>
+                  Upgrade to Pro+ to view full profile insights like lifestyle,
+                  career, and more.
+                </Text>
+                <Text
+                  style={[
+                    tailwind`text-lg font-bold text-yellow-800 text-center mt-2 underline`,
+                    {color: 'black'},
+                  ]}>
+                  Tap here to upgrade
+                </Text>
+              </TouchableOpacity>
+            )}
+
+            <Text
+              style={tailwind`text-gray-600 font-bold text-lg italic mb-3 mt-5`}>
+              Has Children
+            </Text>
+
+            {profile?.tier === 3 ? (
+              <View style={tailwind`w-full flex-row flex-wrap justify-between`}>
+                {hasKidsOptions.map((view, index) => {
+                  const isSelected = hasKids.includes(view);
+                  return (
+                    <TouchableOpacity
+                      key={index}
+                      onPress={() => {
+                        if (isSelected) {
+                          setHasKids(hasKids.filter(v => v !== view));
+                        } else if (hasKids.length < 1) {
+                          setHasKids([...hasKids, view]);
+                        }
+                      }}
+                      style={[
+                        tailwind`px-4 py-2 mb-2 rounded-lg w-[48%]`,
+                        {
+                          backgroundColor: isSelected
+                            ? themeColors.primary
+                            : themeColors.secondaryHighlight,
+                          borderColor: isSelected
+                            ? themeColors.primary
+                            : '#ccc',
+                        },
+                      ]}>
+                      <Text
+                        style={tailwind`text-base font-medium ${
+                          isSelected ? 'text-white' : 'text-gray-800'
+                        }`}>
+                        {view}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            ) : (
+              <TouchableOpacity
+                onPress={() => navigation.navigate('Profiles')}
+                style={[
+                  tailwind`px-5 py-4 rounded-lg mb-6`,
+                  {
+                    backgroundColor: themeColors.darkSecondary,
+                  },
+                ]}>
+                <Text
+                  style={[
+                    tailwind`text-lg font-semibold text-center`,
+                    {color: 'black'},
+                  ]}>
+                  This section is locked.
+                </Text>
+                <Text
+                  style={[
+                    tailwind`text-base  text-center mt-1`,
+                    {color: 'black'},
+                  ]}>
+                  Upgrade to Pro+ to view full profile insights like lifestyle,
+                  career, and more.
+                </Text>
+                <Text
+                  style={[
+                    tailwind`text-lg font-bold text-yellow-800 text-center mt-2 underline`,
+                    {color: 'black'},
+                  ]}>
+                  Tap here to upgrade
+                </Text>
+              </TouchableOpacity>
+            )}
+
+            <Text
+              style={tailwind`text-gray-600 font-bold text-lg italic mb-3 mt-5`}>
+              Wants Children
+            </Text>
+
+            {profile?.tier === 3 ? (
+              <View style={tailwind`w-full flex-row flex-wrap justify-between`}>
+                {wantsKidsOptions.map((view, index) => {
+                  const isSelected = wantsKids.includes(view);
+                  return (
+                    <TouchableOpacity
+                      key={index}
+                      onPress={() => {
+                        if (isSelected) {
+                          setWantsKids(wantsKids.filter(v => v !== view));
+                        } else if (wantsKids.length < 1) {
+                          setWantsKids([...wantsKids, view]);
+                        }
+                      }}
+                      style={[
+                        tailwind`px-4 py-2 mb-2 rounded-lg  w-[48%]`,
+                        {
+                          backgroundColor: isSelected
+                            ? themeColors.primary
+                            : themeColors.secondaryHighlight,
+                          borderColor: isSelected
+                            ? themeColors.primary
+                            : '#ccc',
+                        },
+                      ]}>
+                      <Text
+                        style={tailwind`text-base font-medium ${
+                          isSelected ? 'text-white' : 'text-gray-800'
+                        }`}>
+                        {view}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            ) : (
+              <TouchableOpacity
+                onPress={() => navigation.navigate('Profiles')}
+                style={[
+                  tailwind`px-5 py-4 rounded-lg mb-6`,
+                  {
+                    backgroundColor: themeColors.darkSecondary,
+                  },
+                ]}>
+                <Text
+                  style={[
+                    tailwind`text-lg font-semibold text-center`,
+                    {color: 'black'},
+                  ]}>
+                  This section is locked.
+                </Text>
+                <Text
+                  style={[
+                    tailwind`text-base  text-center mt-1`,
+                    {color: 'black'},
+                  ]}>
+                  Upgrade to Pro+ to view full profile insights like lifestyle,
+                  career, and more.
+                </Text>
+                <Text
+                  style={[
+                    tailwind`text-lg font-bold text-yellow-800 text-center mt-2 underline`,
+                    {color: 'black'},
+                  ]}>
+                  Tap here to upgrade
+                </Text>
+              </TouchableOpacity>
+            )}
           </ScrollView>
 
           {/* Action Buttons */}

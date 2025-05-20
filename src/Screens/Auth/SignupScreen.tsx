@@ -20,6 +20,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import AuthInputStandardNumber from '../../Components/Inputs/AuthInputStandardNumber';
 import axios from 'axios';
 import LinearGradient from 'react-native-linear-gradient';
+import StandardText from '../../Components/Select/StandardText';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -157,7 +158,7 @@ const SignupScreen = () => {
           </View>
           <View style={tailwind`w-full flex items-center mt-2`}>
             <View style={tailwind`w-full`}>
-              <AithInputStandard
+              <StandardText
                 fieldName="Email"
                 value={email}
                 changeText={handleEmailUpdate}
@@ -174,7 +175,7 @@ const SignupScreen = () => {
                   Email is already in use.
                 </Text>
               )}
-              <AithInputStandard
+              <StandardText
                 fieldName="Password:"
                 value={password}
                 changeText={handleUpdatePassword}
@@ -188,7 +189,7 @@ const SignupScreen = () => {
                   special character.
                 </Text>
               )}
-              <AithInputStandard
+              <StandardText
                 fieldName="Verify Password"
                 value={verify}
                 changeText={handleUpdateVerify}

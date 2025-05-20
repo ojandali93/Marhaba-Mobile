@@ -32,6 +32,8 @@ const EditCore = () => {
   const [decisions, setDecisions] = useState(profile.height || '');
   const [politics, setPolitics] = useState(profile.height || '');
 
+  const [isEmpty, setIsEmpty] = useState(false);
+
   useFocusEffect(
     useCallback(() => {
       loadProfile();
@@ -39,14 +41,37 @@ const EditCore = () => {
   );
 
   const loadProfile = () => {
-    setFamily(profile?.Core[0]?.family);
-    setFaith(profile?.Core[0]?.faith);
-    setAmbition(profile?.Core[0]?.ambition);
-    setCareerVsFamily(profile?.Core[0]?.careerVsFamily);
-    setConflicts(profile?.Core[0]?.conflicts);
-    setIndependence(profile?.Core[0]?.independence);
-    setDecisions(profile?.Core[0]?.decisions);
-    setPolitics(profile?.Core[0]?.politics);
+    const core = profile?.Core?.[0] || {};
+    const {
+      family = '',
+      faith = '',
+      ambition = '',
+      careerVsFamily = '',
+      conflicts = '',
+      independence = '',
+      decisions = '',
+      politics = '',
+    } = core;
+
+    setFamily(family);
+    setFaith(faith);
+    setAmbition(ambition);
+    setCareerVsFamily(careerVsFamily);
+    setConflicts(conflicts);
+    setIndependence(independence);
+    setDecisions(decisions);
+    setPolitics(politics);
+
+    const isAllEmpty =
+      !family &&
+      !faith &&
+      !ambition &&
+      !careerVsFamily &&
+      !conflicts &&
+      !independence &&
+      !decisions &&
+      !politics;
+    setIsEmpty(isAllEmpty);
   };
 
   const updateFamily = async (newFamily: string) => {
@@ -147,7 +172,8 @@ const EditCore = () => {
         );
         if (response.data.success) {
           setChangeDetected(false);
-          grabUserProfile(profile?.userId);
+          await grabUserProfile(profile?.userId);
+          loadProfile();
           setExpandProfile(false);
         } else {
           console.error('Error updating user profile:', response.data.error);
@@ -168,9 +194,16 @@ const EditCore = () => {
             tailwind`w-full flex flex-row items-center justify-between p-3 rounded-2`,
             {backgroundColor: themeColors.darkGrey},
           ]}>
-          <Text style={tailwind`text-base font-semibold text-white`}>
-            Core Values
-          </Text>
+          <View style={tailwind`flex flex-row items-center`}>
+            <Text style={tailwind`text-base font-semibold text-white`}>
+              Core Values
+            </Text>
+            {isEmpty && (
+              <View
+                style={tailwind`w-2 h-2 rounded-full bg-yellow-400 mr-2 ml-3`}
+              />
+            )}
+          </View>
           {expandProfile ? (
             changeDetected ? (
               <TouchableOpacity onPress={updateUserProfile}>

@@ -20,12 +20,15 @@ import EditReligion from '../Views/EditReligion';
 import EditCore from '../Views/EditCore';
 import EditRelationshipDynamics from '../Views/EditRelationshipDynamics';
 import EditFuture from '../Views/EditFuture';
+import {useProfile} from '../../Context/ProfileContext';
+import EditSocialsView from '../Views/EditSocialsView';
 
 const EditProfileModalContent = ({
   updateTab,
 }: {
   updateTab: (tab: string) => void;
 }) => {
+  const {profile} = useProfile();
   return (
     <View style={tailwind`flex-1 mb-3`}>
       <TouchableOpacity
@@ -45,9 +48,6 @@ const EditProfileModalContent = ({
       </View>
       <View style={tailwind`w-full flex flex-col`}>
         <EditProfileView />
-      </View>
-      <View style={tailwind`w-full flex flex-col`}>
-        <EditBackgroundView />
       </View>
       <View style={tailwind`w-full flex flex-col`}>
         <EditIntent />
@@ -79,6 +79,11 @@ const EditProfileModalContent = ({
       <View style={tailwind`w-full flex flex-col`}>
         <EitherOrEditView />
       </View>
+      {profile?.tier === 3 && (
+        <View style={tailwind`w-full flex flex-col`}>
+          <EditSocialsView />
+        </View>
+      )}
     </View>
   );
 };

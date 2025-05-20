@@ -12,6 +12,7 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
   Alert,
+  Linking,
 } from 'react-native';
 import tailwind from 'twrnc';
 import {
@@ -29,11 +30,12 @@ import {countryFlagMap} from '../../Utils/FlagMaps';
 import SingleInfoFull from '../../Components/Info/SingleInfoFull';
 import {useRoute, useNavigation} from '@react-navigation/native';
 import axios from 'axios';
-
+import {useProfile} from '../../Context/ProfileContext';
 const SingleProfileScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const {profile} = route.params as {profile: any};
+  const {userId, profile: userProfile} = useProfile();
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [superlikeMessage, setSuperlikeMessage] = useState('');
@@ -50,26 +52,57 @@ const SingleProfileScreen = () => {
   const [showMatchModal, setShowMatchModal] = useState<boolean>(false);
   const [matchedProfile, setMatchedProfile] = useState<any>(null);
 
+  const PLACEHOLDER = '—';
+
   const user = profile;
   const profileId = profile.userId;
-  const about = user?.About?.[0] ?? {};
-  const career = user?.Career?.[0] ?? {};
-  const core = user?.Core[0] ?? [];
-  const future = user?.Future[0] ?? [];
-  const habits = user?.Habits[0] ?? [];
-  const intentions = user?.Intent[0] ?? [];
-  const photos = user?.Photos ?? [];
-  const preferences = user?.Preferences[0] ?? [];
-  const prompts = user?.Prompts ?? [];
-  console.log('prompts', JSON.stringify(prompts));
-  const relationships = user?.Relationships[0] ?? [];
-  const religion = user?.Religion[0] ?? [];
-  const survey = user?.Survey[0] ?? [];
-  const tags = user?.Tags ?? [];
+  const about =
+    Array.isArray(user?.About) && user.About.length > 0 ? user.About[0] : {};
+  const career =
+    Array.isArray(user?.Career) && user.Career.length > 0 ? user.Career[0] : {};
+  const core =
+    Array.isArray(user?.Core) && user.Core.length > 0 ? user.Core[0] : {};
+  const future =
+    Array.isArray(user?.Future) && user.Future.length > 0 ? user.Future[0] : {};
+  const habits =
+    Array.isArray(user?.Habits) && user.Habits.length > 0 ? user.Habits[0] : {};
+  const intentions =
+    Array.isArray(user?.Intent) && user.Intent.length > 0 ? user.Intent[0] : {};
+  const photos = Array.isArray(user?.Photos) ? user.Photos : [];
+  const preferences =
+    Array.isArray(user?.Preferences) && user.Preferences.length > 0
+      ? user.Preferences[0]
+      : {};
+  const prompts = Array.isArray(user?.Prompts) ? user.Prompts : [];
+  const relationships =
+    Array.isArray(user?.Relationships) && user.Relationships.length > 0
+      ? user.Relationships[0]
+      : {};
+  const religion =
+    Array.isArray(user?.Religion) && user.Religion.length > 0
+      ? user.Religion[0]
+      : {};
+  const survey =
+    Array.isArray(user?.Survey) && user.Survey.length > 0 ? user.Survey[0] : {};
+  const tags = Array.isArray(user?.Tags) ? user.Tags : [];
+  const socials = user?.Social ?? {};
   const age = about?.dob ? getAgeFromDOB(about.dob) : '—';
 
-  const background = JSON.parse(about?.background) ?? [];
-  const loveLanguages = JSON.parse(relationships.loveLanguages) ?? [];
+  let background = [];
+  try {
+    background = about?.background ? JSON.parse(about.background) : [];
+  } catch (e) {
+    background = [];
+  }
+
+  let loveLanguages = [];
+  try {
+    loveLanguages = relationships?.loveLanguages
+      ? JSON.parse(relationships.loveLanguages)
+      : [];
+  } catch (e) {
+    loveLanguages = [];
+  }
 
   const photoUrl = photos?.[photoIndex]?.photoUrl;
 
@@ -377,6 +410,13 @@ const SingleProfileScreen = () => {
     }
   };
 
+  function limitString(input: string, maxLength = 12): string {
+    if (!input) return '';
+    return input.length > maxLength
+      ? input.slice(0, maxLength).trim() + '...'
+      : input;
+  }
+
   return (
     <View style={tailwind`flex-1 relative`}>
       <TouchableWithoutFeedback onPress={handleImageTap}>
@@ -422,13 +462,24 @@ const SingleProfileScreen = () => {
             <View
               style={tailwind`flex-row justify-between items-center p-3 pb-2`}>
               <View style={tailwind`flex-row justify-between w-full items-end`}>
-                <Text
-                  style={[
-                    tailwind`text-3xl font-bold text-white`,
-                    {color: themeColors.primary},
-                  ]}>
-                  {about.name} {`(${age})`}
-                </Text>
+                <View style={tailwind`flex-row items-center`}>
+                  <Text
+                    style={[
+                      tailwind`text-3xl font-bold text-white`,
+                      {color: themeColors.primary},
+                    ]}>
+                    {about.name} {`(${age})`}
+                  </Text>
+                  {profile.tier === 3 && (
+                    <View
+                      style={[
+                        tailwind`rounded-2 px-2 py-1 ml-2`,
+                        {backgroundColor: themeColors.primary},
+                      ]}>
+                      <Text style={tailwind`text-xs text-white`}>Pro+</Text>
+                    </View>
+                  )}
+                </View>
                 <Text
                   style={[
                     tailwind`text-3xl font-semibold`,
@@ -452,6 +503,7 @@ const SingleProfileScreen = () => {
 
             <View style={tailwind` px-3`}>
               <Text style={tailwind`text-base text-white`}>
+                {age ? `${age} years old • ` : ''}
                 {about.height ? `${about.height} • ` : ''}
                 {religion.religion
                   ? `${religion.religion}${
@@ -620,13 +672,24 @@ const SingleProfileScreen = () => {
               contentContainerStyle={tailwind``}
               showsVerticalScrollIndicator={false}>
               <View style={tailwind`pb-12`}>
-                <Text
-                  style={[
-                    tailwind`text-4xl font-bold`,
-                    {color: themeColors.primary},
-                  ]}>
-                  {about.name}
-                </Text>
+                <View style={tailwind`flex flex-row items-center`}>
+                  <Text
+                    style={[
+                      tailwind`text-4xl font-bold`,
+                      {color: themeColors.primary},
+                    ]}>
+                    {about.name}
+                  </Text>
+                  {profile.tier === 3 && (
+                    <View
+                      style={[
+                        tailwind`rounded-2 px-2 py-1 ml-2`,
+                        {backgroundColor: themeColors.primary},
+                      ]}>
+                      <Text style={tailwind`text-xs text-white`}>Pro+</Text>
+                    </View>
+                  )}
+                </View>
                 <View style={tailwind`mt-8 flex flex-col`}>
                   <View style={tailwind`flex flex-row items-center`}>
                     <View style={tailwind`pr-2 w-1/2`}>
@@ -688,7 +751,7 @@ const SingleProfileScreen = () => {
                     <View style={tailwind`w-1/2`}>
                       <SingleInfoFull
                         label="Sect"
-                        value={religion.sect ? `${religion.sect}` : 'Unknown'}
+                        value={religion.sect || PLACEHOLDER}
                       />
                     </View>
                   </View>
@@ -696,19 +759,13 @@ const SingleProfileScreen = () => {
                     <View style={tailwind`pr-2 w-1/2`}>
                       <SingleInfoFull
                         label="Practicin"
-                        value={
-                          religion.practicing
-                            ? `${religion.practicing}`
-                            : 'Unknown'
-                        }
+                        value={religion.practicing || PLACEHOLDER}
                       />
                     </View>
                     <View style={tailwind`w-1/2`}>
                       <SingleInfoFull
                         label="Openness"
-                        value={
-                          religion.openness ? `${religion.openness}` : 'Unknown'
-                        }
+                        value={religion.openness || PLACEHOLDER}
                       />
                     </View>
                   </View>
@@ -725,9 +782,7 @@ const SingleProfileScreen = () => {
                     <View style={tailwind`pr-2 w-full`}>
                       <SingleInfoFull
                         label="Education"
-                        value={
-                          career.education ? `${career.education}` : 'Unknown'
-                        }
+                        value={career.education || PLACEHOLDER}
                       />
                     </View>
                   </View>
@@ -736,13 +791,13 @@ const SingleProfileScreen = () => {
                       <View style={tailwind`pr-2 w-1/2`}>
                         <SingleInfoFull
                           label="Industry"
-                          value={career.industry ? career.industry : 'Unknown'}
+                          value={career.industry || PLACEHOLDER}
                         />
                       </View>
                       <View style={tailwind`w-1/2`}>
                         <SingleInfoFull
                           label="Site"
-                          value={career.site ? `${career.site}` : 'Unknown'}
+                          value={career.site || PLACEHOLDER}
                         />
                       </View>
                     </View>
@@ -752,7 +807,7 @@ const SingleProfileScreen = () => {
                       <View style={tailwind`pr-2 w-full`}>
                         <SingleInfoFull
                           label="Five Years"
-                          value={future.fiveYears}
+                          value={future.fiveYears || PLACEHOLDER}
                         />
                       </View>
                     </View>
@@ -856,7 +911,7 @@ const SingleProfileScreen = () => {
                     ]}>
                     Lifestyle Habits
                   </Text>
-                  {profile.tier === 1 ? (
+                  {userProfile.tier === 1 || userProfile.tier === 2 ? (
                     <TouchableOpacity
                       onPress={() => navigation.navigate('Profiles')}
                       style={[
@@ -877,7 +932,7 @@ const SingleProfileScreen = () => {
                           tailwind`text-base  text-center mt-1`,
                           {color: 'white'},
                         ]}>
-                        Upgrade to Pro to view full profile insights like
+                        Upgrade to Pro+ to view full profile insights like
                         lifestyle, career, and more.
                       </Text>
                       <Text
@@ -894,17 +949,13 @@ const SingleProfileScreen = () => {
                         <View style={tailwind`pr-2 w-1/2`}>
                           <SingleInfoFull
                             label="Drinking"
-                            value={
-                              habits.drinking ? `${habits.drinking}` : 'Unknown'
-                            }
+                            value={habits.drinking || PLACEHOLDER}
                           />
                         </View>
                         <View style={tailwind`w-1/2`}>
                           <SingleInfoFull
                             label="Smoking"
-                            value={
-                              habits.smoking ? `${habits.smoking}` : 'Unknown'
-                            }
+                            value={habits.smoking || PLACEHOLDER}
                           />
                         </View>
                       </View>
@@ -912,17 +963,13 @@ const SingleProfileScreen = () => {
                         <View style={tailwind`pr-2 w-1/2`}>
                           <SingleInfoFull
                             label="Sleep"
-                            value={habits.sleep ? `${habits.sleep}` : 'Unknown'}
+                            value={habits.sleep || PLACEHOLDER}
                           />
                         </View>
                         <View style={tailwind`w-1/2`}>
                           <SingleInfoFull
                             label="Excercise"
-                            value={
-                              habits.excersize
-                                ? `${habits.excersize}`
-                                : 'Unknown'
-                            }
+                            value={habits.excersize || PLACEHOLDER}
                           />
                         </View>
                       </View>
@@ -930,7 +977,7 @@ const SingleProfileScreen = () => {
                         <View style={tailwind`pr-2 w-1/2`}>
                           <SingleInfoFull
                             label="Diet"
-                            value={habits.diet ? `${habits.diet}` : 'Unknown'}
+                            value={habits.diet || PLACEHOLDER}
                           />
                         </View>
                       </View>
@@ -947,7 +994,7 @@ const SingleProfileScreen = () => {
                       ]}>
                       Interests
                     </Text>
-                    {profile.tier === 1 ? (
+                    {userProfile.tier === 1 || userProfile.tier === 2 ? (
                       <TouchableOpacity
                         onPress={() => navigation.navigate('Profiles')}
                         style={[
@@ -968,7 +1015,7 @@ const SingleProfileScreen = () => {
                             tailwind`text-base  text-center mt-1`,
                             {color: 'white'},
                           ]}>
-                          Upgrade to Pro to view full profile insights like
+                          Upgrade to Pro+ to view full profile insights like
                           lifestyle, career, and more.
                         </Text>
                         <Text
@@ -1003,7 +1050,7 @@ const SingleProfileScreen = () => {
                       ]}>
                       Love Languages
                     </Text>
-                    {profile.tier === 1 ? (
+                    {userProfile.tier === 1 || userProfile.tier === 2 ? (
                       <TouchableOpacity
                         onPress={() => navigation.navigate('Profiles')}
                         style={[
@@ -1024,7 +1071,7 @@ const SingleProfileScreen = () => {
                             tailwind`text-base  text-center mt-1`,
                             {color: 'white'},
                           ]}>
-                          Upgrade to Pro to view full profile insights like
+                          Upgrade to Pro+ to view full profile insights like
                           lifestyle, career, and more.
                         </Text>
                         <Text
@@ -1055,7 +1102,7 @@ const SingleProfileScreen = () => {
                     ]}>
                     Future Goals
                   </Text>
-                  {profile.tier === 1 ? (
+                  {userProfile.tier === 1 || userProfile.tier === 2 ? (
                     <TouchableOpacity
                       onPress={() => navigation.navigate('Profiles')}
                       style={[
@@ -1076,7 +1123,7 @@ const SingleProfileScreen = () => {
                           tailwind`text-base  text-center mt-1`,
                           {color: 'white'},
                         ]}>
-                        Upgrade to Pro to view full profile insights like
+                        Upgrade to Pro+ to view full profile insights like
                         lifestyle, career, and more.
                       </Text>
                       <Text
@@ -1124,6 +1171,142 @@ const SingleProfileScreen = () => {
                             value={future.fiveYears}
                           />
                         </View>
+                      </View>
+                    </View>
+                  )}
+                </View>
+                <View style={tailwind`mt-12`}>
+                  <Text
+                    style={[
+                      tailwind`text-3xl font-bold mb-4`,
+                      {color: themeColors.primary},
+                    ]}>
+                    Socials
+                  </Text>
+                  {userProfile.tier === 1 || userProfile.tier === 2 ? (
+                    <TouchableOpacity
+                      onPress={() => navigation.navigate('Profiles')}
+                      style={[
+                        tailwind`px-5 py-4 rounded-lg mb-6`,
+                        {
+                          backgroundColor: themeColors.darkGrey,
+                        },
+                      ]}>
+                      <Text
+                        style={[
+                          tailwind`text-lg font-semibold text-center`,
+                          {color: 'white'},
+                        ]}>
+                        This section is locked.
+                      </Text>
+                      <Text
+                        style={[
+                          tailwind`text-base  text-center mt-1`,
+                          {color: 'white'},
+                        ]}>
+                        Upgrade to Pro+ to view full profile insights like
+                        lifestyle, career, and more.
+                      </Text>
+                      <Text
+                        style={[
+                          tailwind`text-lg font-bold text-yellow-800 text-center mt-2 underline`,
+                          {color: 'white'},
+                        ]}>
+                        Tap here to upgrade
+                      </Text>
+                    </TouchableOpacity>
+                  ) : (
+                    <View style={tailwind`flex flex-col mb-4`}>
+                      <View style={tailwind`flex flex-row items-center mt-2`}>
+                        {socials.instagram ? (
+                          <TouchableOpacity
+                            onPress={() => Linking.openURL(socials.instagram)}
+                            style={tailwind`pr-2 w-1/2`}>
+                            <SingleInfoFull
+                              label="instagram"
+                              value={limitString(socials.instagram)}
+                            />
+                          </TouchableOpacity>
+                        ) : (
+                          <View style={tailwind`pr-2 w-1/2`}>
+                            <SingleInfoFull
+                              label="instagram"
+                              value={limitString(socials.instagram)}
+                            />
+                          </View>
+                        )}
+                        {socials.twitter ? (
+                          <TouchableOpacity
+                            onPress={() => Linking.openURL(socials.twitter)}
+                            style={tailwind`pr-2 w-1/2`}>
+                            <SingleInfoFull
+                              label="twitter"
+                              value={socials.twitter}
+                            />
+                          </TouchableOpacity>
+                        ) : (
+                          <View style={tailwind`pr-2 w-1/2`}>
+                            <SingleInfoFull
+                              label="twitter"
+                              value={limitString(socials.twitter)}
+                            />
+                          </View>
+                        )}
+                      </View>
+                      <View style={tailwind`flex flex-row items-center mt-2`}>
+                        {socials.facebook ? (
+                          <TouchableOpacity
+                            onPress={() => Linking.openURL(socials.facebook)}
+                            style={tailwind`pr-2 w-1/2`}>
+                            <SingleInfoFull
+                              label="facebook"
+                              value={limitString(socials.facebook)}
+                            />
+                          </TouchableOpacity>
+                        ) : (
+                          <View style={tailwind`pr-2 w-1/2`}>
+                            <SingleInfoFull
+                              label="facebook"
+                              value={limitString(socials.facebook)}
+                            />
+                          </View>
+                        )}
+                        {socials.linkedin ? (
+                          <TouchableOpacity
+                            onPress={() => Linking.openURL(socials.linkedin)}
+                            style={tailwind`pr-2 w-1/2`}>
+                            <SingleInfoFull
+                              label="linkedin"
+                              value={limitString(socials.linkedin)}
+                            />
+                          </TouchableOpacity>
+                        ) : (
+                          <View style={tailwind`pr-2 w-1/2`}>
+                            <SingleInfoFull
+                              label="linkedin"
+                              value={limitString(socials.linkedin)}
+                            />
+                          </View>
+                        )}
+                      </View>
+                      <View style={tailwind`flex flex-row items-center mt-2`}>
+                        {socials.tiktok ? (
+                          <TouchableOpacity
+                            onPress={() => Linking.openURL(socials.tiktok)}
+                            style={tailwind`pr-2 w-1/2`}>
+                            <SingleInfoFull
+                              label="tiktok"
+                              value={limitString(socials.tiktok)}
+                            />
+                          </TouchableOpacity>
+                        ) : (
+                          <View style={tailwind`pr-2 w-1/2`}>
+                            <SingleInfoFull
+                              label="tiktok"
+                              value={limitString(socials.tiktok)}
+                            />
+                          </View>
+                        )}
                       </View>
                     </View>
                   )}

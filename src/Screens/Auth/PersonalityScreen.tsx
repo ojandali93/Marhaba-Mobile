@@ -92,7 +92,7 @@ const PersonalityScreen = () => {
 
   const storeNextScreen = async responses => {
     await AsyncStorage.setItem('prompts', JSON.stringify(responses));
-    navigation.navigate('Hobbies');
+    navigation.navigate('LifestyleHabits');
   };
 
   return (
@@ -103,13 +103,25 @@ const PersonalityScreen = () => {
       ]}>
       <View style={tailwind`w-11/12 h-10/12 flex`}>
         <View style={[tailwind`flex`, {marginTop: screenHeight * 0.06}]}>
-          <Text
-            style={[
-              tailwind`mt-2 text-3xl font-semibold`,
-              {color: themeColors.primary},
-            ]}>
-            About Me
-          </Text>
+          <View style={tailwind`flex flex-row justify-between items-center`}>
+            <Text
+              style={[
+                tailwind`mt-2 text-3xl font-semibold`,
+                {color: themeColors.primary},
+              ]}>
+              About Me
+            </Text>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('LifestyleHabits')}
+              style={[
+                tailwind`mt-2 text-lg font-semibold`,
+                {color: themeColors.primary},
+              ]}>
+              <Text style={tailwind`text-base font-semibold text-red-500`}>
+                Skip
+              </Text>
+            </TouchableOpacity>
+          </View>
           <Text style={[tailwind`mt-2 text-sm font-semibold text-gray-500`]}>
             The more prompts you answer, the better matches we can find for you.
           </Text>

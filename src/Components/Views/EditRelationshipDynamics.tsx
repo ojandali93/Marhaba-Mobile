@@ -69,6 +69,8 @@ const EditRelationshipDynamics = () => {
   const [originalValues, setOriginalValues] = useState([]);
   const [originalTime, setOriginalTime] = useState([]);
 
+  const [isEmpty, setIsEmpty] = useState(false);
+
   useFocusEffect(
     useCallback(() => {
       loadProfile();
@@ -85,10 +87,10 @@ const EditRelationshipDynamics = () => {
   }, [commStyle, loveLanguage, coreValues, timePriority]);
 
   const loadProfile = () => {
-    const comm = JSON.parse(profile?.Relationships[0]?.communication || '[]');
-    const love = JSON.parse(profile?.Relationships[0]?.loveLanguages || '[]');
-    const values = JSON.parse(profile?.Relationships[0]?.values || '[]');
-    const time = JSON.parse(profile?.Relationships[0]?.time || '[]');
+    const comm = JSON.parse(profile?.Relationships?.[0]?.communication || '[]');
+    const love = JSON.parse(profile?.Relationships?.[0]?.loveLanguages || '[]');
+    const values = JSON.parse(profile?.Relationships?.[0]?.values || '[]');
+    const time = JSON.parse(profile?.Relationships?.[0]?.time || '[]');
 
     setCommStyle(comm);
     setOriginalComm(comm);
@@ -98,6 +100,14 @@ const EditRelationshipDynamics = () => {
     setOriginalValues(values);
     setTimePriority(time);
     setOriginalTime(time);
+
+    const isAllEmpty =
+      (!comm || comm.length === 0) &&
+      (!love || love.length === 0) &&
+      (!values || values.length === 0) &&
+      (!time || time.length === 0);
+
+    setIsEmpty(isAllEmpty);
   };
 
   const updateUserProfile = async () => {
@@ -115,7 +125,8 @@ const EditRelationshipDynamics = () => {
         );
         if (response.data.success) {
           setChangeDetected(false);
-          grabUserProfile(profile?.userId);
+          await grabUserProfile(profile?.userId);
+          loadProfile();
           setExpandProfile(false);
         }
       }
@@ -142,9 +153,16 @@ const EditRelationshipDynamics = () => {
             tailwind`w-full flex flex-row items-center justify-between p-3 rounded-2`,
             {backgroundColor: themeColors.darkGrey},
           ]}>
-          <Text style={tailwind`text-base font-semibold text-white`}>
-            Relationship Dynamics
-          </Text>
+          <View style={tailwind`flex flex-row items-center`}>
+            <Text style={tailwind`text-base font-semibold text-white`}>
+              Relationship Dynamics
+            </Text>
+            {isEmpty && (
+              <View
+                style={tailwind`w-2 h-2 rounded-full bg-yellow-400 mr-2 ml-3`}
+              />
+            )}
+          </View>
           {expandProfile ? (
             changeDetected ? (
               <TouchableOpacity onPress={updateUserProfile}>

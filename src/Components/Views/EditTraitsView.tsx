@@ -7,6 +7,7 @@ import {ChevronsDown, ChevronsUp} from 'react-native-feather';
 import axios from 'axios';
 import {useProfile} from '../../Context/ProfileContext';
 import {traitsAndHobbies} from '../../Utils/SelectOptions';
+
 const EditTraitsView = () => {
   const {profile, userId, grabUserProfile} = useProfile();
   const [expandedAbout, setExpandedAbout] = useState(false);
@@ -14,13 +15,20 @@ const EditTraitsView = () => {
 
   const [traits, setTraits] = useState<string[]>([]);
   const [originalTraits, setOriginalTraits] = useState<string[]>([]);
+  const [isEmpty, setIsEmpty] = useState(false);
+
+  // ✅ Explicit loadProfile function
+  const loadProfile = () => {
+    const dbTraits = (profile?.Tags || []).map(t => t.tag);
+    setTraits(dbTraits);
+    setOriginalTraits(dbTraits);
+    setIsEmpty(dbTraits.length === 0);
+  };
 
   useFocusEffect(
     useCallback(() => {
-      const dbTraits = (profile?.Tags || []).map(t => t.tag); // extract tag strings
-      setTraits(dbTraits);
-      setOriginalTraits(dbTraits);
-    }, []),
+      loadProfile();
+    }, [profile?.Tags]),
   );
 
   const toggleTrait = (trait: string) => {
@@ -28,7 +36,7 @@ const EditTraitsView = () => {
     if (traits.includes(trait)) {
       updated = traits.filter(t => t !== trait);
     } else {
-      if (traits.length >= 8) return; // ✅ Limit to 8
+      if (traits.length >= 8) return;
       updated = [...traits, trait];
     }
 
@@ -61,7 +69,8 @@ const EditTraitsView = () => {
       if (response.data.success) {
         setOriginalTraits(traits);
         setChangeDetected(false);
-        grabUserProfile(userId);
+        await grabUserProfile(userId || '');
+        loadProfile(); // ✅ Re-check traits after update
         setExpandedAbout(false);
       } else {
         console.error('Error updating traits:', response.data.error);
@@ -81,9 +90,16 @@ const EditTraitsView = () => {
             tailwind`w-full flex flex-row items-center justify-between p-3 rounded-2`,
             {backgroundColor: themeColors.darkGrey},
           ]}>
-          <Text style={tailwind`text-base font-semibold text-white`}>
-            Hobbies & Traits
-          </Text>
+          <View style={tailwind`flex flex-row items-center`}>
+            <Text style={tailwind`text-base font-semibold text-white`}>
+              Hobbies & Traits
+            </Text>
+            {isEmpty && (
+              <View
+                style={tailwind`w-2 h-2 rounded-full bg-yellow-400 mr-2 ml-3`}
+              />
+            )}
+          </View>
           {expandedAbout ? (
             changeDetected ? (
               <TouchableOpacity onPress={updateUserTraits}>

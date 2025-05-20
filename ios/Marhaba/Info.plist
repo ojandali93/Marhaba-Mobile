@@ -53,6 +53,12 @@
 	<array>
 		<string>arm64</string>
 	</array>
+  <key>NSPhotoLibraryUsageDescription</key>
+<string>We use your photo library so you can upload profile pictures and share moments with matches.</string>
+
+<key>NSLocationWhenInUseUsageDescription</key>
+<string>We use your location to show you nearby compatible matches and enhance discovery.</string>
+
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

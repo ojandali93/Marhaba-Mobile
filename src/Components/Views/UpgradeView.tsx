@@ -1,9 +1,10 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Text, View, TouchableOpacity, Alert, ScrollView} from 'react-native';
 import tailwind from 'twrnc';
 import {ChevronsLeft, Check, X} from 'react-native-feather';
 import themeColors from '../../Utils/custonColors';
 import {useProfile} from '../../Context/ProfileContext';
+import * as RNIap from 'react-native-iap';
 
 const tiers = [
   {
@@ -22,33 +23,33 @@ const tiers = [
   {
     id: 2,
     name: 'Marhabah Pro',
+    priceAmount: 9.99,
     price: '$9.99/mo',
-    originalPrice: '$14.99/mo',
+    originalPrice: '',
     features: [
       'Unlimited Likes',
       '15 Super Likes / Week',
       'See who liked you',
-      '3 extra profile photos',
       'Advanced filters: Religion, Background, Timeline',
       'Priority profile review',
-      'Hide age & distance',
     ],
   },
   {
     id: 3,
     name: 'Marhabah Pro+',
-    price: '$16.99/mo',
-    originalPrice: '$24.99/mo',
+    price: '$24.99/mo',
+    priceAmount: 24.99,
+    originalPrice: '$34.99/mo',
     features: [
       'Everything in Pro',
-      'Unlimited Super Likes',
+      '20 Super Likes / Week',
       '1 Weekly Boost / Month',
-      'Most Compatible Feed',
-      'See who viewed your profile',
       'Match Priority',
+      'See who viewed your profile',
       'Filter by values, love languages, etc.',
       'Verified Pro badge',
       'Early feature access',
+      'Connect socials to Marhabah',
     ],
   },
 ];
@@ -56,22 +57,78 @@ const tiers = [
 const UpgradeView = ({updateTab}: {updateTab: (tab: string) => void}) => {
   const {profile} = useProfile();
   const currentTier = profile?.data?.tier || 1;
-  const [selectedTier, setSelectedTier] = useState<number | null>(null);
+  const [availableSubs, setAvailableSubs] = useState<any[]>([]);
+
+  const productIds = [
+    'marhabah_pro_999_tier',
+    'marhabah_pro_2499_tier',
+    'marhabah_pro_999_sub',
+    'marhabah_pro_2499_sub',
+  ];
+  useEffect(() => {
+    const initIAP = async () => {
+      try {
+        await RNIap.initConnection();
+        const subscriptions = await RNIap.getSubscriptions(productIds);
+        setAvailableSubs(subscriptions);
+      } catch (err) {
+        console.warn('IAP init error:', err);
+      }
+    };
+
+    initIAP();
+
+    return () => {
+      RNIap.endConnection();
+    };
+  }, []);
+
+  useEffect(() => {
+    const purchaseUpdate = RNIap.purchaseUpdatedListener(async purchase => {
+      const receipt = purchase.transactionReceipt;
+      if (receipt) {
+        console.log('✅ Purchase complete:', {
+          transactionId: purchase.transactionId,
+          productId: purchase.productId,
+          transactionDate: purchase.transactionDate,
+          receipt: receipt,
+        });
+
+        await RNIap.finishTransaction(purchase);
+        // In production, send receipt to your server to verify & store
+      }
+    });
+
+    const purchaseError = RNIap.purchaseErrorListener(error => {
+      console.error('❌ Purchase error:', error);
+    });
+
+    return () => {
+      purchaseUpdate.remove();
+      purchaseError.remove();
+    };
+  }, []);
 
   const handleUpgradeConfirm = (tierId: number) => {
+    const tier = tiers.find(t => t.id === tierId);
+    const sku =
+      tierId === 2 ? productIds[0] : tierId === 3 ? productIds[1] : null;
+
+    if (!sku) return;
+
     Alert.alert(
-      'Confirm Upgrade',
-      `Are you sure you want to upgrade to ${
-        tiers.find(t => t.id === tierId)?.name
-      }?`,
+      `Upgrade to ${tier?.name}`,
+      `Features:\n\n${tier?.features.join('\n')}\n\nPrice: ${tier?.price}`,
       [
         {text: 'Cancel', style: 'cancel'},
         {
           text: 'Confirm',
-          onPress: () => {
-            // ✅ Here you'd call your API to upgrade the user
-            setSelectedTier(null);
-            Alert.alert('Success', 'Your plan has been updated!');
+          onPress: async () => {
+            try {
+              await RNIap.requestSubscription({sku});
+            } catch (err) {
+              console.warn('❌ Error starting subscription:', err);
+            }
           },
         },
       ],
@@ -80,7 +137,6 @@ const UpgradeView = ({updateTab}: {updateTab: (tab: string) => void}) => {
 
   return (
     <View style={tailwind`flex-1`}>
-      {/* Back Button */}
       <TouchableOpacity
         onPress={() => updateTab('profile')}
         style={tailwind`flex-row items-center pt-2`}>
@@ -91,7 +147,6 @@ const UpgradeView = ({updateTab}: {updateTab: (tab: string) => void}) => {
         </Text>
       </TouchableOpacity>
 
-      {/* Current Plan */}
       <View style={tailwind`mt-5`}>
         <Text style={tailwind`text-lg text-white`}>Your current plan:</Text>
         <Text style={tailwind`text-2xl font-bold mt-1 text-white`}>
@@ -99,7 +154,6 @@ const UpgradeView = ({updateTab}: {updateTab: (tab: string) => void}) => {
         </Text>
       </View>
 
-      {/* All Plans */}
       <ScrollView style={tailwind`mt-4`}>
         {tiers.map(tier => {
           const isCurrent = tier.id === currentTier;

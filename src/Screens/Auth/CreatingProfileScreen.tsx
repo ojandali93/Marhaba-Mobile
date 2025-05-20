@@ -96,6 +96,22 @@ const CreatingProfileScreen = () => {
       )
       .then(response => {
         console.log('notifications response:', response);
+        createSocials(userId);
+      })
+      .catch(error => {
+        if (error) {
+          console.log('❌ Server responded with status:', error.error);
+        }
+      });
+  };
+
+  const createSocials = async (userId: string) => {
+    axios
+      .post('https://marhaba-server.onrender.com/api/account/createSocial', {
+        userId,
+      })
+      .then(response => {
+        console.log('notifications response:', response);
         createAbout(userId);
       })
       .catch(error => {
@@ -162,7 +178,7 @@ const CreatingProfileScreen = () => {
       })
       .then(response => {
         console.log('intent response:', response);
-        createHabits(userId);
+        createPhotos(userId);
       })
       .catch(error => {
         if (error) {
@@ -171,261 +187,22 @@ const CreatingProfileScreen = () => {
       });
   };
 
-  const createHabits = async (userId: string) => {
-    const smoking = await AsyncStorage.getItem('LFH_Smoking');
-    const drinking = await AsyncStorage.getItem('LFH_Drinking');
-    const hasKids = await AsyncStorage.getItem('LFH_HasKids');
-    const wantsKids = await AsyncStorage.getItem('LFH_WantsKids');
-    const sleep = await AsyncStorage.getItem('LFH_Sleep');
-    const exercise = await AsyncStorage.getItem('LFH_Exercise');
-    const diet = await AsyncStorage.getItem('LFH_Diet');
-
+  const createPhotos = async (userId: string) => {
+    const photos = await AsyncStorage.getItem('images');
     axios
-      .post('https://marhaba-server.onrender.com/api/account/createHabits', {
+      .post('https://marhaba-server.onrender.com/api/account/createPhotos', {
         userId,
-        smoking,
-        drinking,
-        hasKids,
-        wantsKids,
-        sleep,
-        exercise,
-        diet,
-        updated_at: new Date().toISOString(),
+        photos,
       })
       .then(response => {
-        console.log('habits response:', response);
-        createReligion(userId);
+        console.log('photos response:', response);
+        createPreferences(userId);
       })
       .catch(error => {
         if (error) {
           console.log('❌ Server responded with status:', error.error);
         }
       });
-  };
-
-  const createReligion = async (userId: string) => {
-    const religion = await AsyncStorage.getItem('RG_Religion');
-    const sect = await AsyncStorage.getItem('RG_Sect');
-    const practicing = await AsyncStorage.getItem('RG_Practices');
-    const openness = await AsyncStorage.getItem('RG_Openness');
-
-    axios
-      .post('https://marhaba-server.onrender.com/api/account/createReligion', {
-        userId,
-        religion,
-        sect,
-        practicing,
-        openness,
-        updated_at: new Date().toISOString(),
-      })
-      .then(response => {
-        console.log('religion response:', response);
-        createCore(userId);
-      })
-      .catch(error => {
-        if (error) {
-          console.log('❌ Server responded with status:', error.error);
-        }
-      });
-  };
-
-  const createCore = async (userId: string) => {
-    const family = await AsyncStorage.getItem('CR_Family');
-    const faith = await AsyncStorage.getItem('CR_Faith');
-    const ambition = await AsyncStorage.getItem('CR_Ambition');
-    const career = await AsyncStorage.getItem('CR_CareerVsFamily');
-    const conflicts = await AsyncStorage.getItem('CR_Conflicts');
-    const independence = await AsyncStorage.getItem('CR_Independence');
-    const decisions = await AsyncStorage.getItem('CR_Decisions');
-    const politics = await AsyncStorage.getItem('CR_Politics');
-
-    axios
-      .post('https://marhaba-server.onrender.com/api/account/createCore', {
-        userId,
-        family,
-        faith,
-        ambition,
-        career,
-        conflicts,
-        independence,
-        decisions,
-        politics,
-        updated_at: new Date().toISOString(),
-      })
-      .then(response => {
-        console.log('core response:', response);
-        createRelationships(userId);
-      })
-      .catch(error => {
-        if (error) {
-          console.log('❌ Server responded with status:', error.error);
-        }
-      });
-  };
-
-  const createRelationships = async (userId: string) => {
-    const commStyle = await AsyncStorage.getItem('RD_commStyle');
-    const commStyleArray = JSON.parse(commStyle);
-    const loveLanguages = await AsyncStorage.getItem('RD_loveLanguage');
-    const loveLanguagesArray = JSON.parse(loveLanguages);
-    const coreValues = await AsyncStorage.getItem('RD_coreValues');
-    const coreValuesArray = JSON.parse(coreValues);
-    const timePriority = await AsyncStorage.getItem('RD_timePriority');
-    const timePriorityArray = JSON.parse(timePriority);
-
-    axios
-      .post(
-        'https://marhaba-server.onrender.com/api/account/createRelationships',
-        {
-          userId,
-          commStyle: commStyleArray,
-          loveLanguages: loveLanguagesArray,
-          values: coreValuesArray,
-          time: timePriorityArray,
-          updated_at: new Date().toISOString(),
-        },
-      )
-      .then(response => {
-        console.log('relationships response:', response);
-        createCareer(userId);
-      })
-      .catch(error => {
-        if (error) {
-          console.log('❌ Server responded with status:', error.error);
-        }
-      });
-  };
-
-  const createCareer = async (userId: string) => {
-    const job = await AsyncStorage.getItem('CE_Job');
-    const company = await AsyncStorage.getItem('CE_Company');
-    const industry = await AsyncStorage.getItem('CE_Industry');
-    const relocateWork = await AsyncStorage.getItem('CE_RelocateWork');
-    const site = await AsyncStorage.getItem('CE_Site');
-    const education = await AsyncStorage.getItem('CE_Education');
-
-    axios
-      .post('https://marhaba-server.onrender.com/api/account/createCareer', {
-        userId,
-        job,
-        company,
-        industry,
-        relocateWork,
-        site,
-        education,
-        updated_at: new Date().toISOString(),
-      })
-      .then(response => {
-        console.log('career response:', response);
-        createPropmts(userId);
-      })
-      .catch(error => {
-        if (error) {
-          console.log('❌ Server responded with status:', error.error);
-        }
-      });
-  };
-
-  const createPropmts = async (userId: string) => {
-    const prompts = await AsyncStorage.getItem('prompts');
-    axios
-      .post('https://marhaba-server.onrender.com/api/account/createPrompts', {
-        userId,
-        prompts,
-      })
-      .then(response => {
-        console.log('prompts response:', response);
-        createTraits(userId);
-      })
-      .catch(error => {
-        if (error) {
-          console.log('❌ Server responded with status:', error.error);
-        }
-      });
-  };
-
-  const createTraits = async (userId: string) => {
-    const traits = await AsyncStorage.getItem('traits');
-    axios
-      .post('https://marhaba-server.onrender.com/api/account/createTraits', {
-        userId,
-        traits,
-      })
-      .then(response => {
-        console.log('traits response:', response);
-        createSurvey(userId);
-      })
-      .catch(error => {
-        if (error) {
-          console.log('❌ Server responded with status:', error.error);
-        }
-      });
-  };
-
-  const createSurvey = async (userId: string) => {
-    try {
-      const friday = await AsyncStorage.getItem('onafridaynightidrather');
-      const energy = await AsyncStorage.getItem('myenergylevelisusually');
-      const planning = await AsyncStorage.getItem('iprefertoplan');
-      const morningEnergy = await AsyncStorage.getItem('immoreofa');
-      const social = await AsyncStorage.getItem('insocialsituationsi');
-      const verted = await AsyncStorage.getItem('immore');
-      const pineapple = await AsyncStorage.getItem('pineappleonpizza');
-      const giveUp = await AsyncStorage.getItem('idrathergiveup');
-      const communication = await AsyncStorage.getItem('textingvscalling');
-      const firstSight = await AsyncStorage.getItem(
-        'doyoubelieveinloveatfirstsight',
-      );
-      const morning = await AsyncStorage.getItem('inthemorningi');
-      const travel = await AsyncStorage.getItem('whentravelingiprefer');
-      const spicy = await AsyncStorage.getItem('ilikemyfood');
-      const decisions = await AsyncStorage.getItem('whenmakingdecisions');
-      const arrive = await AsyncStorage.getItem('iusuallyarrive');
-      const partner = await AsyncStorage.getItem('ivaluemoreinapartner');
-      const move = await AsyncStorage.getItem('wouldyoumoveforlove');
-      const opposites = await AsyncStorage.getItem('dooppositesattract');
-      const ghost = await AsyncStorage.getItem('isitokaytoghossomeone');
-      const longDistance = await AsyncStorage.getItem(
-        'longdistancerelationshipscanwork',
-      );
-
-      const surveyPayload = {
-        userId,
-        friday,
-        energy,
-        planning,
-        morningEnergy,
-        social,
-        verted,
-        pineapple,
-        giveUp,
-        communication,
-        firstSight,
-        morning,
-        travel,
-        spicy,
-        decisions,
-        arrive,
-        partner,
-        move,
-        opposites,
-        ghost,
-        longDistance,
-      };
-
-      const response = await axios.post(
-        'https://marhaba-server.onrender.com/api/account/createSurvey',
-        surveyPayload,
-      );
-
-      console.log('survey response:', response);
-      createPreferences(userId);
-    } catch (error) {
-      console.log(
-        '❌ Survey creation error:',
-        error?.response?.data || error.message,
-      );
-    }
   };
 
   const createPreferences = async (userId: string) => {
@@ -455,7 +232,7 @@ const CreatingProfileScreen = () => {
       )
       .then(response => {
         console.log('preferences response:', response);
-        createPhotos(userId);
+        createPropmts(userId);
       })
       .catch(error => {
         if (error) {
@@ -464,44 +241,214 @@ const CreatingProfileScreen = () => {
       });
   };
 
-  const createPhotos = async (userId: string) => {
-    const photos = await AsyncStorage.getItem('images');
+  const createPropmts = async (userId: string) => {
+    try {
+      const raw = await AsyncStorage.getItem('prompts');
+      const parsedPrompts = raw ? JSON.parse(raw) : [];
+
+      console.log('🧠 Parsed prompts to send:', parsedPrompts);
+
+      axios
+        .post('https://marhaba-server.onrender.com/api/account/createPrompts', {
+          userId,
+          prompts: parsedPrompts, // ✅ Always an array
+        })
+        .then(response => {
+          console.log('✅ Prompts response:', response.data);
+          createHabits(userId);
+        })
+        .catch(error => {
+          console.log(
+            '❌ Prompts API error:',
+            error.response?.data || error.message,
+          );
+        });
+    } catch (err) {
+      console.log('❌ Failed to prepare prompts:', err.message);
+    }
+  };
+
+  const createHabits = async (userId: string) => {
+    const smoking = await AsyncStorage.getItem('LFH_Smoking');
+    const drinking = await AsyncStorage.getItem('LFH_Drinking');
+    const hasKids = await AsyncStorage.getItem('LFH_HasKids');
+    const wantsKids = await AsyncStorage.getItem('LFH_WantsKids');
+    const sleep = await AsyncStorage.getItem('LFH_Sleep');
+    const exercise = await AsyncStorage.getItem('LFH_Exercise');
+    const diet = await AsyncStorage.getItem('LFH_Diet');
+
     axios
-      .post('https://marhaba-server.onrender.com/api/account/createPhotos', {
+      .post('https://marhaba-server.onrender.com/api/account/createHabits', {
         userId,
-        photos,
+        smoking: smoking || null,
+        drinking: drinking || null,
+        hasKids: hasKids || null,
+        wantsKids: wantsKids || null,
+        sleep: sleep || null,
+        exercise: exercise || null,
+        diet: diet || null,
+        updated_at: new Date().toISOString(),
       })
       .then(response => {
-        console.log('photos response:', response);
-        createFuture(userId);
+        console.log('habits response:', response);
+        createReligion(userId);
       })
       .catch(error => {
         if (error) {
           console.log('❌ Server responded with status:', error.error);
         }
       });
+  };
+
+  // ------------------------------------------------------------
+
+  const createReligion = async (userId: string) => {
+    axios
+      .post('https://marhaba-server.onrender.com/api/account/createReligion', {
+        userId,
+        religion: null,
+        sect: null,
+        practicing: null,
+        openness: null,
+        updated_at: new Date().toISOString(),
+      })
+      .then(response => {
+        console.log('religion response:', response);
+        createCore(userId);
+      })
+      .catch(error => {
+        if (error) {
+          console.log('❌ Server responded with status:', error.error);
+        }
+      });
+  };
+
+  const createCore = async (userId: string) => {
+    axios
+      .post('https://marhaba-server.onrender.com/api/account/createCore', {
+        userId,
+        family: null,
+        faith: null,
+        ambition: null,
+        career: null,
+        conflicts: null,
+        independence: null,
+        decisions: null,
+        politics: null,
+        updated_at: new Date().toISOString(),
+      })
+      .then(response => {
+        console.log('core response:', response);
+        createRelationships(userId);
+      })
+      .catch(error => {
+        if (error) {
+          console.log('❌ Server responded with status:', error.error);
+        }
+      });
+  };
+
+  const createRelationships = async (userId: string) => {
+    axios
+      .post(
+        'https://marhaba-server.onrender.com/api/account/createRelationships',
+        {
+          userId,
+          commStyle: null,
+          loveLanguages: null,
+          values: null,
+          time: null,
+          updated_at: new Date().toISOString(),
+        },
+      )
+      .then(response => {
+        console.log('relationships response:', response);
+        createCareer(userId);
+      })
+      .catch(error => {
+        if (error) {
+          console.log('❌ Server responded with status:', error.error);
+        }
+      });
+  };
+
+  const createCareer = async (userId: string) => {
+    axios
+      .post('https://marhaba-server.onrender.com/api/account/createCareer', {
+        userId,
+        job: null,
+        company: null,
+        industry: null,
+        relocateWork: null,
+        site: null,
+        education: null,
+        updated_at: new Date().toISOString(),
+      })
+      .then(response => {
+        console.log('career response:', response);
+        createSurvey(userId);
+      })
+      .catch(error => {
+        if (error) {
+          console.log('❌ Server responded with status:', error.error);
+        }
+      });
+  };
+
+  const createSurvey = async (userId: string) => {
+    try {
+      const surveyPayload = {
+        userId,
+        friday: null,
+        energy: null,
+        planning: null,
+        morningEnergy: null,
+        social: null,
+        verted: null,
+        pineapple: null,
+        giveUp: null,
+        communication: null,
+        firstSight: null,
+        morning: null,
+        travel: null,
+        spicy: null,
+        decisions: null,
+        arrive: null,
+        partner: null,
+        move: null,
+        opposites: null,
+        ghost: null,
+        longDistance: null,
+      };
+
+      const response = await axios.post(
+        'https://marhaba-server.onrender.com/api/account/createSurvey',
+        surveyPayload,
+      );
+
+      console.log('survey response:', response);
+      createFuture(userId);
+    } catch (error) {
+      console.log(
+        '❌ Survey creation error:',
+        error?.response?.data || error.message,
+      );
+    }
   };
 
   const createFuture = async (userId: string) => {
-    const career = await AsyncStorage.getItem('FTR_Career');
-    const finances = await AsyncStorage.getItem('FTR_Finances');
-    const pace = await AsyncStorage.getItem('FTR_Pace');
-    const location = await AsyncStorage.getItem('FTR_Location');
-    const fiveYears = await AsyncStorage.getItem('FTR_FiveYears');
-
     axios
       .post('https://marhaba-server.onrender.com/api/account/createFuture', {
         userId,
-        career,
-        finances,
-        pace,
-        live: location,
-        fiveYears,
+        career: null,
+        finances: null,
+        pace: null,
+        live: null,
+        fiveYears: null,
         updated_at: new Date().toISOString(),
       })
       .then(response => {
         console.log('future response:', response);
-        // createSurvey(userId);
       })
       .catch(error => {
         if (error) {

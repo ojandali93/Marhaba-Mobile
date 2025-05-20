@@ -22,6 +22,14 @@ import {
   leaveConversationRoom,
 } from '../../Services/socket';
 
+const openingPrompts = [
+  "What's your idea of a perfect first meeting?",
+  'Would you rather live in a big city or a quiet town?',
+  'What are you most passionate about right now?',
+  'If you can travel anywhere in the world, where would you go?',
+  "What's the most adventurous thing you've ever done?",
+];
+
 const ChatScreen = ({route}) => {
   const {userId, profile, setHasUnreadMessages} = useProfile();
   const jwtToken = profile?.jwtToken;
@@ -150,6 +158,11 @@ const ChatScreen = ({route}) => {
     };
   }, [conversationId, jwtToken, userId]);
 
+  const sendOpeningPrompt = async prompt => {
+    setTextMessage(prompt);
+    await sendMessage();
+  };
+
   const sendMessage = async () => {
     console.log('the other user: ', otherUser);
     const socket = getSocket();
@@ -245,6 +258,24 @@ const ChatScreen = ({route}) => {
           onContentSizeChange={() =>
             scrollViewRef.current?.scrollToEnd({animated: true})
           }>
+          {messages.length === 0 && (
+            <View style={tailwind`mb-4`}>
+              <Text style={tailwind`text-gray-600 mb-2 text-base`}>
+                Not sure how to start the conversation?
+              </Text>
+              {openingPrompts.map((prompt, index) => (
+                <TouchableOpacity
+                  key={index}
+                  onPress={() => sendOpeningPrompt(prompt)}
+                  style={tailwind`bg-blue-100 p-3 rounded-xl mb-2`}>
+                  <Text style={tailwind`text-gray-800 text-base`}>
+                    {prompt}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
+
           {messages.map((msg, idx) => {
             const isMe = msg.sender === userId;
             return (

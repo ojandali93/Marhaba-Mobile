@@ -31,6 +31,30 @@ const BottomTabNavigation = () => {
     useProfile();
   const [isAdmin, setIsAdmin] = useState(false);
 
+  const [incompleteProfile, setIncompleteProfile] = useState(false);
+
+  useEffect(() => {
+    if (profile) {
+      const optionalTables = [
+        'Career',
+        'Core',
+        'Future',
+        'Relationships',
+        'Religion',
+        'Survey',
+        'Tags',
+        'Prompts',
+      ];
+
+      const hasEmptyTable = optionalTables.some(table => {
+        const tableData = profile[table];
+        return !Array.isArray(tableData) || tableData.length === 0;
+      });
+
+      setIncompleteProfile(hasEmptyTable);
+    }
+  }, [profile]);
+
   useEffect(() => {
     if (userId && profile?.admin) {
       setIsAdmin(userId === 'c09a80ce-0af1-4d0c-806c-64ffaf5c8ac5');
@@ -171,6 +195,11 @@ const BottomTabNavigation = () => {
           tabBarIcon: ({focused}) => (
             <View style={tailwind`items-center`}>
               {renderIcon(User, focused)}
+              {incompleteProfile && (
+                <View
+                  style={tailwind`absolute top--.25 right--1 w-2.5 h-2.5 bg-yellow-400 rounded-full`}
+                />
+              )}
             </View>
           ),
         })}

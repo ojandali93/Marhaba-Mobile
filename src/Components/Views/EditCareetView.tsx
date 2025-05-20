@@ -30,6 +30,8 @@ const EditCareetView = () => {
   const [site, setSite] = useState<string>('');
   const [education, setEducation] = useState<string>('');
 
+  const [isEmpty, setIsEmpty] = useState(false);
+
   useFocusEffect(
     useCallback(() => {
       loadCoreViews();
@@ -37,14 +39,17 @@ const EditCareetView = () => {
   );
 
   const loadCoreViews = () => {
-    setJob(profile?.Career[0].job);
-    setCompoany(profile?.Career[0].company);
-    setEducation(profile?.Career[0].education);
-    setSite(profile?.Career[0].site);
-    setIndustry(profile?.Career[0].location);
-    setRelocateWork(profile?.Career[0].fiveYear);
-  };
+    setJob(profile?.Career[0]?.job || '');
+    setCompoany(profile?.Career[0]?.company || '');
+    setEducation(profile?.Career[0]?.education || '');
+    setSite(profile?.Career[0]?.site || '');
+    setIndustry(profile?.Career[0]?.location || '');
+    setRelocateWork(profile?.Career[0]?.fiveYear || '');
 
+    const isAllEmpty =
+      !job && !company && !education && !site && !industry && !relocateWork;
+    setIsEmpty(isAllEmpty);
+  };
   const updateJob = async (newJob: string) => {
     if (newJob !== job) {
       setJob(newJob);
@@ -127,7 +132,8 @@ const EditCareetView = () => {
         );
         if (response.data.success) {
           setChangeDetected(false);
-          grabUserProfile(profile?.userId);
+          await grabUserProfile(profile?.userId);
+          loadCoreViews();
           setExpandedAbout(false);
         } else {
           console.error('Error updating user profile:', response.data.error);
@@ -148,9 +154,16 @@ const EditCareetView = () => {
             tailwind`w-full flex flex-row items-center justify-between p-3 rounded-2`,
             {backgroundColor: themeColors.darkGrey},
           ]}>
-          <Text style={tailwind`text-base font-semibold text-white`}>
-            Career & Education
-          </Text>
+          <View style={tailwind`flex flex-row items-center`}>
+            <Text style={tailwind`text-base font-semibold text-white`}>
+              Career & Education
+            </Text>
+            {isEmpty && (
+              <View
+                style={tailwind`w-2 h-2 rounded-full bg-yellow-400 mr-2 ml-3`}
+              />
+            )}
+          </View>
           {expandedAbout ? (
             changeDetected ? (
               <TouchableOpacity onPress={updateUserProfile}>

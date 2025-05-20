@@ -21,7 +21,9 @@ import DrinkSelect from '../../Components/Select/DrinkSelect';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import KidsSelect from '../../Components/Select/KidsSelect';
 import StandardSelect from '../../Components/Select/StandardSelect';
-
+import StandardText from '../../Components/Select/StandardText';
+import {backgroundOptions} from '../../Utils/SelectOptions';
+import StandardMultiSelect from '../../Components/Select/StandardMultiSelect';
 const screenHeight = Dimensions.get('window').height;
 
 const IdentityScreen = () => {
@@ -35,6 +37,8 @@ const IdentityScreen = () => {
 
   const [height, setHeight] = useState<string>('');
 
+  const [background, setBackground] = useState<string[]>([]);
+
   useFocusEffect(
     useCallback(() => {
       loadPreferences();
@@ -46,6 +50,7 @@ const IdentityScreen = () => {
     const storedDob = await AsyncStorage.getItem('E_dob');
     const storedGender = await AsyncStorage.getItem('E_gender');
     const storeHeight = await AsyncStorage.getItem('E_height');
+    const storedBackground = await AsyncStorage.getItem('BG_Background');
 
     if (storedName) {
       setName(storedName);
@@ -68,10 +73,27 @@ const IdentityScreen = () => {
     if (storeHeight) {
       setHeight(storeHeight);
     }
+    if (storedBackground) {
+      setBackground(JSON.parse(storedBackground));
+    }
+  };
+
+  const backgroundSelect = (country: string) => {
+    if (background.includes(country)) {
+      setBackground(prev => prev.filter(c => c !== country));
+    } else if (background.length < 2) {
+      setBackground(prev => [...prev, country]);
+    }
   };
 
   const redirectToPersonalityScreen = () => {
-    if (name != '' && dob != null && gender != '' && height != '') {
+    if (
+      name !== '' &&
+      dob != null &&
+      gender !== '' &&
+      height !== '' &&
+      background.length > 0
+    ) {
       storeNextScreen();
     } else {
       Alert.alert('Requirements', 'Please fill out all of the fields');
@@ -83,7 +105,8 @@ const IdentityScreen = () => {
     await AsyncStorage.setItem('E_dob', dob?.toString());
     await AsyncStorage.setItem('E_gender', gender);
     await AsyncStorage.setItem('E_height', height);
-    navigation.navigate('Background');
+    await AsyncStorage.setItem('BG_Background', JSON.stringify(background));
+    navigation.navigate('LookingFor');
   };
 
   return (
@@ -113,7 +136,7 @@ const IdentityScreen = () => {
         </View>
         <ScrollView style={tailwind`w-full flex-1`}>
           <View style={tailwind`w-full`}>
-            <AithInputStandard
+            <StandardText
               fieldName="Name"
               value={name}
               changeText={setName}
@@ -161,6 +184,14 @@ const IdentityScreen = () => {
               '7\'0"',
             ]}
             label="Height"
+          />
+          <StandardMultiSelect
+            fieldName="Background"
+            selected={background}
+            onSelect={backgroundSelect}
+            options={backgroundOptions}
+            label="Background"
+            maxSelectable={2}
           />
           {/* <StandardSelect
             fieldName="Have Kids"

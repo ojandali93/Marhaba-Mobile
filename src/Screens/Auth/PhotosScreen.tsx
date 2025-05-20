@@ -141,7 +141,7 @@ const PhotosScreen = () => {
   const storeNextScreen = async () => {
     try {
       await AsyncStorage.setItem('images', JSON.stringify(uploadedImageUrls));
-      navigation.navigate('Accept');
+      navigation.navigate('Preferences');
     } catch (err) {
       console.error('Failed to store images:', err);
     }

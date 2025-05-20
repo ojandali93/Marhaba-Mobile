@@ -11,26 +11,35 @@ interface InputProps {
   valid?: boolean;
   optional?: boolean;
   label?: string;
+  multiline?: boolean;
 }
 
 const screenHeight = Dimensions.get('window').height;
 
-const AuthInputStandardNumber: React.FC<InputProps> = ({
+const StandardText: React.FC<InputProps> = ({
   fieldName,
   value,
   changeText,
-  secure,
+  secure = false,
   valid,
-  optional,
+  optional = false,
   label,
+  multiline = false,
 }) => {
   return (
-    <View style={tailwind`w-full flex justify-center rounded-2 mt-2`}>
-      <View style={tailwind``}>
+    <View style={tailwind`w-full mt-3`}>
+      {label && (
         <Text style={tailwind`italic text-lg font-semibold px-2 pb-2`}>
-          {label} {optional ? ' (optional)' : null}
+          {label}{' '}
+          {optional ? (
+            <Text style={tailwind`text-sm italic text-gray-400`}>
+              (optional)
+            </Text>
+          ) : (
+            <Text style={tailwind`text-red-500`}>*</Text>
+          )}
         </Text>
-      </View>
+      )}
       <View
         style={[
           tailwind`w-full border rounded-lg px-3 py-2`,
@@ -42,19 +51,16 @@ const AuthInputStandardNumber: React.FC<InputProps> = ({
         <TextInput
           value={value}
           onChangeText={changeText}
-          placeholder={fieldName.toLowerCase()}
-          placeholderTextColor={'grey'}
+          placeholder={fieldName}
+          placeholderTextColor="gray"
           secureTextEntry={secure}
-          style={tailwind`text-base`}
-          paddingBottom={8}
-          paddingTop={0}
-          lineHeight={24} // or match to font size
-          textAlignVertical="center" // ensures proper vertical alignment
-          keyboardType="phone-pad"
+          multiline={multiline}
+          style={tailwind`text-base mb-1`}
+          textAlignVertical={multiline ? 'top' : 'center'}
         />
       </View>
     </View>
   );
 };
 
-export default AuthInputStandardNumber;
+export default StandardText;

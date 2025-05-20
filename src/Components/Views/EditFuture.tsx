@@ -34,6 +34,8 @@ const EditFuture = () => {
   const [location, setLocation] = useState(profile.height || '');
   const [fiveYears, setFiveYears] = useState(profile.height || '');
 
+  const [isEmpty, setIsEmpty] = useState(false);
+
   useFocusEffect(
     useCallback(() => {
       loadProfile();
@@ -41,11 +43,28 @@ const EditFuture = () => {
   );
 
   const loadProfile = () => {
-    setCareer(profile?.Future[0]?.career);
-    setFinances(profile?.Future[0]?.finances);
-    setPace(profile?.Future[0]?.pace);
-    setLocation(profile?.Future[0]?.location);
-    setFiveYears(profile?.Future[0]?.fiveYear);
+    const future = profile?.Future?.[0] || {};
+
+    const careerValue = future.career || '';
+    const financesValue = future.finances || '';
+    const paceValue = future.pace || '';
+    const locationValue = future.location || '';
+    const fiveYearsValue = future.fiveYear || '';
+
+    setCareer(careerValue);
+    setFinances(financesValue);
+    setPace(paceValue);
+    setLocation(locationValue);
+    setFiveYears(fiveYearsValue);
+
+    const isAllEmpty =
+      !careerValue &&
+      !financesValue &&
+      !paceValue &&
+      !locationValue &&
+      !fiveYearsValue;
+
+    setIsEmpty(isAllEmpty);
   };
 
   const updateCareer = async (newCareer: string) => {
@@ -116,7 +135,8 @@ const EditFuture = () => {
         );
         if (response.data.success) {
           setChangeDetected(false);
-          grabUserProfile(profile?.userId);
+          await grabUserProfile(profile?.userId);
+          loadProfile();
           setExpandProfile(false);
         } else {
           console.error('Error updating user profile:', response.data.error);
@@ -137,9 +157,16 @@ const EditFuture = () => {
             tailwind`w-full flex flex-row items-center justify-between p-3 rounded-2`,
             {backgroundColor: themeColors.darkGrey},
           ]}>
-          <Text style={tailwind`text-base font-semibold text-white`}>
-            The Future
-          </Text>
+          <View style={tailwind`flex flex-row items-center`}>
+            <Text style={tailwind`text-base font-semibold text-white`}>
+              The Future
+            </Text>
+            {isEmpty && (
+              <View
+                style={tailwind`w-2 h-2 rounded-full bg-yellow-400 mr-2 ml-3`}
+              />
+            )}
+          </View>
           {expandProfile ? (
             changeDetected ? (
               <TouchableOpacity onPress={updateUserProfile}>

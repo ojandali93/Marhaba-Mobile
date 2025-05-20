@@ -15,7 +15,7 @@ const EditPromptsView = () => {
 
   const [prompts, setPrompts] = useState<{id: string; prompt: string}[]>([]);
   const [originalPrompts, setOriginalPrompts] = useState<string[]>([]);
-
+  const [isEmpty, setIsEmpty] = useState(false);
   useFocusEffect(
     useCallback(() => {
       loadPrompts();
@@ -24,13 +24,20 @@ const EditPromptsView = () => {
 
   const loadPrompts = () => {
     const profilePrompts = profile?.Prompts || [];
+
     const formatted = profilePrompts.map(p => ({
       id: p.id,
       prompt: p.prompt,
-      response: p.response || '', // ✅ include response
+      response: p.response || '',
     }));
+
     setPrompts(formatted);
     setOriginalPrompts(formatted.map(p => p.response));
+
+    const isEmpty =
+      profilePrompts.length === 0 || formatted.every(p => !p.response?.trim());
+
+    setIsEmpty(isEmpty);
   };
 
   const updatePrompt = (index: number, newText: string) => {
@@ -59,7 +66,8 @@ const EditPromptsView = () => {
       if (response.data.success) {
         setOriginalPrompts(prompts.map(p => p.response)); // ✅ update with response
         setChangeDetected(false);
-        grabUserProfile(userId);
+        await grabUserProfile(userId || '');
+        loadPrompts();
         setExpanded(false);
       } else {
         console.error('⚠️ Failed to update prompts:', response.data.error);
@@ -79,9 +87,16 @@ const EditPromptsView = () => {
             tailwind`w-full flex flex-row items-center justify-between p-3 rounded-2`,
             {backgroundColor: themeColors.darkGrey},
           ]}>
-          <Text style={tailwind`text-base font-semibold text-white`}>
-            Prompts
-          </Text>
+          <View style={tailwind`flex flex-row items-center`}>
+            <Text style={tailwind`text-base font-semibold text-white`}>
+              Prompts
+            </Text>
+            {isEmpty && (
+              <View
+                style={tailwind`w-2 h-2 rounded-full bg-yellow-400 mr-2 ml-3`}
+              />
+            )}
+          </View>
           {expanded ? (
             changeDetected ? (
               <TouchableOpacity onPress={updatePrompts}>

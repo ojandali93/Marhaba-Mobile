@@ -23,12 +23,14 @@ import VerifyModalContent from '../Modals/VerifyModalContent';
 import PhoneModalContent from '../Modals/PhoneModalContent';
 import PasswordModalContent from '../Modals/PasswordModalContent';
 import EmailModalContent from '../Modals/EmailModalContent';
+import {useProfile} from '../../Context/ProfileContext';
 
 interface SettingsViewProps {
   updateTab: (tab: string) => void;
 }
 
 const SettingsView = ({updateTab}: SettingsViewProps) => {
+  const {profile} = useProfile();
   const [activeModal, setActiveModal] = useState<string | null>(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -97,6 +99,19 @@ const SettingsView = ({updateTab}: SettingsViewProps) => {
         </Text>
         <ChevronsRight height={24} width={24} color={themeColors.primary} />
       </TouchableOpacity>
+      {profile.tier === 3 && (
+        <TouchableOpacity
+          onPress={() => updateTab('proSettings')}
+          style={[
+            tailwind`flex-row justify-between items-center p-4 mt-2 rounded-2`,
+            {backgroundColor: themeColors.darkGrey},
+          ]}>
+          <Text style={tailwind`text-base font-semibold text-white`}>
+            Pro+ Settings
+          </Text>
+          <ChevronsRight height={24} width={24} color={themeColors.primary} />
+        </TouchableOpacity>
+      )}
 
       {/* Privacy Section */}
       <Text style={tailwind`text-xl font-semibold text-gray-500 mt-3`}>

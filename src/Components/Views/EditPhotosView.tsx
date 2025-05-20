@@ -33,6 +33,8 @@ const EditPhotosView = () => {
   );
   const [expandPhotos, setExpandPhotos] = useState(false);
 
+  const [isEmpty, setIsEmpty] = useState(false);
+
   useFocusEffect(
     useCallback(() => {
       loadImages();
@@ -49,6 +51,9 @@ const EditPhotosView = () => {
 
     setUploadedImageUrls(imageUrls);
     setOriginalImageUrls(imageUrls);
+
+    const isAllEmpty = imageUrls.every(url => !url);
+    setIsEmpty(isAllEmpty); // ✅ assumes useState: const [isEmpty, setIsEmpty] = useState(false);
   };
 
   const hasImageChanges = () => {
@@ -77,7 +82,8 @@ const EditPhotosView = () => {
       );
 
       if (response.data.success) {
-        grabUserProfile(userId || '');
+        await grabUserProfile(userId || '');
+        loadImages();
         setExpandPhotos(false);
         return {success: true, data: response.data.data};
       } else {
@@ -199,9 +205,16 @@ const EditPhotosView = () => {
             tailwind`w-full flex flex-row items-center justify-between p-3 rounded-2`,
             {backgroundColor: themeColors.darkGrey},
           ]}>
-          <Text style={tailwind`text-base font-semibold text-white`}>
-            Photos
-          </Text>
+          <View style={tailwind`flex flex-row items-center`}>
+            <Text style={tailwind`text-base font-semibold text-white`}>
+              Photos
+            </Text>
+            {isEmpty && (
+              <View
+                style={tailwind`w-2 h-2 rounded-full bg-yellow-400 mr-2 ml-3`}
+              />
+            )}
+          </View>
           {expandPhotos ? (
             hasImageChanges() ? (
               <TouchableOpacity onPress={updateUserPhotos}>

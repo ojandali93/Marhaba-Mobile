@@ -341,6 +341,7 @@ const FeedScreen = () => {
               console.error('❌ Failed to send push notification:', err);
             }
           }
+          removeTopProfile();
           return;
         }
 

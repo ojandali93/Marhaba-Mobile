@@ -107,7 +107,7 @@ const LookingForScreen = () => {
     await AsyncStorage.setItem('LF_Relocate', relocate);
     await AsyncStorage.setItem('LF_FirstStep', firstStep);
     await AsyncStorage.setItem('LF_Parents', parents);
-    navigation.navigate('LifestyleHabits');
+    navigation.navigate('Photos');
   };
 
   return (

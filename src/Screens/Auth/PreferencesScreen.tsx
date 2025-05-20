@@ -25,6 +25,7 @@ import {
   religiousSectOptions,
   religionOptions,
 } from '../../Utils/SelectOptions';
+import StandardMultiSelect from '../../Components/Select/StandardMultiSelect';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -82,8 +83,16 @@ const PreferencesScreen = () => {
     }
   };
 
+  const backgroundSelect = (country: string) => {
+    if (background.includes(country)) {
+      setBackground(prev => prev.filter(c => c !== country));
+    } else if (background.length < 4) {
+      setBackground(prev => [...prev, country]);
+    }
+  };
+
   const redirectToPersonalityScreen = () => {
-    if (gender != '' && radius != '' && background != '') {
+    if (gender !== '' && radius !== '' && background.length > 0) {
       storeNextScreen();
     } else {
       Alert.alert('Requirements', 'Please fill out missing info.');
@@ -99,7 +108,7 @@ const PreferencesScreen = () => {
     await AsyncStorage.setItem('PR_Background', JSON.stringify(background));
     await AsyncStorage.setItem('PR_AgeMin', ageRange[0].toString());
     await AsyncStorage.setItem('PR_AgeMax', ageRange[1].toString());
-    navigation.navigate('Photos');
+    navigation.navigate('Personality');
   };
 
   return (
@@ -152,12 +161,13 @@ const PreferencesScreen = () => {
             ]}
             label="Distance"
           />
-          <BackgroundSelect
-            fieldName="Background"
+          <StandardMultiSelect
+            label="Background"
             options={backgroundOptions}
             selected={background}
-            setSelected={setBackground}
-            maxSelect={4}
+            onSelect={backgroundSelect}
+            maxSelectable={4}
+            fieldName="Background"
           />
           <StandardSelect
             fieldName="Religion"

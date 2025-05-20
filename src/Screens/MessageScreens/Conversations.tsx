@@ -68,6 +68,7 @@ const Conversations = () => {
       );
 
       if (response.data?.data.length > 0) {
+        console.log('conversations', response.data?.data);
         setConversations(response.data?.data);
       } else {
         console.warn(

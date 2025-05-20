@@ -167,20 +167,20 @@ const IdentityThirdScreen = () => {
         <View style={tailwind`w-full flex justify-center`}></View>
         <ScrollView style={tailwind`w-full flex-1`}>
           <View style={tailwind`mt-2`}>
-            <Text style={tailwind`italic text-base px-2 pb-1 mb-2`}>
+            <Text style={tailwind`italic text-xl font-semibold px-2 pb-1 mb-2`}>
               Communication Style (Select 2)
             </Text>
 
             <ScrollView
               style={tailwind`max-h-72`}
               showsVerticalScrollIndicator={false}>
-              <View style={tailwind`flex-row flex-wrap justify-between`}>
+              <View style={tailwind`flex-row flex-wrap`}>
                 {communicationStyles.map((style, idx) => (
                   <TouchableOpacity
                     key={idx}
                     onPress={() => toggleCommStyle(style)}
                     style={[
-                      tailwind`w-[48%] p-2 mb-3 rounded-xl border`,
+                      tailwind`rounded-full px-3 py-1 m-1 border`,
                       {
                         backgroundColor: commStyle.includes(style)
                           ? themeColors.primary
@@ -204,20 +204,20 @@ const IdentityThirdScreen = () => {
             </ScrollView>
           </View>
           <View style={tailwind`mt-2`}>
-            <Text style={tailwind`italic text-base px-2 pb-1 mb-2`}>
+            <Text style={tailwind`italic text-xl font-semibold px-2 pb-1 mb-2`}>
               Love Language (Select 2)
             </Text>
 
             <ScrollView
               style={tailwind`max-h-72`}
               showsVerticalScrollIndicator={false}>
-              <View style={tailwind`flex-row flex-wrap justify-between`}>
+              <View style={tailwind`flex-row flex-wrap`}>
                 {loveLanguages.map((lang, idx) => (
                   <TouchableOpacity
                     key={idx}
                     onPress={() => toggleLoveLanguage(lang)}
                     style={[
-                      tailwind`w-[48%] p-2 mb-3 rounded-xl border`,
+                      tailwind`rounded-full px-3 py-1 m-1 border`,
                       {
                         backgroundColor: loveLanguage.includes(lang)
                           ? themeColors.primary
@@ -242,20 +242,20 @@ const IdentityThirdScreen = () => {
             </ScrollView>
           </View>
           <View style={tailwind`mt-2`}>
-            <Text style={tailwind`italic text-base px-2 pb-1 mb-2`}>
+            <Text style={tailwind`italic text-xl font-semibold px-2 pb-1 mb-2`}>
               Core Values (Select 4)
             </Text>
 
             <ScrollView
               style={tailwind`max-h-72`}
               showsVerticalScrollIndicator={false}>
-              <View style={tailwind`flex-row flex-wrap justify-between`}>
+              <View style={tailwind`flex-row flex-wrap`}>
                 {coreValuesList.map((value, idx) => (
                   <TouchableOpacity
                     key={idx}
                     onPress={() => toggleCoreValue(value)}
                     style={[
-                      tailwind`w-[48%] p-2 mb-3 rounded-xl border`,
+                      tailwind`rounded-full px-3 py-1 m-1 border`,
                       {
                         backgroundColor: coreValues.includes(value)
                           ? themeColors.primary
@@ -278,20 +278,20 @@ const IdentityThirdScreen = () => {
             </ScrollView>
           </View>
           <View style={tailwind`mt-2`}>
-            <Text style={tailwind`italic text-base px-2 pb-1 mb-2`}>
+            <Text style={tailwind`italic text-xl font-semibold px-2 pb-1 mb-2`}>
               Time Priorities (Select 2)
             </Text>
 
             <ScrollView
               style={tailwind`max-h-72`}
               showsVerticalScrollIndicator={false}>
-              <View style={tailwind`flex-row flex-wrap justify-between`}>
+              <View style={tailwind`flex-row flex-wrap`}>
                 {timePrioritiesList.map((item, idx) => (
                   <TouchableOpacity
                     key={idx}
                     onPress={() => toggleTimePriority(item)}
                     style={[
-                      tailwind`w-[48%] p-2 mb-3 rounded-xl border`,
+                      tailwind`rounded-full px-3 py-1 m-1 border`,
                       {
                         backgroundColor: timePriority.includes(item)
                           ? themeColors.primary

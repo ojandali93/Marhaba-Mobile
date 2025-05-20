@@ -36,6 +36,8 @@ const EditHabits = () => {
   const [excersize, setExcersize] = useState(profile.height || '');
   const [diet, setDiet] = useState(profile.height || '');
 
+  const [isEmpty, setIsEmpty] = useState(false);
+
   useFocusEffect(
     useCallback(() => {
       loadProfile();
@@ -43,13 +45,26 @@ const EditHabits = () => {
   );
 
   const loadProfile = () => {
-    setSmoking(profile?.Habits[0]?.smoking);
-    setDrinking(profile?.Habits[0]?.drinking);
-    setHasKids(profile?.Habits[0]?.hasKids);
-    setWantsKids(profile?.Habits[0]?.wantsKids);
-    setSleep(profile?.Habits[0]?.sleep);
-    setExcersize(profile?.Habits[0]?.excersize);
-    setDiet(profile?.Habits[0]?.diet);
+    const habits = profile?.Habits?.[0] || {};
+
+    setSmoking(habits.smoking || '');
+    setDrinking(habits.drinking || '');
+    setHasKids(habits.hasKids || '');
+    setWantsKids(habits.wantsKids || '');
+    setSleep(habits.sleep || '');
+    setExcersize(habits.excersize || '');
+    setDiet(habits.diet || '');
+
+    const isAllEmpty =
+      !habits.smoking &&
+      !habits.drinking &&
+      !habits.hasKids &&
+      !habits.wantsKids &&
+      !habits.sleep &&
+      !habits.excersize &&
+      !habits.diet;
+
+    setIsEmpty(isAllEmpty); // ✅ Update your component's state accordingly
   };
 
   const updateSmoking = async (newSmoking: string) => {
@@ -140,7 +155,8 @@ const EditHabits = () => {
         );
         if (response.data.success) {
           setChangeDetected(false);
-          grabUserProfile(profile?.userId);
+          await grabUserProfile(profile?.userId);
+          loadProfile();
           setExpandProfile(false);
         } else {
           console.error('Error updating user profile:', response.data.error);
@@ -161,9 +177,16 @@ const EditHabits = () => {
             tailwind`w-full flex flex-row items-center justify-between p-3 rounded-2`,
             {backgroundColor: themeColors.darkGrey},
           ]}>
-          <Text style={tailwind`text-base font-semibold text-white`}>
-            Lifestyle Habits
-          </Text>
+          <View style={tailwind`flex flex-row items-center`}>
+            <Text style={tailwind`text-base font-semibold text-white`}>
+              Lifestyle Habits
+            </Text>
+            {isEmpty && (
+              <View
+                style={tailwind`w-2 h-2 rounded-full bg-yellow-400 mr-2 ml-3`}
+              />
+            )}
+          </View>
           {expandProfile ? (
             changeDetected ? (
               <TouchableOpacity onPress={updateUserProfile}>

@@ -36,6 +36,8 @@ const EditIntent = () => {
   const [relocate, setRelocate] = useState(profile.height || '');
   const [firstStep, setFirstStep] = useState(profile.height || '');
 
+  const [isEmpty, setIsEmpty] = useState(false);
+
   useFocusEffect(
     useCallback(() => {
       loadProfile();
@@ -43,13 +45,26 @@ const EditIntent = () => {
   );
 
   const loadProfile = () => {
-    setIntentions(profile?.Intent[0]?.intentions);
-    setTimeline(profile?.Intent[0]?.timeline);
-    setMarriage(profile?.Intent[0]?.marriage);
-    setMarriageStatus(profile?.Intent[0]?.marriageStatus);
-    setLongDistance(profile?.Intent[0]?.longDistance);
-    setRelocate(profile?.Intent[0]?.relocate);
-    setFirstStep(profile?.Intent[0]?.firstStep);
+    const intent = profile?.Intent?.[0] || {};
+
+    setIntentions(intent.intentions || '');
+    setTimeline(intent.timeline || '');
+    setMarriage(intent.marriage || '');
+    setMarriageStatus(intent.marriageStatus || '');
+    setLongDistance(intent.longDistance || '');
+    setRelocate(intent.relocate || '');
+    setFirstStep(intent.firstStep || '');
+
+    const isAllEmpty =
+      !intent.intentions &&
+      !intent.timeline &&
+      !intent.marriage &&
+      !intent.marriageStatus &&
+      !intent.longDistance &&
+      !intent.relocate &&
+      !intent.firstStep;
+
+    setIsEmpty(isAllEmpty); // ✅ useState to track empty state
   };
 
   const updateIntentions = async (newIntentions: string) => {
@@ -140,7 +155,8 @@ const EditIntent = () => {
         );
         if (response.data.success) {
           setChangeDetected(false);
-          grabUserProfile(profile?.userId);
+          await grabUserProfile(profile?.userId);
+          loadProfile();
           setExpandProfile(false);
         } else {
           console.error('Error updating user profile:', response.data.error);
@@ -161,9 +177,16 @@ const EditIntent = () => {
             tailwind`w-full flex flex-row items-center justify-between p-3 rounded-2`,
             {backgroundColor: themeColors.darkGrey},
           ]}>
-          <Text style={tailwind`text-base font-semibold text-white`}>
-            Relationship Intent
-          </Text>
+          <View style={tailwind`flex flex-row items-center`}>
+            <Text style={tailwind`text-base font-semibold text-white`}>
+              Relationship Intent
+            </Text>
+            {isEmpty && (
+              <View
+                style={tailwind`w-2 h-2 rounded-full bg-yellow-400 mr-2 ml-3`}
+              />
+            )}
+          </View>
           {expandProfile ? (
             changeDetected ? (
               <TouchableOpacity onPress={updateUserProfile}>

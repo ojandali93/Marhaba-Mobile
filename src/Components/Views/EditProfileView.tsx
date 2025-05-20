@@ -4,6 +4,7 @@ import {
   ActivityIndicator,
   Dimensions,
   Image,
+  ScrollView,
   Text,
   TouchableOpacity,
   View,
@@ -13,7 +14,7 @@ import themeColors from '../../Utils/custonColors';
 import {Camera, ChevronsDown, ChevronsUp, X} from 'react-native-feather';
 import EditSelect from '../Select/EditSelect';
 import EditTextInput from '../Select/EditTextInput';
-import {heightsOptions} from '../../Utils/SelectOptions';
+import {heightsOptions, backgroundOptions} from '../../Utils/SelectOptions';
 import axios from 'axios';
 import {useProfile} from '../../Context/ProfileContext';
 
@@ -26,17 +27,53 @@ const EditProfileView = () => {
   const [name, setName] = useState(profile.name || '');
   const [phone, setPhone] = useState(profile.dob || '');
   const [height, setHeight] = useState(profile.height || '');
+  const [background, setBackground] = useState<string[]>([]);
+
+  const [isEmpty, setIsEmpty] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
       loadProfile();
-    }, []),
+    }, [profile]),
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      loadProfile();
+    }, [profile]),
   );
 
   const loadProfile = () => {
-    setName(profile?.name);
-    setPhone(profile?.About[0]?.phone);
-    setHeight(profile?.About[0]?.height);
+    const about = profile?.About?.[0] || {};
+
+    setName(profile?.name || '');
+    setPhone(about.phone || '');
+    setHeight(about.height || '');
+
+    let parsedBackground = [];
+    if (about.background) {
+      try {
+        const parsed = JSON.parse(about.background);
+        if (Array.isArray(parsed)) {
+          parsedBackground = parsed;
+          setBackground(parsedBackground);
+        } else {
+          setBackground([]);
+        }
+      } catch {
+        setBackground([]);
+      }
+    } else {
+      setBackground([]);
+    }
+
+    const isAllEmpty =
+      !profile?.name &&
+      !about.phone &&
+      !about.height &&
+      parsedBackground.length === 0;
+
+    setIsEmpty(isAllEmpty); // ✅ assumes useState: const [isEmpty, setIsEmpty] = useState(false);
   };
 
   const updateName = async (newName: string) => {
@@ -86,7 +123,8 @@ const EditProfileView = () => {
         );
         if (response.data.success) {
           setChangeDetected(false);
-          grabUserProfile(profile?.userId);
+          await grabUserProfile(profile?.userId);
+          loadProfile();
           setExpandProfile(false);
         } else {
           console.error('Error updating user profile:', response.data.error);
@@ -107,9 +145,16 @@ const EditProfileView = () => {
             tailwind`w-full flex flex-row items-center justify-between p-3 rounded-2`,
             {backgroundColor: themeColors.darkGrey},
           ]}>
-          <Text style={tailwind`text-base font-semibold text-white`}>
-            Profile Info
-          </Text>
+          <View style={tailwind`flex flex-row items-center`}>
+            <Text style={tailwind`text-base font-semibold text-white`}>
+              Profile Info
+            </Text>
+            {isEmpty && (
+              <View
+                style={tailwind`w-2 h-2 rounded-full bg-yellow-400 mr-2 ml-3`}
+              />
+            )}
+          </View>
           {expandProfile ? (
             changeDetected ? (
               <TouchableOpacity onPress={updateUserProfile}>
@@ -159,6 +204,51 @@ const EditProfileView = () => {
                 onSelect={updateHeight}
                 options={heightsOptions}
               />
+              <View
+                style={tailwind`w-full flex flex-row items-center justify-between px-4 mt-3`}>
+                <Text style={tailwind`text-base text-gray-800 italic`}>
+                  Background
+                </Text>
+              </View>
+              <ScrollView
+                style={[
+                  tailwind`w-full h-70 px-4 pt-3 pb-4 rounded-3 mb-4`,
+                  {backgroundColor: themeColors.secondary},
+                ]}>
+                <View style={tailwind`w-full flex flex-row items-center`}>
+                  <View style={tailwind`flex-row flex-wrap`}>
+                    {backgroundOptions.map((country, index) => {
+                      const isSelected = background.includes(country);
+                      return (
+                        <TouchableOpacity
+                          key={index}
+                          onPress={() => updateBackground(country)}
+                          style={[
+                            tailwind`px-2 py-1 m-1 rounded-full border`,
+                            {
+                              backgroundColor: isSelected
+                                ? themeColors.primary
+                                : themeColors.secondary,
+                              borderColor: themeColors.primary,
+                            },
+                          ]}>
+                          <Text
+                            style={[
+                              tailwind`text-base font-semibold`,
+                              {
+                                color: isSelected
+                                  ? 'white'
+                                  : themeColors.primary,
+                              },
+                            ]}>
+                            {country}
+                          </Text>
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </View>
+                </View>
+              </ScrollView>
             </View>
           </View>
         )}

@@ -19,6 +19,7 @@ import LongTextInput from '../../Components/Inputs/LongTextInput';
 import StandardInputBordered from '../../Components/Inputs/StandardInputBordered';
 import StandardSelect from '../../Components/Select/StandardSelect';
 import {industries} from '../../Utils/SelectOptions';
+import StandardText from '../../Components/Select/StandardText';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -108,14 +109,14 @@ const CareerScreen = () => {
         </View>
         <View style={tailwind`w-full flex flex-row items-center`}></View>
         <ScrollView style={tailwind`w-full flex-1`}>
-          <AithInputStandard
+          <StandardText
             fieldName="Current job"
             value={job}
             changeText={setJob}
             valid={true}
             label="Current job"
           />
-          <AithInputStandard
+          <StandardText
             fieldName="Current Company"
             value={company}
             changeText={setCompoany}
@@ -146,7 +147,7 @@ const CareerScreen = () => {
             options={['Yes', 'No']}
             label="Relocate Work"
           />
-          <AithInputStandard
+          <StandardText
             fieldName="Education"
             value={education}
             changeText={setEducation}

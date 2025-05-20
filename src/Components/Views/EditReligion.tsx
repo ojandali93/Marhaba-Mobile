@@ -28,17 +28,25 @@ const EditReligion = () => {
   const [practiicing, setPractiicing] = useState(profile.height || '');
   const [openness, setOpenness] = useState(profile.height || '');
 
+  const [isEmpty, setIsEmpty] = useState(false);
+
   useFocusEffect(
     useCallback(() => {
       loadProfile();
-    }, []),
+    }, [profile]),
   );
 
   const loadProfile = () => {
-    setReligion(profile?.Religion[0]?.religion);
-    setSect(profile?.Religion[0]?.sect);
-    setPractiicing(profile?.Religion[0]?.practiicing);
-    setOpenness(profile?.Religion[0]?.openness);
+    const religionData = profile?.Religion?.[0] || {};
+    const {religion, sect, practicing, openness} = religionData;
+
+    setReligion(religion || '');
+    setSect(sect || '');
+    setPractiicing(practicing || '');
+    setOpenness(openness || '');
+
+    const isAllEmpty = !religion && !sect && !practicing && !openness;
+    setIsEmpty(isAllEmpty);
   };
 
   const updateReligion = async (newReligion: string) => {
@@ -99,7 +107,8 @@ const EditReligion = () => {
         );
         if (response.data.success) {
           setChangeDetected(false);
-          grabUserProfile(profile?.userId);
+          await grabUserProfile(profile?.userId);
+          loadProfile();
           setExpandProfile(false);
         } else {
           console.error('Error updating user profile:', response.data.error);
@@ -120,9 +129,16 @@ const EditReligion = () => {
             tailwind`w-full flex flex-row items-center justify-between p-3 rounded-2`,
             {backgroundColor: themeColors.darkGrey},
           ]}>
-          <Text style={tailwind`text-base font-semibold text-white`}>
-            Religion
-          </Text>
+          <View style={tailwind`flex flex-row items-center`}>
+            <Text style={tailwind`text-base font-semibold text-white`}>
+              Religion
+            </Text>
+            {isEmpty && (
+              <View
+                style={tailwind`w-2 h-2 rounded-full bg-yellow-400 mr-2 ml-3`}
+              />
+            )}
+          </View>
           {expandProfile ? (
             changeDetected ? (
               <TouchableOpacity onPress={updateUserProfile}>

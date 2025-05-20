@@ -1,4 +1,3 @@
-// EitherOrEditView.js
 import React, {useCallback, useRef, useState} from 'react';
 import {useFocusEffect} from '@react-navigation/native';
 import {
@@ -14,43 +13,35 @@ import axios from 'axios';
 import {ChevronsDown, ChevronsUp} from 'react-native-feather';
 import {eitherOrQuestions} from '../../Utils/SelectOptions';
 import {useProfile} from '../../Context/ProfileContext';
+
 const screenHeight = Dimensions.get('window').height;
 
 const EitherOrEditView = () => {
   const {profile, grabUserProfile} = useProfile();
   const [expanded, setExpanded] = useState(false);
   const [changeDetected, setChangeDetected] = useState(false);
+  const [isEmpty, setIsEmpty] = useState(false);
 
-  const [friday, setFriday] = useState(profile?.Survey[0].friday || '');
-  const [energy, setEnergy] = useState(profile?.Survey[0].energy || '');
-  const [planning, setPlanning] = useState(profile?.Survey[0].planning || '');
-  const [morningEnergy, setMorningEnergy] = useState(
-    profile?.Survey[0].morningEnergy || '',
-  );
-  const [social, setSocial] = useState(profile?.Survey[0].social || '');
-  const [verted, setVerted] = useState(profile?.Survey[0].verted || '');
-  const [pineapple, setPineapple] = useState(
-    profile?.Survey[0].pineapple || '',
-  );
-  const [giveUp, setGiveUp] = useState(profile?.Survey[0].giveUp || '');
-  const [communication, setCommunication] = useState(
-    profile?.Survey[0].communication || '',
-  );
-  const [firstSight, setFirstSight] = useState(
-    profile?.Survey[0].firstSight || '',
-  );
-  const [morning, setMorning] = useState(profile?.Survey[0].morning || '');
-  const [travel, setTravel] = useState(profile?.Survey[0].travel || '');
-  const [spicy, setSpicy] = useState(profile?.Survey[0].spicy || '');
-  const [decision, setDecision] = useState(profile?.Survey[0].decision || '');
-  const [arrive, setArrive] = useState(profile?.Survey[0].arrive || '');
-  const [partner, setPartner] = useState(profile?.Survey[0].partner || '');
-  const [move, setMove] = useState(profile?.Survey[0].move || '');
-  const [opposite, setOpposite] = useState(profile?.Survey[0].opposite || '');
-  const [ghost, setGhost] = useState(profile?.Survey[0].ghost || '');
-  const [longDistance, setLongDistance] = useState(
-    profile?.Survey[0].longDistance || '',
-  );
+  const [friday, setFriday] = useState('');
+  const [energy, setEnergy] = useState('');
+  const [planning, setPlanning] = useState('');
+  const [morningEnergy, setMorningEnergy] = useState('');
+  const [social, setSocial] = useState('');
+  const [verted, setVerted] = useState('');
+  const [pineapple, setPineapple] = useState('');
+  const [giveUp, setGiveUp] = useState('');
+  const [communication, setCommunication] = useState('');
+  const [firstSight, setFirstSight] = useState('');
+  const [morning, setMorning] = useState('');
+  const [travel, setTravel] = useState('');
+  const [spicy, setSpicy] = useState('');
+  const [decision, setDecision] = useState('');
+  const [arrive, setArrive] = useState('');
+  const [partner, setPartner] = useState('');
+  const [move, setMove] = useState('');
+  const [opposite, setOpposite] = useState('');
+  const [ghost, setGhost] = useState('');
+  const [longDistance, setLongDistance] = useState('');
 
   const originalAnswers = useRef({});
 
@@ -85,26 +76,28 @@ const EitherOrEditView = () => {
     ],
   };
 
+  const loadProfile = () => {
+    const eo = profile?.Survey?.[0] || {};
+    originalAnswers.current = eo;
+
+    Object.values(questionStateMap).forEach(([_, setFunc, key]) => {
+      setFunc(eo[key] || '');
+    });
+
+    const answered = Object.keys(eo).filter(key => eo[key] && eo[key] !== '');
+    setIsEmpty(answered.length < 6); // show yellow dot if < 6 answered
+  };
+
   useFocusEffect(
     useCallback(() => {
-      const eo = profile?.Survey[0] || {};
-      originalAnswers.current = eo;
-      Object.values(questionStateMap).forEach(([_, setFunc, key]) => {
-        setFunc(eo[key] || '');
-      });
-    }, []),
+      loadProfile();
+    }, [profile?.Survey]),
   );
 
   const countAnswered = () => {
     return Object.values(questionStateMap).filter(
       ([val]) => val && val.trim() !== '',
     ).length;
-  };
-
-  const trackChange = (key, newValue) => {
-    if (originalAnswers.current[key] !== newValue) {
-      setChangeDetected(true);
-    }
   };
 
   const updateValue = (currentValue, newValue, setFunc, key) => {
@@ -127,13 +120,14 @@ const EitherOrEditView = () => {
       const response = await axios.put(
         'https://marhaba-server.onrender.com/api/account/updateSurvey',
         {
-          userId: userProfile?.data?.userId,
+          userId: profile?.userId,
           eitherOr: questions,
         },
       );
       if (response.data.success) {
         setChangeDetected(false);
-        grabUserProfile(profile?.userId);
+        await grabUserProfile(profile?.userId);
+        loadProfile(); // ✅ Re-evaluate for yellow dot after update
         setExpanded(false);
       }
     } catch (err) {
@@ -151,9 +145,16 @@ const EitherOrEditView = () => {
             tailwind`w-full flex flex-row items-center justify-between p-3 rounded-2`,
             {backgroundColor: themeColors.darkGrey},
           ]}>
-          <Text style={tailwind`text-base font-semibold text-white`}>
-            Either / Or
-          </Text>
+          <View style={tailwind`flex flex-row items-center`}>
+            <Text style={tailwind`text-base font-semibold text-white`}>
+              Either / Or
+            </Text>
+            {isEmpty && (
+              <View
+                style={tailwind`w-2 h-2 rounded-full bg-yellow-400 mr-2 ml-3`}
+              />
+            )}
+          </View>
           {expanded ? (
             changeDetected && countAnswered() >= 6 ? (
               <TouchableOpacity onPress={handleUpdate}>
@@ -184,36 +185,34 @@ const EitherOrEditView = () => {
           ]}>
           {eitherOrQuestions.map((q, index) => {
             const [value, setFunc, key] = questionStateMap[q.question];
+            const isSelected = option => option === value;
             return (
               <View key={index} style={tailwind`mb-4`}>
                 <Text style={tailwind`text-lg font-semibold mb-2`}>
                   {q.question}
                 </Text>
                 <View style={tailwind`flex-row justify-between`}>
-                  {q.options.map(option => {
-                    const isSelected = option === value;
-                    return (
-                      <TouchableOpacity
-                        key={option}
-                        onPress={() => updateValue(value, option, setFunc, key)}
+                  {q.options.map(option => (
+                    <TouchableOpacity
+                      key={option}
+                      onPress={() => updateValue(value, option, setFunc, key)}
+                      style={[
+                        tailwind`flex-1 mx-1 py-2 rounded-md items-center border`,
+                        isSelected(option)
+                          ? tailwind`bg-[#008080] border-[#008080]`
+                          : tailwind`border-gray-400`,
+                      ]}>
+                      <Text
                         style={[
-                          tailwind`flex-1 mx-1 py-2 rounded-md items-center border`,
-                          isSelected
-                            ? tailwind`bg-[#008080] border-[#008080]`
-                            : tailwind`border-gray-400`,
+                          tailwind`text-base font-semibold`,
+                          isSelected(option)
+                            ? tailwind`text-white`
+                            : tailwind`text-black`,
                         ]}>
-                        <Text
-                          style={[
-                            tailwind`text-base font-semibold`,
-                            isSelected
-                              ? tailwind`text-white`
-                              : tailwind`text-black`,
-                          ]}>
-                          {option}
-                        </Text>
-                      </TouchableOpacity>
-                    );
-                  })}
+                        {option}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
                 </View>
               </View>
             );

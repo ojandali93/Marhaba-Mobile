@@ -31,6 +31,7 @@ import ViewedView from '../../Components/Views/ViewedView';
 import NoticiationsView from '../../Components/Views/NoticiationsView';
 import VisbilityViews from '../../Components/Views/VisbilityViews';
 import BlockedUserViews from '../../Components/Views/BlockedUserViews';
+import ProSettingsView from '../../Components/Views/ProSettingsView';
 
 const ProfileScreen = () => {
   const {profile} = useProfile();
@@ -109,15 +110,17 @@ const ProfileScreen = () => {
             </View>
             <View style={tailwind`px-4`}>
               <Text style={tailwind`text-base text-white`}>
-                {profile.About[0].height ? `${profile.About[0].height} • ` : ''}
-                {profile.Religion[0].religion
+                {profile?.About?.[0]?.height
+                  ? `${profile.About[0].height} • `
+                  : ''}
+                {profile?.Religion?.length > 0 && profile.Religion[0].religion
                   ? `${profile.Religion[0].religion}${
                       profile.Religion[0].sect
                         ? ` (${profile.Religion[0].sect})`
                         : ''
                     } • `
                   : ''}
-                {profile.Career[0].job ?? ''}
+                {profile?.Career?.length > 0 ? profile.Career[0].job : ''}
               </Text>
             </View>
           </>
@@ -139,6 +142,9 @@ const ProfileScreen = () => {
           )}
           {activeTab === 'upgrade' && <UpgradeView updateTab={setActiveTab} />}
           {activeTab === 'Viewed' && <ViewedView updateTab={setActiveTab} />}
+          {activeTab === 'proSettings' && (
+            <ProSettingsView updateTab={setActiveTab} />
+          )}
           {activeTab === 'notifications' && (
             <NoticiationsView updateTab={setActiveTab} />
           )}

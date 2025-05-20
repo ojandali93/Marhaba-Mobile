@@ -1,10 +1,8 @@
 import {useFocusEffect} from '@react-navigation/native';
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
-  ActivityIndicator,
   Alert,
   Dimensions,
-  Image,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -12,10 +10,7 @@ import {
 } from 'react-native';
 import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
-import {Camera, ChevronsDown, ChevronsUp, X} from 'react-native-feather';
-import EditSelect from '../Select/EditSelect';
-import EditTextInput from '../Select/EditTextInput';
-import {heightsOptions} from '../../Utils/SelectOptions';
+import {ChevronsDown, ChevronsUp} from 'react-native-feather';
 import axios from 'axios';
 import {useProfile} from '../../Context/ProfileContext';
 import {backgroundOptions} from '../../Utils/SelectOptions';
@@ -27,17 +22,22 @@ const EditBackgroundView = () => {
   const [changeDetected, setChangeDetected] = useState(false);
   const [background, setBackground] = useState<string[]>([]);
 
-  console.log('background: ', background.length);
-
   useFocusEffect(
     useCallback(() => {
-      loadProfile();
-    }, []),
+      if (profile && profile?.About?.[0]?.background) {
+        try {
+          const parsed = JSON.parse(profile.About[0].background);
+          if (Array.isArray(parsed)) {
+            setBackground(parsed);
+          } else {
+            setBackground([]);
+          }
+        } catch {
+          setBackground([]);
+        }
+      }
+    }, [profile]),
   );
-
-  const loadProfile = () => {
-    setBackground(JSON.parse(profile?.About?.[0]?.background) || []);
-  };
 
   const updateBackground = (country: string) => {
     const isSelected = background.includes(country);
@@ -55,32 +55,31 @@ const EditBackgroundView = () => {
   };
 
   const updateUserProfile = async () => {
+    if (!changeDetected || !profile?.userId) return;
+
     try {
-      if (changeDetected) {
-        const response = await axios.put(
-          'https://marhaba-server.onrender.com/api/account/updateBackground',
-          {
-            userId: profile?.userId,
-            background: JSON.stringify(background),
+      const response = await axios.put(
+        'https://marhaba-server.onrender.com/api/account/updateBackground',
+        {
+          userId: profile.userId,
+          background: JSON.stringify(background),
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
           },
-          {
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            maxContentLength: Infinity,
-            maxBodyLength: Infinity,
-          },
-        );
-        if (response.data.success) {
-          setChangeDetected(false);
-          grabUserProfile(profile?.userId);
-          setExpandProfile(false);
-        } else {
-          console.error('Error updating user profile:', response.data.error);
-        }
+        },
+      );
+
+      if (response.data.success) {
+        setChangeDetected(false);
+        grabUserProfile(profile.userId);
+        setExpandProfile(false);
+      } else {
+        console.error('Error updating user profile:', response.data.error);
       }
     } catch (error) {
-      console.error('Error updating user profile:', error);
+      console.error('❌ Error updating user profile:', error);
     }
   };
 
@@ -122,47 +121,46 @@ const EditBackgroundView = () => {
           )}
         </View>
       </TouchableOpacity>
-      <View style={tailwind`flex-1`}>
-        {expandProfile && (
-          <ScrollView
-            style={[
-              tailwind`w-full h-70 p-4 rounded-3 my-3`,
-              {backgroundColor: themeColors.secondary},
-            ]}>
-            <View style={tailwind`w-full flex flex-row items-center`}>
-              <View style={tailwind`flex-row flex-wrap`}>
-                {backgroundOptions.map((country, index) => {
-                  const isSelected = background.includes(country);
-                  return (
-                    <TouchableOpacity
-                      key={index}
-                      onPress={() => updateBackground(country)}
+
+      {expandProfile && (
+        <ScrollView
+          style={[
+            tailwind`w-full h-70 p-4 rounded-3 my-3`,
+            {backgroundColor: themeColors.secondary},
+          ]}>
+          <View style={tailwind`w-full flex flex-row items-center`}>
+            <View style={tailwind`flex-row flex-wrap`}>
+              {backgroundOptions.map((country, index) => {
+                const isSelected = background.includes(country);
+                return (
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() => updateBackground(country)}
+                    style={[
+                      tailwind`px-2 py-1 m-1 rounded-full border`,
+                      {
+                        backgroundColor: isSelected
+                          ? themeColors.primary
+                          : themeColors.secondary,
+                        borderColor: themeColors.primary,
+                      },
+                    ]}>
+                    <Text
                       style={[
-                        tailwind`px-2 py-1 m-1 rounded-full border`,
+                        tailwind`text-base font-semibold`,
                         {
-                          backgroundColor: isSelected
-                            ? themeColors.primary
-                            : themeColors.secondary,
-                          borderColor: themeColors.primary,
+                          color: isSelected ? 'white' : themeColors.primary,
                         },
                       ]}>
-                      <Text
-                        style={[
-                          tailwind`text-base font-semibold`,
-                          {
-                            color: isSelected ? 'white' : themeColors.primary,
-                          },
-                        ]}>
-                        {country}
-                      </Text>
-                    </TouchableOpacity>
-                  );
-                })}
-              </View>
+                      {country}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
             </View>
-          </ScrollView>
-        )}
-      </View>
+          </View>
+        </ScrollView>
+      )}
     </View>
   );
 };
