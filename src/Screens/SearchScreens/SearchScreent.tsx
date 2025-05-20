@@ -223,13 +223,20 @@ const SearchScreent = () => {
             style={styles.profileImage}
             resizeMode="cover"
           />
+
+          {/* 🔲 Dark overlay */}
+          <View
+            style={tailwind`absolute bottom-0 left-0 right-0 top-0 bg-black bg-opacity-50 rounded-b-2xl`}
+          />
+
+          {/* 📝 Text on top of the overlay */}
           <Text
             style={tailwind`absolute bottom-0 left-0 p-3 text-white text-xl font-bold`}>
             {item.name}
           </Text>
           <Text
             style={tailwind`absolute bottom-0 right-0 p-3 text-white text-xl font-bold`}>
-            {calculateAge(item.dob)} yrs
+            {calculateAge(item.About[0].dob)} yrs
           </Text>
         </View>
       </TouchableWithoutFeedback>
@@ -281,7 +288,7 @@ const SearchScreent = () => {
       <FlatList
         data={users}
         renderItem={renderGridItem}
-        keyExtractor={item => item._id}
+        keyExtractor={(item, index) => `${index.toString()}`}
         numColumns={numColumns}
         contentContainerStyle={styles.listContainer}
         showsVerticalScrollIndicator={false}
@@ -302,7 +309,7 @@ const SearchScreent = () => {
       style={[tailwind`flex-1`, {backgroundColor: themeColors.secondary}]}>
       <View
         style={[
-          tailwind`w-full flex flex-row items-center justify-between px-4 p-4 rounded-2 mb-3`,
+          tailwind`w-full flex flex-row items-center justify-between px-4 p-4 rounded-2`,
           {backgroundColor: themeColors.secondary},
         ]}>
         <Text style={tailwind`text-2xl font-bold text-gray-800`}>Search</Text>
@@ -362,7 +369,7 @@ const SearchScreent = () => {
 const styles = StyleSheet.create({
   listContainer: {
     paddingHorizontal: itemPadding / 2,
-    paddingBottom: itemPadding / 2,
+    paddingBottom: 55,
     flexGrow: 1,
   },
   gridItem: {

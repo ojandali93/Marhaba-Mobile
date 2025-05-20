@@ -21,6 +21,7 @@ import AuthInputStandardNumber from '../../Components/Inputs/AuthInputStandardNu
 import axios from 'axios';
 import LinearGradient from 'react-native-linear-gradient';
 import StandardText from '../../Components/Select/StandardText';
+import {track} from '@amplitude/analytics-react-native';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -40,6 +41,7 @@ const SignupScreen = () => {
   useFocusEffect(
     useCallback(() => {
       loadPreferences();
+      track('Signup Started');
     }, []),
   );
 
@@ -117,6 +119,7 @@ const SignupScreen = () => {
     await AsyncStorage.setItem('SU_password', password);
     await AsyncStorage.setItem('SU_phone', phone);
     // createAccount(email, password);
+    track('Signup Completed');
     navigation.navigate('Identity');
   };
   const formatPhoneNumber = (value: string) => {

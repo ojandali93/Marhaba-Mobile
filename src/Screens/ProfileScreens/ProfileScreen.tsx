@@ -154,6 +154,16 @@ const ProfileScreen = () => {
           {activeTab === 'blockedUsers' && (
             <BlockedUserViews updateTab={setActiveTab} />
           )}
+          <View style={tailwind`w-full flex flex-row justify-center mt-3`}>
+            <Text style={tailwind`text-sm font-semibold text-white`}>
+              Marhabah Inc. © 2025 All Rights Reserved.
+            </Text>
+          </View>
+          <View style={tailwind`w-full flex flex-row justify-center mb-3`}>
+            <Text style={tailwind`text-sm font-semibold text-white`}>
+              V. 1.0.1 (May 12, 2025)
+            </Text>
+          </View>
         </ScrollView>
       </View>
     </View>

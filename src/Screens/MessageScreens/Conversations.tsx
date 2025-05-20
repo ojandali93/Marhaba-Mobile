@@ -16,6 +16,7 @@ import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {useProfile} from '../../Context/ProfileContext';
+import {track} from '@amplitude/analytics-react-native';
 
 interface Profile {
   _id: string;
@@ -44,6 +45,9 @@ const Conversations = () => {
 
   useFocusEffect(
     useCallback(() => {
+      track('Viewed Conversations Screen', {
+        targetUserId: userId,
+      });
       grabConversations();
     }, []),
   );
@@ -135,6 +139,9 @@ const Conversations = () => {
         ]}
         onPress={() => {
           navigation.navigate('Chat', {conversation: item});
+          track(`Viewed conversation: ${item.id}`, {
+            targetUserId: userId,
+          });
         }}>
         {hasUnread && (
           <View

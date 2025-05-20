@@ -21,6 +21,7 @@ import {useProfile} from '../../Context/ProfileContext';
 import AuthLoginInput from '../../Components/Inputs/AuthLoginInput';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {identify, setUserId, track} from '@amplitude/analytics-react-native';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -59,6 +60,11 @@ const LoginScreen = () => {
 
       console.log('deviceToken', deviceToken);
       console.log('userId', userId);
+
+      setUserId(userId);
+      track('User Logged In', {
+        userId: userId,
+      });
 
       await axios.post(
         'https://marhaba-server.onrender.com/api/notifications/store-device-token',

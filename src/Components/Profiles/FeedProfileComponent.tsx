@@ -33,6 +33,8 @@ import SingleInfoFull from '../Info/SingleInfoFull';
 import {useNavigation} from '@react-navigation/native';
 import {useProfile} from '../../Context/ProfileContext';
 import axios from 'axios';
+import {calculateCompatibility} from '../../Utils/Functions/Comptability';
+import {track} from '@amplitude/analytics-react-native';
 
 interface Photo {
   photoUrl: string;
@@ -97,6 +99,8 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
 
   const [selectedReason, setSelectedReason] = useState('');
   const [customReason, setCustomReason] = useState('');
+
+  const [showCompatibilityModal, setShowCompatibilityModal] = useState(false);
 
   if (!profile) return null;
 
@@ -206,6 +210,9 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
   };
 
   const handleReportProfile = async () => {
+    track(`Profile Reported: ${selectedReason} `, {
+      targetUserId: userId,
+    });
     const finalReason =
       selectedReason === 'Other' ? customReason.trim() : selectedReason;
 
@@ -235,6 +242,9 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
   };
 
   const handleBlockProfile = async () => {
+    track('Profile Blocked', {
+      targetUserId: userId,
+    });
     try {
       await axios.post(
         'https://marhaba-server.onrender.com/api/user/blockUser',
@@ -288,8 +298,7 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
 
       {!showFullProfile ? (
         <>
-          <TouchableOpacity
-            onPress={handleToggleFullProfile}
+          <View
             style={[
               tailwind`absolute bottom-39 left-0 right-0 rounded-t-2`,
               {backgroundColor: themeColors.darkGrey},
@@ -304,7 +313,7 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                       tailwind`text-3xl font-bold text-white`,
                       {color: themeColors.primary},
                     ]}>
-                    {about.name} {`(${age})`}
+                    {about.name}
                   </Text>
                   {profile.tier === 3 && (
                     <View
@@ -317,20 +326,23 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                   )}
                 </View>
 
-                <View
+                <TouchableOpacity
+                  onPress={() => setShowCompatibilityModal(true)}
                   style={[
                     tailwind`flex-row flex-wrap items-center mr-1 py-1 px-3 rounded-full`,
                     {backgroundColor: themeColors.primary},
                   ]}>
-                  <Text
-                    style={tailwind`text-base text-white`}>{`92% match`}</Text>
-                </View>
+                  <Text style={tailwind`text-base text-white`}>
+                    {calculateCompatibility(profile, userProfile)}% match
+                  </Text>
+                </TouchableOpacity>
               </View>
             </View>
 
             <View
               style={tailwind`flex flex-row items-center justify-between px-3`}>
               <Text style={tailwind`text-base text-white`}>
+                {age ? `${age} yrs • ` : ''}
                 {about.height ? `${about.height} • ` : ''}
                 {religion.religion
                   ? `${religion.religion}${
@@ -399,7 +411,7 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                 />
               </View>
             </TouchableWithoutFeedback>
-          </TouchableOpacity>
+          </View>
           <View
             style={tailwind`absolute z-20 bottom-19 left-0 right-0 flex flex-row items-center justify-center`}>
             <View
@@ -512,23 +524,36 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
               contentContainerStyle={tailwind``}
               showsVerticalScrollIndicator={false}>
               <View style={tailwind`pb-12`}>
-                <View style={tailwind`flex flex-row items-center`}>
-                  <Text
-                    style={[
-                      tailwind`text-4xl font-bold`,
-                      {color: themeColors.primary},
-                    ]}>
-                    {about.name}
-                  </Text>
-                  {profile.tier === 3 && (
-                    <View
+                <View
+                  style={tailwind`flex flex-row items-center justify-between`}>
+                  <View style={tailwind`flex flex-row items-center`}>
+                    <Text
                       style={[
-                        tailwind`rounded-2 px-2 py-1 ml-2`,
-                        {backgroundColor: themeColors.primary},
+                        tailwind`text-4xl font-bold`,
+                        {color: themeColors.primary},
                       ]}>
-                      <Text style={tailwind`text-xs text-white`}>Pro+</Text>
-                    </View>
-                  )}
+                      {about.name}
+                    </Text>
+                    {profile.tier === 3 && (
+                      <View
+                        style={[
+                          tailwind`rounded-2 px-2 py-1 ml-2`,
+                          {backgroundColor: themeColors.primary},
+                        ]}>
+                        <Text style={tailwind`text-xs text-white`}>Pro+</Text>
+                      </View>
+                    )}
+                  </View>
+                  <TouchableOpacity
+                    onPress={() => setShowCompatibilityModal(true)}
+                    style={[
+                      tailwind`flex-row flex-wrap items-center mr-1 py-1 px-3 rounded-full`,
+                      {backgroundColor: themeColors.primary},
+                    ]}>
+                    <Text style={tailwind`text-base text-white`}>
+                      {calculateCompatibility(profile, userProfile)}% match
+                    </Text>
+                  </TouchableOpacity>
                 </View>
                 <View style={tailwind`mt-8 flex flex-col`}>
                   <View style={tailwind`flex flex-row items-center`}>
@@ -1331,6 +1356,48 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
               }}
               style={tailwind`mt-4`}>
               <Text style={tailwind`text-center text-gray-400`}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={showCompatibilityModal}
+        onRequestClose={() => setShowCompatibilityModal(false)}>
+        <View
+          style={tailwind`flex-1 bg-black bg-opacity-50 justify-center items-center`}>
+          <View
+            style={[
+              tailwind`w-11/12 rounded-2xl p-5`,
+              {backgroundColor: themeColors.darkGrey},
+            ]}>
+            <Text style={tailwind`text-xl font-bold text-white mb-3`}>
+              How Compatibility Is Calculated
+            </Text>
+
+            <Text style={tailwind`text-base text-gray-300 mb-3`}>
+              Your compatibility score is calculated by comparing values,
+              habits, religious views, relationship goals, and lifestyle
+              preferences between you and this profile.
+            </Text>
+
+            <Text
+              style={tailwind`text-base text-yellow-300 font-semibold mb-4`}>
+              AI-powered compatibility is coming soon. The algorithm will get
+              smarter and more accurate over time!
+            </Text>
+
+            <TouchableOpacity
+              onPress={() => setShowCompatibilityModal(false)}
+              style={[
+                tailwind`mt-2 py-2 px-4 rounded-xl`,
+                {backgroundColor: themeColors.primary},
+              ]}>
+              <Text style={tailwind`text-white text-center font-semibold`}>
+                Got it
+              </Text>
             </TouchableOpacity>
           </View>
         </View>

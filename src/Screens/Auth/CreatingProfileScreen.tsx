@@ -6,6 +6,7 @@ import {useNavigation} from '@react-navigation/native';
 import {Activity, Heart} from 'react-native-feather';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import {track} from '@amplitude/analytics-react-native';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -13,6 +14,7 @@ const CreatingProfileScreen = () => {
   const navigation = useNavigation();
 
   useEffect(() => {
+    track('Creating Profile Started');
     createAccount();
 
     const timer = setTimeout(() => {
@@ -43,6 +45,7 @@ const CreatingProfileScreen = () => {
         name,
       })
       .then(response => {
+        track('Account Created');
         console.log('account response:', response);
         createProfile(response.data.data);
       })
@@ -71,6 +74,7 @@ const CreatingProfileScreen = () => {
         agreements: true,
       })
       .then(response => {
+        track('Profile Created');
         console.log('profile response:', response);
         createNotifications(userId);
       })
@@ -95,6 +99,7 @@ const CreatingProfileScreen = () => {
         },
       )
       .then(response => {
+        track('Notifications Created');
         console.log('notifications response:', response);
         createSocials(userId);
       })
@@ -145,6 +150,7 @@ const CreatingProfileScreen = () => {
         background: backgroundString,
       })
       .then(response => {
+        track('About Created');
         console.log('about response:', response);
         createIntent(userId);
       })
@@ -177,6 +183,7 @@ const CreatingProfileScreen = () => {
         updated_at: new Date().toISOString(),
       })
       .then(response => {
+        track('Intent Created');
         console.log('intent response:', response);
         createPhotos(userId);
       })
@@ -195,6 +202,7 @@ const CreatingProfileScreen = () => {
         photos,
       })
       .then(response => {
+        track('Photos Created');
         console.log('photos response:', response);
         createPreferences(userId);
       })
@@ -231,6 +239,7 @@ const CreatingProfileScreen = () => {
         },
       )
       .then(response => {
+        track('Preferences Created');
         console.log('preferences response:', response);
         createPropmts(userId);
       })
@@ -254,6 +263,7 @@ const CreatingProfileScreen = () => {
           prompts: parsedPrompts, // ✅ Always an array
         })
         .then(response => {
+          track('Prompts Created');
           console.log('✅ Prompts response:', response.data);
           createHabits(userId);
         })
@@ -290,6 +300,7 @@ const CreatingProfileScreen = () => {
         updated_at: new Date().toISOString(),
       })
       .then(response => {
+        track('Habits Created');
         console.log('habits response:', response);
         createReligion(userId);
       })
@@ -313,6 +324,7 @@ const CreatingProfileScreen = () => {
         updated_at: new Date().toISOString(),
       })
       .then(response => {
+        track('Religion Created');
         console.log('religion response:', response);
         createCore(userId);
       })
@@ -338,6 +350,7 @@ const CreatingProfileScreen = () => {
         updated_at: new Date().toISOString(),
       })
       .then(response => {
+        track('Core Created');
         console.log('core response:', response);
         createRelationships(userId);
       })
@@ -362,6 +375,7 @@ const CreatingProfileScreen = () => {
         },
       )
       .then(response => {
+        track('Relationships Created');
         console.log('relationships response:', response);
         createCareer(userId);
       })
@@ -385,6 +399,7 @@ const CreatingProfileScreen = () => {
         updated_at: new Date().toISOString(),
       })
       .then(response => {
+        track('Career Created');
         console.log('career response:', response);
         createSurvey(userId);
       })
@@ -427,6 +442,7 @@ const CreatingProfileScreen = () => {
       );
 
       console.log('survey response:', response);
+      track('Survey Created');
       createFuture(userId);
     } catch (error) {
       console.log(
@@ -449,6 +465,7 @@ const CreatingProfileScreen = () => {
       })
       .then(response => {
         console.log('future response:', response);
+        track('Future Created');
       })
       .catch(error => {
         if (error) {

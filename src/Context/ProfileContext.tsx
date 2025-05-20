@@ -11,6 +11,7 @@ import {PermissionsAndroid, Platform} from 'react-native';
 import Geolocation from '@react-native-community/geolocation';
 import {initializeSocket} from '../Services/socket';
 import {Alert} from 'react-native';
+import {identify, setUserId} from '@amplitude/analytics-react-native';
 
 interface ProfileContextType {
   profile: any | null;

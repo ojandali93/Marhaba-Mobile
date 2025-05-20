@@ -26,6 +26,7 @@ import {
   religionOptions,
 } from '../../Utils/SelectOptions';
 import StandardMultiSelect from '../../Components/Select/StandardMultiSelect';
+import {track} from '@amplitude/analytics-react-native';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -46,6 +47,7 @@ const PreferencesScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
+      track('Preferences Started');
       loadPreferences();
     }, []),
   );
@@ -108,6 +110,7 @@ const PreferencesScreen = () => {
     await AsyncStorage.setItem('PR_Background', JSON.stringify(background));
     await AsyncStorage.setItem('PR_AgeMin', ageRange[0].toString());
     await AsyncStorage.setItem('PR_AgeMax', ageRange[1].toString());
+    track('Preferences Completed');
     navigation.navigate('Personality');
   };
 

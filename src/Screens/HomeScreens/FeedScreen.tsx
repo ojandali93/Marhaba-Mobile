@@ -16,6 +16,7 @@ import {Check, Heart} from 'react-native-feather';
 import {useProfile} from '../../Context/ProfileContext';
 import TutorialModal from '../../Components/Modals/TutorialModal';
 import {getDistance} from 'geolib';
+import {track} from '@amplitude/analytics-react-native';
 
 const FeedScreen = () => {
   const navigation = useNavigation();
@@ -91,6 +92,9 @@ const FeedScreen = () => {
     if (matchedProfiles?.length > 0) {
       setResults(matchedProfiles);
       setSelectedProfile(matchedProfiles[0]);
+      track(`Viewed profile: ${matchedProfiles[0]?.name}`, {
+        targetUserId: userId,
+      });
     } else {
       setResults([]);
       setSelectedProfile(null);
@@ -119,6 +123,9 @@ const FeedScreen = () => {
           updatedAt: new Date().toISOString(),
         },
       );
+      track(`Conversation Created with ${profileId}`, {
+        targetUserId: userId,
+      });
       console.log(`✅ Created conversation with ${profileId}`);
     } catch (error) {
       console.error(`❌ Error creating conversation with ${profileId}:`, error);
@@ -170,14 +177,23 @@ const FeedScreen = () => {
   };
 
   const dislikeProfile = async (profileId: string) => {
+    track('Profile Disliked', {
+      targetUserId: userId,
+    });
     console.log(`disliked profile: ${profileId}`);
     createViewed(profileId);
     removeTopProfile();
   };
 
   const likeProfile = async (profileId: string, profile: any) => {
+    track('Profile Liked', {
+      targetUserId: userId,
+    });
     console.log(`likes: ${likes}`);
     if (likes === 0) {
+      track('Out of Likes', {
+        targetUserId: userId,
+      });
       Alert.alert('Out of Likes', 'Upgrade to Pro to get more!', [
         {text: 'Cancel', style: 'cancel'},
         {
@@ -213,7 +229,9 @@ const FeedScreen = () => {
               message: null,
             },
           );
-
+          track('Match Approved', {
+            targetUserId: userId,
+          });
           updateMatchStatus(existingInteraction.id);
           createConversation(profileId);
           setMatchedProfile(profile);
@@ -253,6 +271,9 @@ const FeedScreen = () => {
         );
 
         if (response.data?.success) {
+          track('Profile Liked', {
+            targetUserId: userId,
+          });
           console.log(`✅ Liked profile: ${profile.apnToken}`);
           createViewed(profileId);
           fetchUsage();
@@ -285,7 +306,13 @@ const FeedScreen = () => {
     message?: string,
     profile: any,
   ) => {
+    track('Profile Super Liked', {
+      targetUserId: userId,
+    });
     if (superLikes === 0) {
+      track('Out of Super Likes', {
+        targetUserId: userId,
+      });
       Alert.alert('Out of Super Likes', 'Upgrade to Pro to get more!', [
         {text: 'Cancel', style: 'cancel'},
         {
@@ -320,7 +347,9 @@ const FeedScreen = () => {
               message: message,
             },
           );
-
+          track('Match Approved', {
+            targetUserId: userId,
+          });
           updateMatchStatus(existingInteraction.id);
           createConversation(profileId);
           setMatchedProfile(profile);
@@ -361,6 +390,9 @@ const FeedScreen = () => {
         );
 
         if (response.data?.success) {
+          track('Profile Super Liked', {
+            targetUserId: userId,
+          });
           console.log(`✅ Super liked profile: ${profileId}`);
           createViewed(profileId);
           fetchUsage();
@@ -392,6 +424,9 @@ const FeedScreen = () => {
     setResults(prevMatches => {
       const newMatches = prevMatches?.length ? prevMatches.slice(1) : [];
       setSelectedProfile(newMatches[0] || null); // ✅ Update the selected profile
+      track(`Viewed new profile: ${newMatches[0]?.name}`, {
+        targetUserId: userId,
+      });
       return newMatches;
     });
   };
@@ -497,7 +532,12 @@ const FeedScreen = () => {
         superlikeProfile={superLikeProfile}
         showFullProfile={showFullProfile}
         setShowFullProfile={setShowFullProfile}
-        handleToggleFullProfile={() => setShowFullProfile(prev => !prev)}
+        handleToggleFullProfile={() => {
+          setShowFullProfile(prev => !prev);
+          track(`Full Profile ${showFullProfile ? 'Opened' : 'Closed'}`, {
+            targetUserId: userId,
+          });
+        }}
       />
 
       <Modal

@@ -5,6 +5,7 @@ import {ChevronsLeft, Check, X} from 'react-native-feather';
 import themeColors from '../../Utils/custonColors';
 import {useProfile} from '../../Context/ProfileContext';
 import * as RNIap from 'react-native-iap';
+import {track} from '@amplitude/analytics-react-native';
 
 const tiers = [
   {
@@ -66,6 +67,9 @@ const UpgradeView = ({updateTab}: {updateTab: (tab: string) => void}) => {
     'marhabah_pro_2499_sub',
   ];
   useEffect(() => {
+    track('Viewed Upgrade Screen', {
+      targetUserId: profile.userId,
+    });
     const initIAP = async () => {
       try {
         await RNIap.initConnection();
@@ -110,6 +114,9 @@ const UpgradeView = ({updateTab}: {updateTab: (tab: string) => void}) => {
   }, []);
 
   const handleUpgradeConfirm = (tierId: number) => {
+    track('Started Upgrade', {
+      targetUserId: profile.userId,
+    });
     const tier = tiers.find(t => t.id === tierId);
     const sku =
       tierId === 2 ? productIds[0] : tierId === 3 ? productIds[1] : null;
@@ -126,6 +133,9 @@ const UpgradeView = ({updateTab}: {updateTab: (tab: string) => void}) => {
           onPress: async () => {
             try {
               await RNIap.requestSubscription({sku});
+              track('Confirmed Upgrade', {
+                targetUserId: profile.userId,
+              });
             } catch (err) {
               console.warn('❌ Error starting subscription:', err);
             }

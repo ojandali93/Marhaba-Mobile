@@ -24,6 +24,7 @@ import PhoneModalContent from '../Modals/PhoneModalContent';
 import PasswordModalContent from '../Modals/PasswordModalContent';
 import EmailModalContent from '../Modals/EmailModalContent';
 import {useProfile} from '../../Context/ProfileContext';
+import axios from 'axios';
 
 interface SettingsViewProps {
   updateTab: (tab: string) => void;
@@ -32,7 +33,6 @@ interface SettingsViewProps {
 const SettingsView = ({updateTab}: SettingsViewProps) => {
   const {profile} = useProfile();
   const [activeModal, setActiveModal] = useState<string | null>(null);
-  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [verifyPassword, setVerifyPassword] = useState('');
@@ -40,6 +40,35 @@ const SettingsView = ({updateTab}: SettingsViewProps) => {
   const [verificationCode, setVerificationCode] = useState('');
 
   const openLink = (url: string) => Linking.openURL(url);
+
+  const updatePasswordViaServer = async () => {
+    if (newPassword !== verifyPassword) {
+      Alert.alert('Passwords do not match');
+      return;
+    }
+
+    console.log(profile?.email, password, newPassword);
+
+    try {
+      const response = await axios.post(
+        'https://marhaba-server.onrender.com/api/auth/updatePassword',
+        {email: profile?.email, currentPassword: password, newPassword},
+      );
+
+      if (response.status === 200) {
+        setActiveModal(null);
+        Alert.alert('Password updated successfully');
+      } else {
+        Alert.alert('Failed to update password');
+      }
+    } catch (error) {
+      console.error(
+        '❌ Server error:',
+        error.response?.data?.error || error.message,
+      );
+      return {success: false, error: error.message};
+    }
+  };
 
   return (
     <View style={tailwind`flex-1`}>
@@ -62,19 +91,30 @@ const SettingsView = ({updateTab}: SettingsViewProps) => {
       </Text>
 
       {/* Edit Email */}
-      <TouchableOpacity
-        onPress={() => setActiveModal('email')}
+      <View
         style={[
           tailwind`flex-row justify-between items-center p-4 rounded-2`,
           {backgroundColor: themeColors.darkGrey},
         ]}>
+        <Text style={tailwind`text-base font-semibold text-white`}>Email:</Text>
         <Text style={tailwind`text-base font-semibold text-white`}>
-          Edit Email
+          {profile.email}
         </Text>
-        <ChevronsRight height={24} width={24} color={themeColors.primary} />
-      </TouchableOpacity>
+      </View>
 
       {/* Edit Password */}
+
+      {/* Edit Phone */}
+      <View
+        style={[
+          tailwind`flex-row justify-between items-center p-4 mt-2 rounded-2`,
+          {backgroundColor: themeColors.darkGrey},
+        ]}>
+        <Text style={tailwind`text-base font-semibold text-white`}>Phone:</Text>
+        <Text style={tailwind`text-base font-semibold text-white`}>
+          {profile.About[0].phone}
+        </Text>
+      </View>
       <TouchableOpacity
         onPress={() => setActiveModal('password')}
         style={[
@@ -83,19 +123,6 @@ const SettingsView = ({updateTab}: SettingsViewProps) => {
         ]}>
         <Text style={tailwind`text-base font-semibold text-white`}>
           Edit Password
-        </Text>
-        <ChevronsRight height={24} width={24} color={themeColors.primary} />
-      </TouchableOpacity>
-
-      {/* Edit Phone */}
-      <TouchableOpacity
-        onPress={() => setActiveModal('phone')}
-        style={[
-          tailwind`flex-row justify-between items-center p-4 mt-2 rounded-2`,
-          {backgroundColor: themeColors.darkGrey},
-        ]}>
-        <Text style={tailwind`text-base font-semibold text-white`}>
-          Edit Phone
         </Text>
         <ChevronsRight height={24} width={24} color={themeColors.primary} />
       </TouchableOpacity>
@@ -253,16 +280,6 @@ const SettingsView = ({updateTab}: SettingsViewProps) => {
       </TouchableOpacity>
 
       {/* Footer */}
-      <View style={tailwind`w-full flex flex-row justify-center mt-3`}>
-        <Text style={tailwind`text-sm font-semibold text-gray-500`}>
-          Marhabah Inc. © 2025 All Rights Reserved.
-        </Text>
-      </View>
-      <View style={tailwind`w-full flex flex-row justify-center mb-3`}>
-        <Text style={tailwind`text-sm font-semibold text-gray-500`}>
-          V. 1.0.1 (May 12, 2025)
-        </Text>
-      </View>
 
       {/* Modal Rendering */}
       <Modal
@@ -316,6 +333,7 @@ const SettingsView = ({updateTab}: SettingsViewProps) => {
                 verifyPassword={verifyPassword}
                 setVerifyPassword={setVerifyPassword}
                 setActiveModal={setActiveModal}
+                updatePasswordViaServer={updatePasswordViaServer}
               />
             )}
             {activeModal === 'phone' && (

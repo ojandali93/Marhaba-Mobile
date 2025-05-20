@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Alert,
   Dimensions,
@@ -12,6 +12,7 @@ import {
 import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
 import AuthMainButton from '../../Components/Buttons/AuthMainButton';
+import {track} from '@amplitude/analytics-react-native';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -22,8 +23,13 @@ const FinalAgreementsScreen = ({navigation}) => {
 
   const allAccepted = acceptedTerms && acceptedEULA && acceptedPledge;
 
+  useEffect(() => {
+    track('Accept Started');
+  }, []);
+
   const handleContinue = () => {
     if (allAccepted) {
+      track('Accept Completed');
       navigation.navigate('CreatingProfile');
     } else {
       Alert.alert(

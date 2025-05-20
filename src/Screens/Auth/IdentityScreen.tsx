@@ -24,6 +24,7 @@ import StandardSelect from '../../Components/Select/StandardSelect';
 import StandardText from '../../Components/Select/StandardText';
 import {backgroundOptions} from '../../Utils/SelectOptions';
 import StandardMultiSelect from '../../Components/Select/StandardMultiSelect';
+import {track} from '@amplitude/analytics-react-native';
 const screenHeight = Dimensions.get('window').height;
 
 const IdentityScreen = () => {
@@ -41,6 +42,7 @@ const IdentityScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
+      track('Essential Info Started');
       loadPreferences();
     }, []),
   );
@@ -106,6 +108,7 @@ const IdentityScreen = () => {
     await AsyncStorage.setItem('E_gender', gender);
     await AsyncStorage.setItem('E_height', height);
     await AsyncStorage.setItem('BG_Background', JSON.stringify(background));
+    track('Essential Info Completed');
     navigation.navigate('LookingFor');
   };
 

@@ -27,6 +27,7 @@ import {
   importanceMarriageOptions,
   marriageStatusOptions,
 } from '../../Utils/SelectOptions';
+import {track} from '@amplitude/analytics-react-native';
 const screenHeight = Dimensions.get('window').height;
 
 const LookingForScreen = () => {
@@ -43,6 +44,7 @@ const LookingForScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
+      track('Looking For Started');
       loadPreferences();
     }, []),
   );
@@ -107,6 +109,7 @@ const LookingForScreen = () => {
     await AsyncStorage.setItem('LF_Relocate', relocate);
     await AsyncStorage.setItem('LF_FirstStep', firstStep);
     await AsyncStorage.setItem('LF_Parents', parents);
+    track('Looking For Completed');
     navigation.navigate('Photos');
   };
 

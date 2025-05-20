@@ -21,6 +21,7 @@ import tailwind from 'twrnc';
 import {useProfile} from '../../Context/ProfileContext';
 import themeColors from '../../Utils/custonColors';
 import {useFocusEffect} from '@react-navigation/native';
+import {track} from '@amplitude/analytics-react-native';
 
 if (Platform.OS === 'android') {
   UIManager.setLayoutAnimationEnabledExperimental &&
@@ -103,6 +104,9 @@ const AdminReviewScreen = () => {
   };
 
   const toggleFlagPhoto = (profileId, url) => {
+    track(`Flagged photo for user: ${profileId}`, {
+      targetUserId: userId,
+    });
     const stringId = String(profileId);
     setFlaggedImages(prev => {
       const existing = prev[stringId] || [];
@@ -114,6 +118,9 @@ const AdminReviewScreen = () => {
   };
 
   const toggleFlagPrompt = (profileId, promptText) => {
+    track(`Flagged prompt for user: ${profileId}`, {
+      targetUserId: userId,
+    });
     const stringId = String(profileId);
     setFlaggedPrompts(prev => {
       const existing = prev[stringId] || [];
@@ -125,6 +132,9 @@ const AdminReviewScreen = () => {
   };
 
   const handleApprove = async (userId, profile) => {
+    track(`Approved profile: ${userId}`, {
+      targetUserId: userId,
+    });
     console.log('Profile:', JSON.stringify(profile));
     const profileToken = profile.apnToken;
     console.log('Profile Token:', profileToken);
@@ -164,6 +174,9 @@ const AdminReviewScreen = () => {
   };
 
   const handleReject = async (profileId: string, profile: any) => {
+    track(`Rejected profile: ${profileId}`, {
+      targetUserId: userId,
+    });
     const idKey = String(profileId);
 
     console.log('🔴 Notes:', notes);

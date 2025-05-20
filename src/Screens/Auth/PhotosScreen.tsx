@@ -20,6 +20,7 @@ import {
 } from '../../Utils/Functions/ImageFunctions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import {track} from '@amplitude/analytics-react-native';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -36,6 +37,7 @@ const PhotosScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
+      track('Photos Started');
       loadPreferences();
     }, []),
   );
@@ -141,6 +143,7 @@ const PhotosScreen = () => {
   const storeNextScreen = async () => {
     try {
       await AsyncStorage.setItem('images', JSON.stringify(uploadedImageUrls));
+      track('Photos Completed');
       navigation.navigate('Preferences');
     } catch (err) {
       console.error('Failed to store images:', err);

@@ -14,6 +14,7 @@ import StandardInputBordered from '../../Components/Inputs/StandardInputBordered
 import PromptSelect from '../../Components/Select/PromptSelect';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {track} from '@amplitude/analytics-react-native';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -28,6 +29,7 @@ const PersonalityScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
+      track('Personality Started');
       const loadStoredResponses = async () => {
         try {
           const stored = await AsyncStorage.getItem('prompts');
@@ -92,6 +94,7 @@ const PersonalityScreen = () => {
 
   const storeNextScreen = async responses => {
     await AsyncStorage.setItem('prompts', JSON.stringify(responses));
+    track('Personality Completed');
     navigation.navigate('LifestyleHabits');
   };
 
@@ -112,7 +115,10 @@ const PersonalityScreen = () => {
               About Me
             </Text>
             <TouchableOpacity
-              onPress={() => navigation.navigate('LifestyleHabits')}
+              onPress={() => {
+                track('Personality Skipped');
+                navigation.navigate('LifestyleHabits');
+              }}
               style={[
                 tailwind`mt-2 text-lg font-semibold`,
                 {color: themeColors.primary},

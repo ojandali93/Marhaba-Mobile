@@ -29,6 +29,7 @@ import {
   importanceMarriageOptions,
   marriageStatusOptions,
 } from '../../Utils/SelectOptions';
+import {track} from '@amplitude/analytics-react-native';
 const screenHeight = Dimensions.get('window').height;
 
 const LifestyleHabitsScreen = () => {
@@ -44,6 +45,7 @@ const LifestyleHabitsScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
+      track('Lifestyle Habits Started');
       loadPreferences();
     }, []),
   );
@@ -100,6 +102,7 @@ const LifestyleHabitsScreen = () => {
     await AsyncStorage.setItem('LFH_Sleep', sleep);
     await AsyncStorage.setItem('LFH_Exercise', exercise);
     await AsyncStorage.setItem('LFH_Diet', diet);
+    track('Lifestyle Habits Completed');
     navigation.navigate('Accept');
   };
 
@@ -126,7 +129,10 @@ const LifestyleHabitsScreen = () => {
               Lifestyle Habits
             </Text>
             <TouchableOpacity
-              onPress={() => navigation.navigate('Accept')}
+              onPress={() => {
+                track('Lifestyle Habits Skipped');
+                navigation.navigate('Accept');
+              }}
               style={[
                 tailwind`mt-2 text-lg font-semibold`,
                 {color: themeColors.primary},

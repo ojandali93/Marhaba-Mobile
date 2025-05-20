@@ -36,14 +36,21 @@ const BottomTabNavigation = () => {
   useEffect(() => {
     if (profile) {
       const optionalTables = [
+        'About',
         'Career',
         'Core',
         'Future',
+        'Habits',
+        'Intent',
+        'Notifications',
+        'Photos',
+        'Prompts',
+        'Preferences',
         'Relationships',
         'Religion',
         'Survey',
         'Tags',
-        'Prompts',
+        'Social',
       ];
 
       const hasEmptyTable = optionalTables.some(table => {

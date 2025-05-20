@@ -21,6 +21,7 @@ import {
   joinConversationRoom,
   leaveConversationRoom,
 } from '../../Services/socket';
+import {track} from '@amplitude/analytics-react-native';
 
 const openingPrompts = [
   "What's your idea of a perfect first meeting?",
@@ -50,6 +51,9 @@ const ChatScreen = ({route}) => {
   const scrollViewRef = useRef();
 
   useEffect(() => {
+    track(`Viewed chat: ${conversationId}`, {
+      targetUserId: userId,
+    });
     const showSub = Keyboard.addListener('keyboardDidShow', () =>
       setIsKeyboardOpen(true),
     );
@@ -182,6 +186,9 @@ const ChatScreen = ({route}) => {
     };
 
     socket.emit('sendMessage', newMessage);
+    track(`Sent message in chat: ${conversationId}`, {
+      targetUserId: userId,
+    });
 
     try {
       // ✅ Step 1: Get other user's profile

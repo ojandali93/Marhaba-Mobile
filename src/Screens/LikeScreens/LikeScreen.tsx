@@ -27,6 +27,7 @@ import themeColors from '../../Utils/custonColors';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {useProfile} from '../../Context/ProfileContext';
 import {countryFlagMap} from '../../Utils/FlagMaps';
+import {track} from '@amplitude/analytics-react-native';
 
 interface Interaction {
   _id: string;
@@ -127,6 +128,9 @@ const LikeScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
+      track('Viewed Likes Screen', {
+        targetUserId: userId,
+      });
       markLikesAsViewed(userId);
       fetchLikes(false);
       fetchViews(false);
@@ -141,6 +145,9 @@ const LikeScreen = () => {
 
   const handleApproveLike = async (interactionId: any, userId2: string) => {
     console.log('🔄 Approving like interaction:', interactionId);
+    track(`Approved like interaction (Likes Screen): ${userId2}`, {
+      targetUserId: userId,
+    });
 
     try {
       // 1. Approve the interaction
@@ -188,6 +195,9 @@ const LikeScreen = () => {
   };
 
   const handleRejectLike = async (interactionId: string) => {
+    track(`Rejected like interaction (Likes Screen): ${interactionId}`, {
+      targetUserId: userId,
+    });
     try {
       const response = await axios.delete(
         `https://marhaba-server.onrender.com/api/user/removeInteraction/${interactionId}`,
@@ -218,6 +228,9 @@ const LikeScreen = () => {
 
       if (response.data) {
         fetchLikes(false);
+        track(`Conversation Created with ${userId2}`, {
+          targetUserId: userId,
+        });
       } else {
         console.log('No likes found or invalid data format.');
       }
@@ -230,6 +243,9 @@ const LikeScreen = () => {
   const handleViewProfile = (userProfile: any) => {
     if (profile?.tier === 3) {
       navigation.navigate('SingleProfile', {profile: userProfile});
+      track(`Viewed profile (Likes Screen): ${userProfile.name}`, {
+        targetUserId: userId,
+      });
     } else {
       null;
     }
@@ -250,7 +266,12 @@ const LikeScreen = () => {
 
     return (
       <TouchableWithoutFeedback
-        onPress={() => handleViewProfile(item.likerProfile)}>
+        onPress={() => {
+          handleViewProfile(item.likerProfile);
+          track(`Viewed profile (Likes Screen): ${item.likerProfile.name}`, {
+            targetUserId: userId,
+          });
+        }}>
         <View style={styles.gridItem}>
           <Image
             source={{uri: profilePicUrl}}

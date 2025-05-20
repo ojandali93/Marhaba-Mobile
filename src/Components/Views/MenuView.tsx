@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {Alert, Text, TouchableOpacity, View} from 'react-native';
 import {ChevronsRight} from 'react-native-feather';
 import tailwind from 'twrnc';
@@ -7,6 +7,7 @@ import {useProfile} from '../../Context/ProfileContext';
 import {useNavigation} from '@react-navigation/native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {track} from '@amplitude/analytics-react-native';
 interface MenuViewProps {
   updateTab: (tab: string) => void;
 }
@@ -20,7 +21,7 @@ const MenuView = ({updateTab}: MenuViewProps) => {
     checkAuthenticated,
   } = useProfile();
   const navigation = useNavigation();
-
+  const [incompleteProfile, setIncompleteProfile] = useState(false);
   const logout = async () => {
     try {
       removeSession();
@@ -72,6 +73,35 @@ const MenuView = ({updateTab}: MenuViewProps) => {
     );
   };
 
+  useEffect(() => {
+    if (profile) {
+      const optionalTables = [
+        'About',
+        'Career',
+        'Core',
+        'Future',
+        'Habits',
+        'Intent',
+        'Notifications',
+        'Photos',
+        'Prompts',
+        'Preferences',
+        'Relationships',
+        'Religion',
+        'Survey',
+        'Tags',
+        'Social',
+      ];
+
+      const hasEmptyTable = optionalTables.some(table => {
+        const tableData = profile[table];
+        return !Array.isArray(tableData) || tableData.length === 0;
+      });
+
+      setIncompleteProfile(hasEmptyTable);
+    }
+  }, [profile]);
+
   return (
     <View style={tailwind`flex-1`}>
       <TouchableOpacity
@@ -80,9 +110,16 @@ const MenuView = ({updateTab}: MenuViewProps) => {
           tailwind`flex-row justify-between items-center p-4 rounded-2`,
           {backgroundColor: themeColors.darkGrey},
         ]}>
-        <Text style={tailwind`text-base font-semibold text-white`}>
-          Edit Profile
-        </Text>
+        <View style={tailwind`flex flex-row items-center`}>
+          <Text style={tailwind`text-base font-semibold text-white`}>
+            Edit Profile
+          </Text>
+          {incompleteProfile && (
+            <View
+              style={tailwind`w-2 h-2 rounded-full bg-yellow-400 mr-2 ml-3`}
+            />
+          )}
+        </View>
         <ChevronsRight height={24} width={24} color={themeColors.primary} />
       </TouchableOpacity>
       <TouchableOpacity
@@ -97,7 +134,12 @@ const MenuView = ({updateTab}: MenuViewProps) => {
         <ChevronsRight height={24} width={24} color={themeColors.primary} />
       </TouchableOpacity>
       <TouchableOpacity
-        onPress={() => updateTab('upgrade')}
+        onPress={() => {
+          track('Viewed Upgrade Screen', {
+            targetUserId: profile.userId,
+          });
+          updateTab('upgrade');
+        }}
         style={[
           tailwind`flex-row justify-between items-center p-4 rounded-2 mt-2`,
           {backgroundColor: themeColors.darkGrey},
