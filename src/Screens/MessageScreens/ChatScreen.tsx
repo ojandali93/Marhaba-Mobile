@@ -250,9 +250,12 @@ const ChatScreen = ({route}) => {
             </Text>
           </View>
           <TouchableOpacity
-            onPress={() =>
-              navigation.navigate('SingleProfile', {profile: otherUser})
-            }>
+            onPress={() => {
+              track(`Viewed profile (Chat Screen): ${otherUser.name}`, {
+                targetUserId: userId,
+              });
+              navigation.navigate('SingleProfile', {profile: otherUser});
+            }}>
             <Info color={themeColors.primary} height={24} width={24} />
           </TouchableOpacity>
         </View>

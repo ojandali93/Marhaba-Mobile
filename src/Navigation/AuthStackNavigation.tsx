@@ -25,6 +25,7 @@ import BackgroundScreen from '../Screens/Auth/BackgroundScreen';
 import LookingForScreen from '../Screens/Auth/LookingForScreen';
 import LifestyleHabitsScreen from '../Screens/Auth/LifestyleHabitsScreen';
 import ReligionScreen from '../Screens/Auth/ReligionScreen';
+import EulaScreen from '../Screens/Auth/EULAScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -55,6 +56,7 @@ const AuthStack = () => {
       <Stack.Screen name="LookingFor" component={LookingForScreen} />
       <Stack.Screen name="LifestyleHabits" component={LifestyleHabitsScreen} />
       <Stack.Screen name="Religion" component={ReligionScreen} />
+      <Stack.Screen name="Eula" component={EulaScreen} />
     </Stack.Navigator>
   );
 };

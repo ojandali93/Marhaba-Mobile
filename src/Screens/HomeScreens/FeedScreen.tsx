@@ -181,8 +181,57 @@ const FeedScreen = () => {
       targetUserId: userId,
     });
     console.log(`disliked profile: ${profileId}`);
-    createViewed(profileId);
-    removeTopProfile();
+    try {
+      const checkRes = await axios.get(
+        `https://marhaba-server.onrender.com/api/user/matchStatus/${userId}/${profileId}`,
+      );
+
+      const existingInteraction = checkRes.data?.data[0];
+
+      if (existingInteraction) {
+        const updatedRes = await axios.put(
+          `https://marhaba-server.onrender.com/api/user/updateInteraction`,
+          {
+            id: existingInteraction.id,
+            userId: existingInteraction.userId,
+            targetUserId: existingInteraction.targetUserId,
+            userInteraction: existingInteraction.userInteraction,
+            targetInteraction: 'disliked',
+            viewed: true,
+            approved: true,
+            viewed_at: new Date().toISOString(),
+            approved_at: new Date().toISOString(),
+            message: null,
+          },
+        );
+        return;
+      }
+
+      const response = await axios.post(
+        `https://marhaba-server.onrender.com/api/user/interaction`,
+        {
+          userId: userId,
+          targetUserId: profileId,
+          userInteraction: 'disliked',
+          targetInteraction: null,
+          viewed: false,
+          approved: false,
+          viewed_at: null,
+          approved_at: null,
+          message: null,
+        },
+      );
+
+      if (response.data?.success) {
+        track('Profile disliked', {
+          targetUserId: userId,
+        });
+        createViewed(profileId);
+        removeTopProfile();
+      }
+    } catch (error) {
+      console.error(`❌ Error liking profile ${profileId}:`, error);
+    }
   };
 
   const likeProfile = async (profileId: string, profile: any) => {

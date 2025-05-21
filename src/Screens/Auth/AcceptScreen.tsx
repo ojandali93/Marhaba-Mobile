@@ -13,14 +13,16 @@ import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
 import AuthMainButton from '../../Components/Buttons/AuthMainButton';
 import {track} from '@amplitude/analytics-react-native';
+import {useNavigation} from '@react-navigation/native';
 
 const screenHeight = Dimensions.get('window').height;
 
-const FinalAgreementsScreen = ({navigation}) => {
+const FinalAgreementsScreen = ({}) => {
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [acceptedEULA, setAcceptedEULA] = useState(false);
   const [acceptedPledge, setAcceptedPledge] = useState(false);
 
+  const navigation = useNavigation();
   const allAccepted = acceptedTerms && acceptedEULA && acceptedPledge;
 
   useEffect(() => {
@@ -84,7 +86,7 @@ const FinalAgreementsScreen = ({navigation}) => {
             </Text>
             <View style={tailwind`mt-2 flex-row justify-between items-center`}>
               <Text style={tailwind`text-base text-blue-500 underline`}>
-                Accept Terms
+                View Terms
               </Text>
               <Switch
                 value={acceptedTerms}
@@ -97,11 +99,7 @@ const FinalAgreementsScreen = ({navigation}) => {
 
           {/* EULA */}
           <TouchableOpacity
-            onPress={() =>
-              Linking.openURL(
-                'https://app.termly.io/policy-viewer/policy.html?policyUUID=2c96703e-b201-4b10-8414-c9a70374f352',
-              )
-            }
+            onPress={() => navigation.navigate('Eula')}
             style={[
               tailwind`p-4 rounded-lg mb-2`,
               {backgroundColor: themeColors.darkSecondary},
@@ -116,9 +114,32 @@ const FinalAgreementsScreen = ({navigation}) => {
             <Text style={tailwind`text-sm text-gray-700 mt-1`}>
               Learn about your license to use Marhabah and limits of liability.
             </Text>
-            <View style={tailwind`mt-2 flex-row justify-between items-center`}>
+
+            {/* 👇 Apple-compliant UGC bullet points */}
+            <View style={tailwind`mt-3`}>
+              <Text style={tailwind`text-sm text-gray-600 mt-2`}>
+                • All users must treat others with respect and dignity.
+              </Text>
+              <Text style={tailwind`text-sm text-gray-600 mt-2`}>
+                • Objectionable content, harassment, or abuse is not tolerated
+                under any circumstances.
+              </Text>
+              <Text style={tailwind`text-sm text-gray-600 mt-2`}>
+                • Users are responsible for the content they upload or send.
+              </Text>
+              <Text style={tailwind`text-sm text-gray-600 mt-2`}>
+                • Inappropriate behavior can be reported and will be reviewed by
+                our moderation team.
+              </Text>
+              <Text style={tailwind`text-sm text-gray-600 mt-2`}>
+                • Repeated violations may result in account suspension or
+                permanent removal.
+              </Text>
+            </View>
+
+            <View style={tailwind`mt-4 flex-row justify-between items-center`}>
               <Text style={tailwind`text-base text-blue-500 underline`}>
-                Accept EULA
+                View EULA
               </Text>
               <Switch
                 value={acceptedEULA}
