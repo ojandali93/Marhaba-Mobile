@@ -17,6 +17,8 @@ import axios from 'axios';
 import themeColors from '../../Utils/custonColors'; // Your color config
 import {
   Calendar,
+  Check,
+  ChevronsLeft,
   MapPin,
   MoreHorizontal,
   Plus,
@@ -30,6 +32,7 @@ import {
 } from '../../Utils/Functions/ImageFunctions';
 import {useProfile} from '../../Context/ProfileContext';
 import {track} from '@amplitude/analytics-react-native';
+import {useNavigation} from '@react-navigation/native';
 
 const EVENT_LOCATION = {
   latitude: 33.961, // replace with actual event location
@@ -55,7 +58,7 @@ const isWithinFiveMiles = (userLat, userLong) => {
 const EventScreen = ({route}) => {
   const {eventId} = route.params;
   const {userId} = useProfile();
-
+  const navigation = useNavigation();
   const [showOptions, setShowOptions] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
 
@@ -68,7 +71,7 @@ const EventScreen = ({route}) => {
   const [newPost, setNewPost] = useState('');
   const [checkedIn, setCheckedIn] = useState(false);
   const [postImage, setPostImage] = useState(null);
-  const [loadingStates, setLoadingStates] = useState<boolean>(false);
+  const [loadingStates, setLoadingStates] = useState<boolean>(true);
 
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -76,21 +79,96 @@ const EventScreen = ({route}) => {
   const [selectedReason, setSelectedReason] = useState('');
   const [customReason, setCustomReason] = useState('');
 
-  const fetchEventDetails = async () => {
-    const eventData = await axios.get(
-      `https://marhaba-server.onrender.com/api/events/${eventId}`,
-    );
-    console.log('eventData', eventData.data.data);
-    setEvent(eventData.data.data);
-    setRsvps(eventData.data.data.Event_Rsvp);
-    setPosts(eventData.data.data.Event_Posts);
-    setAttendees(eventData.data.data.Event_Attend);
+  const handleCheckIn = async () => {
+    try {
+      const {data, error} = await axios.post(
+        `https://marhaba-server.onrender.com/api/events/createCheckin`,
+        {
+          eventId: eventId,
+          userId: userId,
+        },
+      );
+      if (error) {
+        console.error('Error checking in:', error);
+        Alert.alert('Error', 'Failed to check in. Please try again.');
+      } else {
+        console.log('event details', data.data);
+        setAttendees(data.data);
+        getEventCheckins();
+        Alert.alert('Checked In', 'You have been checked in to the event');
+      }
+    } catch (error) {
+      console.error('Error fetching event posts:', error);
+    }
   };
 
-  const handleCheckIn = async () => {
-    // Temporarily skip location check
-    setCheckedIn(true);
-    Alert.alert('✅ Checked In!');
+  useLayoutEffect(() => {
+    grabEventDetails();
+    getEventPosts();
+    getEventCheckins();
+    getEventRsvp();
+  }, []);
+
+  const grabEventDetails = async () => {
+    try {
+      const {data, error} = await axios.get(
+        `https://marhaba-server.onrender.com/api/events/${eventId}`,
+      );
+      console.log('event details', data.data);
+      setEvent(data.data);
+    } catch (error) {
+      console.error('Error fetching event posts:', error);
+    }
+  };
+
+  const getEventCheckins = async () => {
+    try {
+      const {data, error} = await axios.post(
+        `https://marhaba-server.onrender.com/api/events/eventAttend`,
+        {
+          eventId: eventId,
+        },
+      );
+      console.log('event checkins', data.data);
+      setAttendees(data.data);
+      setCheckedIn(data.data.some(att => att.userId.userId === userId));
+    } catch (error) {
+      console.error('Error fetching event posts:', error);
+    }
+  };
+
+  const getEventRsvp = async () => {
+    try {
+      const {data, error} = await axios.post(
+        `https://marhaba-server.onrender.com/api/events/eventRsvp`,
+        {
+          eventId: eventId,
+        },
+      );
+      console.log('event rsvp', data.data);
+      setRsvps(data.data);
+      setLoadingStates(false);
+    } catch (error) {
+      console.error('Error fetching event posts:', error);
+    }
+  };
+
+  const getEventPosts = async () => {
+    try {
+      const eventPosts = await axios.post(
+        `https://marhaba-server.onrender.com/api/events/eventPosts`,
+        {
+          eventId: eventId,
+          userId: userId,
+        },
+      );
+      console.log('event posts', eventPosts.data.posts);
+      if (eventPosts.data.posts) {
+        setPosts(eventPosts.data.posts);
+      }
+    } catch (error) {
+      console.error('Error fetching event posts:', error);
+    }
   };
 
   const handleCreatePost = async () => {
@@ -117,7 +195,7 @@ const EventScreen = ({route}) => {
       setModalVisible(false);
       setNewPost('');
       setPostImage(null);
-      fetchEventDetails();
+      getEventPosts();
     } catch (error) {
       console.error('Error creating post:', error);
     }
@@ -157,10 +235,6 @@ const EventScreen = ({route}) => {
     }
   };
 
-  useLayoutEffect(() => {
-    fetchEventDetails();
-  }, []);
-
   const handleBlockProfile = async post => {
     console.log('post', post);
     track('Profile Blocked', {
@@ -184,7 +258,9 @@ const EventScreen = ({route}) => {
 
   const handleDeletePost = async postId => {
     try {
-      await axios.delete(`/api/posts/${postId}`);
+      await axios.delete(
+        `https://marhaba-server.onrender.com/api/posts/${postId}`,
+      );
       setPosts(posts.filter(p => p.id !== postId));
       Alert.alert('✅ Post deleted');
     } catch (err) {
@@ -265,18 +341,33 @@ const EventScreen = ({route}) => {
       style={[tailwind`flex-1`, {backgroundColor: themeColors.secondary}]}>
       <View style={tailwind`flex-1`}>
         {/* 🔹 Event Info */}
-        <View style={tailwind`pt-4 pl-4`}>
-          <View style={tailwind`flex flex-row justify-between`}>
-            <Text
-              style={[
-                tailwind`text-2xl font-bold`,
-                {color: themeColors.primary},
-              ]}>
-              {event.title}
-            </Text>
+        <View style={tailwind`pt-2 pl-4`}>
+          <View style={tailwind`flex flex-row justify-between mb-3`}>
+            <View style={tailwind`flex flex-row items-center`}>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.goBack();
+                }}>
+                <ChevronsLeft
+                  height={24}
+                  width={24}
+                  color={themeColors.primary}
+                />
+              </TouchableOpacity>
+              <Text
+                style={[
+                  tailwind`text-2xl font-bold ml-2`,
+                  {color: themeColors.primary},
+                ]}>
+                {event.title}
+              </Text>
+            </View>
             <TouchableOpacity
-              onPress={handleCheckIn}
-              style={tailwind`mx-4 py-1 px-2 bg-green-600 rounded-2 `}>
+              onPress={checkedIn ? null : handleCheckIn}
+              disabled={checkedIn}
+              style={tailwind`mx-4 py-1 px-2 rounded-2 ${
+                checkedIn ? 'bg-gray-400' : 'bg-green-600'
+              }`}>
               <Text
                 style={tailwind`text-center text-white font-semibold text-base`}>
                 {checkedIn ? 'Checked In' : 'Check In'}
@@ -297,7 +388,7 @@ const EventScreen = ({route}) => {
           <View style={tailwind`flex-row items-center my-1`}>
             <Users height={16} width={16} color={themeColors.primary} />
             <Text style={tailwind`text-sm ml-1`}>
-              {event.Event_Rsvp.length} / {event.capacity}
+              {rsvps.length} / {event.capacity}
             </Text>
           </View>
         </View>
@@ -312,15 +403,28 @@ const EventScreen = ({route}) => {
               <Text style={tailwind`text-lg italic`}>RSVP</Text>
             </View>
             <ScrollView horizontal style={tailwind`py-2`}>
-              {event.Event_Rsvp.map((user, index) => {
+              {rsvps.map((user, index) => {
                 const mainImage = user.userId.Photos[0].photoUrl;
+                const isCheckedIn = attendees.some(
+                  att => att.userId.userId === user.userId.userId,
+                );
+
                 return (
-                  <TouchableOpacity key={index}>
-                    <Image
-                      source={{uri: mainImage}}
-                      style={tailwind`w-14 h-14 rounded-full`}
-                    />
-                  </TouchableOpacity>
+                  <View key={index} style={tailwind`mr-3 relative`}>
+                    <TouchableOpacity>
+                      <Image
+                        source={{uri: mainImage}}
+                        style={tailwind`w-14 h-14 rounded-full`}
+                      />
+                    </TouchableOpacity>
+
+                    {isCheckedIn && (
+                      <View
+                        style={tailwind`absolute bottom-0 right-0 bg-green-500 rounded-full p-1`}>
+                        <Check height={12} width={12} color="white" />
+                      </View>
+                    )}
+                  </View>
                 );
               })}
             </ScrollView>
@@ -393,6 +497,21 @@ const EventScreen = ({route}) => {
               <Text style={tailwind`text-xl font-bold text-center mb-4`}>
                 What would you like to do?
               </Text>
+              {selectedPost.userId.userId === userId && (
+                <TouchableOpacity
+                  onPress={() => {
+                    handleDeletePost(selectedPost.id);
+                    setShowOptions(false);
+                  }}
+                  style={[
+                    tailwind`py-3 px-5 rounded-md mb-3`,
+                    {backgroundColor: themeColors.primary},
+                  ]}>
+                  <Text style={tailwind`text-white text-center font-semibold`}>
+                    Delete Post
+                  </Text>
+                </TouchableOpacity>
+              )}
               <TouchableOpacity
                 onPress={() => handleBlockProfile(selectedPost)}
                 style={[

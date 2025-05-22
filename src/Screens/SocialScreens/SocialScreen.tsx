@@ -68,7 +68,8 @@ const SocialScreen = () => {
                 width: screenWidth * 0.33,
                 height: 150,
                 resizeMode: 'cover',
-                borderRadius: 8,
+                borderRadius: 6,
+                padding: 10,
               }}
             />
 

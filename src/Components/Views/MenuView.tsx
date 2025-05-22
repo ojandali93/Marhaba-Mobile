@@ -26,7 +26,7 @@ const MenuView = ({updateTab}: MenuViewProps) => {
 
   const navigation = useNavigation();
   const [incompleteProfile, setIncompleteProfile] = useState(false);
-  const [viewRelationships, setViewRelationships] = useState(false);
+  const [viewRelationships, setViewRelationships] = useState(profile.mainView);
   const logout = async () => {
     try {
       removeSession();
@@ -200,7 +200,7 @@ const MenuView = ({updateTab}: MenuViewProps) => {
             tailwind`text-base font-semibold`,
             {color: themeColors.primary},
           ]}>
-          {viewRelationships ? 'Social' : 'Relationships'}
+          {viewRelationships === 'Social' ? 'Social' : 'Relationships'}
         </Text>
 
         <View style={{transform: [{scale: 0.7}]}}>

@@ -70,7 +70,7 @@ const BottomTabNavigation = () => {
   }, [userId, profile]);
 
   const transparentScreens = [
-    'Feed',
+    'Feeds',
     'SingleProfile',
     'SingleProfileSearch',
     'Profiles',
@@ -118,21 +118,31 @@ const BottomTabNavigation = () => {
 
   return (
     <Tab.Navigator screenOptions={screenOptions}>
-      <Tab.Screen
-        name="Feeds"
-        component={
-          profile.mainView === 'Relationships'
-            ? FeedStackNavigation
-            : SocialStackNavigation
-        }
-        options={({route}) => ({
-          tabBarIcon: ({focused}) => (
-            <View style={tailwind`items-center`}>
-              {renderIcon(Grid, focused)}
-            </View>
-          ),
-        })}
-      />
+      {profile.mainView === 'Relationships' ? (
+        <Tab.Screen
+          name="Feeds"
+          component={FeedStackNavigation}
+          options={({route}) => ({
+            tabBarIcon: ({focused}) => (
+              <View style={tailwind`items-center`}>
+                {renderIcon(Grid, focused)}
+              </View>
+            ),
+          })}
+        />
+      ) : (
+        <Tab.Screen
+          name="Social"
+          component={SocialStackNavigation}
+          options={({route}) => ({
+            tabBarIcon: ({focused}) => (
+              <View style={tailwind`items-center`}>
+                {renderIcon(Grid, focused)}
+              </View>
+            ),
+          })}
+        />
+      )}
       <Tab.Screen
         name="List"
         component={LikeStackNavigation}
