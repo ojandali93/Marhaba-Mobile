@@ -8,6 +8,7 @@ import {useNavigation} from '@react-navigation/native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {track} from '@amplitude/analytics-react-native';
+import {Switch} from 'react-native-gesture-handler';
 interface MenuViewProps {
   updateTab: (tab: string) => void;
 }
@@ -20,8 +21,12 @@ const MenuView = ({updateTab}: MenuViewProps) => {
     profile,
     checkAuthenticated,
   } = useProfile();
+
+  const {grabUserProfile, userId} = useProfile();
+
   const navigation = useNavigation();
   const [incompleteProfile, setIncompleteProfile] = useState(false);
+  const [viewRelationships, setViewRelationships] = useState(false);
   const logout = async () => {
     try {
       removeSession();
@@ -71,6 +76,32 @@ const MenuView = ({updateTab}: MenuViewProps) => {
         },
       ],
     );
+  };
+
+  const updateView = async () => {
+    setViewRelationships(!viewRelationships);
+    console.log(
+      'viewRelationships',
+      viewRelationships ? 'Relationships' : 'Social',
+    );
+    try {
+      const response = await axios.put(
+        'https://marhaba-server.onrender.com/api/account/updateView',
+        {
+          userId: userId,
+          view: viewRelationships ? 'Relationships' : 'Social',
+        }, // `data` key is required for DELETE body
+      );
+      if (response.data?.success) {
+        console.log('✅ Account successfully deleted');
+        grabUserProfile(userId);
+      } else {
+        Alert.alert('Error', 'Failed to delete account.');
+      }
+    } catch (error) {
+      console.error('❌ Delete account error:', error);
+      Alert.alert('Error', 'An unexpected error occurred.');
+    }
   };
 
   useEffect(() => {
@@ -153,6 +184,30 @@ const MenuView = ({updateTab}: MenuViewProps) => {
         </Text>
         <ChevronsRight height={24} width={24} color={themeColors.primary} />
       </TouchableOpacity>
+
+      <TouchableOpacity
+        onPress={() => {
+          track('toggles between social and relationships', {
+            targetUserId: profile.userId,
+          });
+        }}
+        style={[
+          tailwind`flex-row justify-between items-center p-4 rounded-2 mt-2`,
+          {backgroundColor: themeColors.darkGrey},
+        ]}>
+        <Text
+          style={[
+            tailwind`text-base font-semibold`,
+            {color: themeColors.primary},
+          ]}>
+          {viewRelationships ? 'Social' : 'Relationships'}
+        </Text>
+
+        <View style={{transform: [{scale: 0.7}]}}>
+          <Switch value={viewRelationships} onValueChange={updateView} />
+        </View>
+      </TouchableOpacity>
+
       {profile.tier === 3 && (
         <TouchableOpacity
           onPress={() => updateTab('Viewed')}

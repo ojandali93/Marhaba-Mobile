@@ -23,6 +23,7 @@ import AdminReviewScreen from '../Screens/HomeScreens/AdminReviewScreen';
 import {useProfile} from '../Context/ProfileContext';
 import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
 import LoadDtabaseScreen from '../Screens/HomeScreens/LoadDtabaseScreen';
+import SocialStackNavigation from './SocialStackNavigation';
 
 const Tab = createBottomTabNavigator();
 
@@ -69,7 +70,7 @@ const BottomTabNavigation = () => {
   }, [userId, profile]);
 
   const transparentScreens = [
-    'Feeds',
+    'Feed',
     'SingleProfile',
     'SingleProfileSearch',
     'Profiles',
@@ -113,11 +114,17 @@ const BottomTabNavigation = () => {
     tabBarShowLabel: false,
   });
 
+  console.log('profile.view', profile.mainView);
+
   return (
     <Tab.Navigator screenOptions={screenOptions}>
       <Tab.Screen
         name="Feeds"
-        component={FeedStackNavigation}
+        component={
+          profile.mainView === 'Relationships'
+            ? FeedStackNavigation
+            : SocialStackNavigation
+        }
         options={({route}) => ({
           tabBarIcon: ({focused}) => (
             <View style={tailwind`items-center`}>

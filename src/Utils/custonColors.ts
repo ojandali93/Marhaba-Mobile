@@ -1,5 +1,5 @@
 const themeColors = {
-  primary: '#00796B',           // Rich teal for brand identity
+  primary: '#008080',           // Rich teal for brand identity
   primaryDark: '#004D40',       // Darker teal for accents and buttons
   primaryOpacity: 'rgba(0, 121, 107, 0.8)',
 
