@@ -466,12 +466,31 @@ const CreatingProfileScreen = () => {
       .then(response => {
         console.log('future response:', response);
         track('Future Created');
+        sendNotification(userId);
       })
       .catch(error => {
         if (error) {
           console.log('❌ Server responded with status:', error.error);
         }
       });
+  };
+
+  const sendNotification = async () => {
+    try {
+      const {data, error} = await axios.post(
+        'https://marhaba-server.onrender.com/api/admin/sendNotificationToAllAdmins',
+        {
+          title: 'New Account Created',
+          body: 'A new profile needs to be reviewed and approved.',
+        },
+      );
+      if (error) {
+        console.log('❌ Server responded with status:', error.error);
+      }
+      console.log('notification response:', data);
+    } catch (error) {
+      console.log('❌ Server responded with status:', error.error);
+    }
   };
 
   return (

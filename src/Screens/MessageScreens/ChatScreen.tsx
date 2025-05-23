@@ -32,7 +32,8 @@ const openingPrompts = [
 ];
 
 const ChatScreen = ({route}) => {
-  const {userId, profile, setHasUnreadMessages} = useProfile();
+  const {userId, profile, setHasUnreadMessages, fetchUnreadMessages} =
+    useProfile();
   const jwtToken = profile?.jwtToken;
   const {conversation} = route.params;
   const navigation = useNavigation();
@@ -99,15 +100,6 @@ const ChatScreen = ({route}) => {
       }
     };
 
-    markChatActive();
-
-    return () => {
-      markChatInactive();
-    };
-  }, [conversationId]);
-
-  // Fetch existing messages
-  useEffect(() => {
     const fetchMessages = async () => {
       try {
         const res = await axios.get(
@@ -122,8 +114,29 @@ const ChatScreen = ({route}) => {
       }
     };
 
+    markChatActive();
     fetchMessages();
+    if (userId && conversationId) {
+      markMessagesAsRead();
+    }
+
+    return () => {
+      markChatInactive();
+    };
   }, [conversationId]);
+
+  const markMessagesAsRead = async () => {
+    try {
+      await axios.put(
+        'https://marhaba-server.onrender.com/api/conversation/read',
+        {conversationId, userId},
+      );
+      console.log('✅ Messages marked as read');
+      fetchUnreadMessages(jwtToken, userId);
+    } catch (err) {
+      console.error('❌ Error marking messages as read:', err);
+    }
+  };
 
   // Join socket room + listener for real-time messages
   useEffect(() => {
@@ -250,12 +263,9 @@ const ChatScreen = ({route}) => {
             </Text>
           </View>
           <TouchableOpacity
-            onPress={() => {
-              track(`Viewed profile (Chat Screen): ${otherUser.name}`, {
-                targetUserId: userId,
-              });
-              navigation.navigate('SingleProfile', {profile: otherUser});
-            }}>
+            onPress={() =>
+              navigation.navigate('SingleProfile', {profile: otherUser})
+            }>
             <Info color={themeColors.primary} height={24} width={24} />
           </TouchableOpacity>
         </View>

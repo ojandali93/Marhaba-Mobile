@@ -73,13 +73,11 @@ function App(): React.JSX.Element {
 
   useEffect(() => {
     if (ready && profile?.userId) {
-      const intervalId = setInterval(() => {
-        fetchLikes(profile.userId);
-        fetchUnreadMessages(profile.jwtToken, profile.userId);
-        if (profile.approved === 'rejected') {
-          fetchReviewNotes(profile.userId);
-        }
-      }, 2 * 60 * 1000);
+      fetchLikes(profile.userId);
+      fetchUnreadMessages(profile.jwtToken, profile.userId);
+      if (profile.approved === 'rejected') {
+        fetchReviewNotes(profile.userId);
+      }
       return () => clearInterval(intervalId);
     }
   }, [ready, profile?.userId]);
