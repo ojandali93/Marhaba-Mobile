@@ -1,5 +1,5 @@
 import React from 'react';
-import {Dimensions, Text, TextInput, View} from 'react-native';
+import {Dimensions, Text, TextInput, View, Keyboard} from 'react-native';
 import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
 
@@ -33,7 +33,7 @@ const AuthInputStandardNumber: React.FC<InputProps> = ({
       </View>
       <View
         style={[
-          tailwind`w-full border rounded-lg px-3 py-2`,
+          tailwind`w-full border rounded-full px-4 py-2`,
           {
             backgroundColor: themeColors.secondary,
             borderColor: themeColors.primary,
@@ -42,15 +42,14 @@ const AuthInputStandardNumber: React.FC<InputProps> = ({
         <TextInput
           value={value}
           onChangeText={changeText}
-          placeholder={fieldName.toLowerCase()}
-          placeholderTextColor={'grey'}
+          placeholder={fieldName}
+          placeholderTextColor="gray"
           secureTextEntry={secure}
-          style={tailwind`text-base`}
-          paddingBottom={8}
-          paddingTop={0}
-          lineHeight={24} // or match to font size
-          textAlignVertical="center" // ensures proper vertical alignment
+          style={tailwind`text-base mb-1`}
+          multiline={false}
           keyboardType="phone-pad"
+          returnKeyType="done"
+          onSubmitEditing={Keyboard.dismiss}
         />
       </View>
     </View>

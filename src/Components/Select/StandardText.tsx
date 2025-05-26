@@ -1,5 +1,5 @@
 import React from 'react';
-import {Dimensions, Text, TextInput, View} from 'react-native';
+import {Dimensions, Text, TextInput, View, Keyboard} from 'react-native';
 import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
 
@@ -42,7 +42,7 @@ const StandardText: React.FC<InputProps> = ({
       )}
       <View
         style={[
-          tailwind`w-full border rounded-lg px-3 py-2`,
+          tailwind`w-full border rounded-full px-4 py-2`,
           {
             backgroundColor: themeColors.secondary,
             borderColor: themeColors.primary,
@@ -57,6 +57,8 @@ const StandardText: React.FC<InputProps> = ({
           multiline={multiline}
           style={tailwind`text-base mb-1`}
           textAlignVertical={multiline ? 'top' : 'center'}
+          returnKeyType="done"
+          onSubmitEditing={Keyboard.dismiss}
         />
       </View>
     </View>

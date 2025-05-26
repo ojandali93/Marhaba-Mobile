@@ -46,6 +46,7 @@ import {
 import {Camera} from 'react-native-feather';
 import AuthMainButton from '../../Components/Buttons/AuthMainButton';
 import {createUserAccount} from '../../Utils/Functions/AccountFunctions';
+import axios from 'axios';
 const communicationStyles = [
   'Direct & honest',
   'Playful & teasing',
@@ -91,6 +92,10 @@ if (Platform.OS === 'android') {
 }
 
 const LoadDtabaseScreen = () => {
+  const [gptPrompt, setGptPrompt] = useState('');
+  const [gptResponse, setGptResponse] = useState('');
+  const [gptNumber, setGptNumber] = useState(0);
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [phone, setPhone] = useState('');
@@ -393,6 +398,33 @@ const LoadDtabaseScreen = () => {
     }
   };
 
+  const callGenerateProfilePrompt = async (): Promise<any[]> => {
+    try {
+      const res = await axios.post(
+        'https://marhaba-server.onrender.com/api/generate/user',
+        {
+          description: gptPrompt,
+          count: gptNumber,
+        },
+      );
+
+      const data = res.data;
+
+      if (!data.success) {
+        console.error('❌ GPT generation failed:', data.error || data.message);
+        return [];
+      }
+
+      const gptResponse = data.profiles;
+      console.log('✅ GPT Profiles Generated:', gptResponse.length);
+      console.log('gptResponse', gptResponse);
+      setGptResponse(gptResponse);
+    } catch (error) {
+      console.error('❌ Error calling GPT profile generator:', error);
+      return [];
+    }
+  };
+
   return (
     <View style={[tailwind`flex-1`, {backgroundColor: themeColors.secondary}]}>
       <View
@@ -404,6 +436,27 @@ const LoadDtabaseScreen = () => {
           Create A User
         </Text>
       </View>
+      <TextInput
+        value={gptPrompt}
+        onChangeText={setGptPrompt}
+        placeholder="Enter a prompt"
+        style={tailwind`border-2 border-gray-300 rounded-md p-2 mb-2`}
+      />
+      <TextInput
+        value={gptNumber}
+        onChangeText={setGptNumber}
+        placeholder="Enter a number"
+        style={tailwind`border-2 border-gray-300 rounded-md p-2 mb-2`}
+      />
+      <TouchableOpacity
+        title="Generate"
+        onPress={callGenerateProfilePrompt}
+        style={[
+          tailwind`rounded-md p-2 mb-2`,
+          {backgroundColor: themeColors.primary},
+        ]}>
+        <Text style={tailwind`text-white`}>Generate</Text>
+      </TouchableOpacity>
       <ScrollView style={tailwind`flex-1 mb-24`}>
         <AithInputStandard
           fieldName="Email"

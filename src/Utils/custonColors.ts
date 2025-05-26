@@ -8,9 +8,9 @@ const themeColors = {
   darkSecondary: '#d6d1c1',
   lightGrey: '#B0B0B0',
   darkGrey: 'rgba(0, 0, 0, 0.8)',
-  lightGreyOpacity: 'rgba(0, 0, 0, 0.4)',
+  lightGreyOpacity: 'rgba(0, 0, 0, 0.55)',
 
-  darkSecondaryOpacity: 'rgba(227, 224, 216, .7)',
+  darkSecondaryOpacity: 'rgba(227, 224, 216, .75)',
 
   green: '#4CAF50',
   red: '#E53935',

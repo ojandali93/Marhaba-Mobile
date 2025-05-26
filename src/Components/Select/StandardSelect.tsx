@@ -21,7 +21,7 @@ const StandardSelect = ({
   label,
 }: GenderPickerProps) => {
   return (
-    <View style={tailwind`w-full mt-4`}>
+    <View style={tailwind`w-full mt-4 max-h-42`}>
       {/* Label */}
       <Text style={tailwind`italic text-lg font-semibold px-2 pb-2`}>
         {label}{' '}
@@ -43,7 +43,7 @@ const StandardSelect = ({
               key={index}
               onPress={() => onSelect(option)}
               style={[
-                tailwind`rounded-full px-3 py-1 m-1 border`,
+                tailwind`rounded-full px-3.25 py-1.25 m-1 border`,
                 {
                   borderColor: themeColors.primary,
                   backgroundColor: isSelected
@@ -53,7 +53,7 @@ const StandardSelect = ({
               ]}>
               <Text
                 style={[
-                  tailwind`text-sm font-semibold`,
+                  tailwind`text-base`,
                   {
                     color: isSelected ? 'white' : 'black',
                   },

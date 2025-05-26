@@ -68,7 +68,7 @@ const UpgradeView = ({updateTab}) => {
   const [availableSubs, setAvailableSubs] = useState<RNIap.Subscription[]>([]);
 
   const productIds = React.useMemo(
-    () => ['marhabah_pro_subscription', 'marhabah_pro_plus_subscription'],
+    () => ['marhabah_pro_subscriptions', 'marhabah_pro_plus_subscriptions'],
     [],
   );
 
@@ -215,6 +215,18 @@ const UpgradeView = ({updateTab}) => {
           {tiers.find(t => t.id === currentTier)?.name}
         </Text>
       </View>
+
+      <TouchableOpacity
+        style={tailwind`mt-4`}
+        onPress={() =>
+          Linking.openURL(
+            'https://app.termly.io/policy-viewer/policy.html?policyUUID=36e1fc4b-c6f8-47a7-b03f-8fd1e1144c89',
+          )
+        }>
+        <Text style={tailwind`underline text-gray-300`}>
+          View Privacy Policy
+        </Text>
+      </TouchableOpacity>
 
       <TouchableOpacity
         style={tailwind`mt-4`}

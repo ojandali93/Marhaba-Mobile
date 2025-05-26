@@ -78,7 +78,6 @@ function App(): React.JSX.Element {
       if (profile.approved === 'rejected') {
         fetchReviewNotes(profile.userId);
       }
-      return () => clearInterval(intervalId);
     }
   }, [ready, profile?.userId]);
 

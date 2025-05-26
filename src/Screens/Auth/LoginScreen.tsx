@@ -7,6 +7,9 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
+  KeyboardAvoidingView,
+  Platform,
+  Keyboard,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import tailwind from 'twrnc';
@@ -22,8 +25,10 @@ import AuthLoginInput from '../../Components/Inputs/AuthLoginInput';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {identify, setUserId, track} from '@amplitude/analytics-react-native';
+import backgroundIMage from '../../Assets/m-flow-1-3.png';
 
 const screenHeight = Dimensions.get('window').height;
+const screenWidth = Dimensions.get('window').width;
 
 const LoginScreen = () => {
   const navigation = useNavigation();
@@ -91,80 +96,109 @@ const LoginScreen = () => {
   //#76ccc2
 
   return (
-    <LinearGradient
-      colors={['#76ccc2', '#afdbd6']}
-      style={tailwind`flex-1 justify-between`}>
-      <View>
-        <View
-          style={[
-            tailwind`flex items-center justify-center`,
-            {marginTop: screenHeight * 0.1},
-          ]}>
-          <Image style={tailwind`w-22 h-22`} source={Icon} />
-          <View style={tailwind`mt-2 items-center`}>
-            <Image style={tailwind`w-62 h-12`} source={Logo} />
-            <Text style={tailwind`mt-2 text-lg font-semibold text-gray-800`}>
-              Where love begins with hello!
-            </Text>
-          </View>
-        </View>
-        <View style={tailwind`w-full flex items-center justify-center mt-4`}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={{width: screenWidth, height: screenHeight}}>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View style={{width: screenWidth, height: screenHeight}}>
+          <Image
+            source={backgroundIMage}
+            style={[
+              tailwind`absolute z-0`,
+              {width: screenWidth, height: screenHeight},
+            ]}
+            resizeMode="cover"
+          />
           <View
             style={[
-              tailwind`w-11/12 p-6 rounded-2`,
-              {backgroundColor: '#9be0d9'},
-            ]}>
-            <AuthLoginInput
-              fieldName="Email"
-              value={email}
-              changeText={handleUpdateEmail}
-              iconName="Mail"
-              valid
-            />
-            <View style={tailwind`mt-3`}>
-              <AuthLoginInput
-                fieldName="Password"
-                value={password}
-                changeText={setPassword}
-                secure={true}
-                iconName="Lock"
-                valid
-              />
+              tailwind`absolute z-1`,
+              {
+                width: screenWidth,
+                height: screenHeight,
+                backgroundColor: themeColors.lightGreyOpacity,
+              },
+            ]}></View>
+          <View
+            style={tailwind`absolute z-2 w-full h-full flex flex-col justify-between items-center pb-8`}>
+            <View
+              style={[
+                tailwind`flex items-center justify-center`,
+                {marginTop: screenHeight * 0.09},
+              ]}>
+              <Image style={tailwind`w-20 h-20`} source={Icon} />
+              <View style={tailwind`mt-6 items-center`}>
+                <Image style={tailwind`w-62 h-12`} source={Logo} />
+                <Text style={tailwind`mt-2 text-lg font-semibold text-white`}>
+                  Where love begins with hello!
+                </Text>
+              </View>
             </View>
-            <View style={tailwind`w-full flex flex-row justify-end pr-2 mt-2`}>
-              <TouchableOpacity
-                onPress={() => {
-                  navigation.navigate('ForgotPassword');
-                }}>
-                <View style={tailwind`bg-transparent`}>
-                  <Text style={tailwind`font-semibold`}>Forgot Password?</Text>
+            <View
+              style={tailwind`w-full flex items-center justify-center mt-4`}>
+              <View style={tailwind`w-11/12 p-6 rounded-2`}>
+                <AuthLoginInput
+                  fieldName="Email"
+                  value={email}
+                  changeText={handleUpdateEmail}
+                  iconName="Mail"
+                  valid
+                />
+                <View style={tailwind`mt-3`}>
+                  <AuthLoginInput
+                    fieldName="Password"
+                    value={password}
+                    changeText={setPassword}
+                    secure={true}
+                    iconName="Lock"
+                    valid
+                  />
                 </View>
-              </TouchableOpacity>
-            </View>
-            <View style={tailwind`w-full flex flex-row justify-end`}>
-              <AuthMainButton text={'Login'} click={login} loading={loading} />
+                <View
+                  style={tailwind`w-full flex flex-row justify-end pr-2 mt-2`}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      navigation.navigate('ForgotPassword');
+                    }}>
+                    <View style={tailwind`bg-transparent`}>
+                      <Text style={tailwind`font-semibold text-white`}>
+                        Forgot Password?
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                </View>
+                <View style={tailwind`w-full flex flex-row justify-end`}>
+                  <AuthMainButton
+                    text={'Login'}
+                    click={login}
+                    loading={loading}
+                  />
+                </View>
+                <View
+                  style={tailwind`w-full flex-row justify-center items-center mt-4`}>
+                  <Text style={tailwind`text-base text-white font-semibold`}>
+                    I'm a new user.
+                  </Text>
+                  <TouchableWithoutFeedback
+                    onPress={() => {
+                      navigation.navigate('Signup');
+                    }}>
+                    <View>
+                      <Text
+                        style={[
+                          tailwind`text-base font-bold ml-2`,
+                          {color: themeColors.primary},
+                        ]}>
+                        Sign Up
+                      </Text>
+                    </View>
+                  </TouchableWithoutFeedback>
+                </View>
+              </View>
             </View>
           </View>
         </View>
-      </View>
-      <View style={tailwind`w-full flex-row justify-center items-center mb-14`}>
-        <Text style={tailwind`text-base`}>I'm a new user. </Text>
-        <TouchableWithoutFeedback
-          onPress={() => {
-            navigation.navigate('Signup');
-          }}>
-          <View>
-            <Text
-              style={[
-                tailwind`text-base font-bold`,
-                {color: themeColors.primary},
-              ]}>
-              Sign Up
-            </Text>
-          </View>
-        </TouchableWithoutFeedback>
-      </View>
-    </LinearGradient>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 

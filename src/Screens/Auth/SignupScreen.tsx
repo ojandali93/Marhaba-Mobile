@@ -5,6 +5,9 @@ import {
   Text,
   TouchableWithoutFeedback,
   View,
+  KeyboardAvoidingView,
+  Platform,
+  Keyboard,
 } from 'react-native';
 import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
@@ -22,6 +25,7 @@ import axios from 'axios';
 import LinearGradient from 'react-native-linear-gradient';
 import StandardText from '../../Components/Select/StandardText';
 import {track} from '@amplitude/analytics-react-native';
+import ContinueButton from '../../Components/Buttons/ContinueButton';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -132,113 +136,112 @@ const SignupScreen = () => {
   };
 
   return (
-    <LinearGradient
-      colors={['#76ccc2', '#afdbd6']}
-      style={tailwind`h-full w-full justify-between`}>
-      <View
-        style={[
-          tailwind`flex-1 w-full h-full flex items-center`,
-          {backgroundColor: themeColors.secondary},
-        ]}>
-        <View style={tailwind`w-11/12 h-10/12 flex`}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={tailwind`h-full w-full`}>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <LinearGradient
+          colors={['#76ccc2', '#afdbd6']}
+          style={tailwind`h-full w-full justify-between`}>
           <View
             style={[
-              tailwind`flex`,
-              {marginTop: screenHeight * 0.06}, // 20% of screen height
+              tailwind`flex-1 w-full h-full flex items-center`,
+              {backgroundColor: themeColors.secondary},
             ]}>
-            <View style={tailwind`mt-2`}>
-              <Text
-                style={[
-                  tailwind`mt-2 text-3xl font-semibold`,
-                  {color: themeColors.primary},
-                ]}>
-                Signup
-              </Text>
-              <Text style={tailwind`text-base mt-1`}>
-                Enter your details below.
-              </Text>
-            </View>
-          </View>
-          <View style={tailwind`w-full flex items-center mt-2`}>
-            <View style={tailwind`w-full`}>
-              <StandardText
-                fieldName="Email"
-                value={email}
-                changeText={handleEmailUpdate}
-                label="Email"
-                valid
-              />
-              {!validEmail && (
-                <Text style={tailwind`text-xs text-red-600 mt-1`}>
-                  Enter valid email.
-                </Text>
-              )}
-              {!availableEmail && (
-                <Text style={tailwind`text-xs text-red-600 mt-1`}>
-                  Email is already in use.
-                </Text>
-              )}
-              <StandardText
-                fieldName="Password:"
-                value={password}
-                changeText={handleUpdatePassword}
-                secure={true}
-                valid={validPassowrd}
-                label="Password"
-              />
-              {!validPassowrd && (
-                <Text style={tailwind`text-xs text-red-600 mt-1`}>
-                  Password requirements: 8+ chars, capital letter, number, and
-                  special character.
-                </Text>
-              )}
-              <StandardText
-                fieldName="Verify Password"
-                value={verify}
-                changeText={handleUpdateVerify}
-                secure={true}
-                valid={validVerify}
-                label="Verify Password"
-              />
-              {!validVerify && (
-                <Text style={tailwind`text-xs text-red-600 mt-1`}>
-                  Passwords & Verify do not match.
-                </Text>
-              )}
-              <AuthInputStandardNumber
-                fieldName="Phone"
-                value={phone}
-                changeText={(text: string) => setPhone(formatPhoneNumber(text))}
-                secure={false}
-                valid={true}
-                label="Phone"
-              />
-              <View style={tailwind`w-full flex flex-row justify-end`}>
-                <AuthMainButton text={'Signup'} click={redirectToIdentity} />
+            <View style={tailwind`w-11/12 h-10/12 flex`}>
+              <View style={[tailwind`flex`, {marginTop: screenHeight * 0.07}]}>
+                <View style={tailwind`mt-2`}>
+                  <Text
+                    style={[
+                      tailwind`mt-2 text-3xl font-semibold`,
+                      {color: themeColors.primary},
+                    ]}>
+                    Signup
+                  </Text>
+                  <Text style={tailwind`text-base mt-1`}>
+                    Enter your details below.
+                  </Text>
+                </View>
+              </View>
+              <View style={tailwind`w-full flex items-center mt-2`}>
+                <View style={tailwind`w-full`}>
+                  <StandardText
+                    fieldName="Email"
+                    value={email}
+                    changeText={handleEmailUpdate}
+                    label="Email"
+                    valid
+                  />
+                  {!validEmail && (
+                    <Text style={tailwind`text-xs text-red-600 mt-1`}>
+                      Enter valid email.
+                    </Text>
+                  )}
+                  {!availableEmail && (
+                    <Text style={tailwind`text-xs text-red-600 mt-1`}>
+                      Email is already in use.
+                    </Text>
+                  )}
+                  <StandardText
+                    fieldName="Password:"
+                    value={password}
+                    changeText={handleUpdatePassword}
+                    secure={true}
+                    valid={validPassowrd}
+                    label="Password"
+                  />
+                  {!validPassowrd && (
+                    <Text style={tailwind`text-xs text-red-600 mt-1`}>
+                      Password requirements: 8+ chars, capital letter, number,
+                      and special character.
+                    </Text>
+                  )}
+                  <StandardText
+                    fieldName="Verify Password"
+                    value={verify}
+                    changeText={handleUpdateVerify}
+                    secure={true}
+                    valid={validVerify}
+                    label="Verify Password"
+                  />
+                  {!validVerify && (
+                    <Text style={tailwind`text-xs text-red-600 mt-1`}>
+                      Passwords & Verify do not match.
+                    </Text>
+                  )}
+                  <AuthInputStandardNumber
+                    fieldName="Phone"
+                    value={phone}
+                    changeText={(text: string) =>
+                      setPhone(formatPhoneNumber(text))
+                    }
+                    secure={false}
+                    valid={true}
+                    label="Phone"
+                  />
+                </View>
               </View>
             </View>
-          </View>
-        </View>
-        <View
-          style={tailwind`absolute bottom-0 w-full flex-row justify-center items-center mb-14`}>
-          <Text style={tailwind`text-base`}>I'm already a user. </Text>
-          <TouchableWithoutFeedback
-            onPress={() => {
-              navigation.navigate('Login');
-            }}>
-            <View style={tailwind``}>
-              <Text
-                style={[
-                  tailwind`text-base font-bold`,
-                  {color: themeColors.primary},
-                ]}>
-                Login
-              </Text>
+            <View
+              style={tailwind`w-full absolute bottom-0 flex flex-row justify-between px-5 mb-16`}>
+              <View style={tailwind`flex flex-row items-center`}>
+                <TouchableWithoutFeedback
+                  onPress={() => {
+                    navigation.goBack();
+                  }}>
+                  <View style={tailwind``}>
+                    <Text style={tailwind`text-base font-bold text-red-400`}>
+                      Cancel
+                    </Text>
+                  </View>
+                </TouchableWithoutFeedback>
+              </View>
+              <ContinueButton text={'About You'} click={redirectToIdentity} />
             </View>
-          </TouchableWithoutFeedback>
-        </View>
-      </View>
-    </LinearGradient>
+          </View>
+        </LinearGradient>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 
