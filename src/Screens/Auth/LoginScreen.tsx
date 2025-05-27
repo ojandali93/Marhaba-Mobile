@@ -118,13 +118,9 @@ const LoginScreen = () => {
                 backgroundColor: themeColors.lightGreyOpacity,
               },
             ]}></View>
-          <View
-            style={tailwind`absolute z-2 w-full h-full flex flex-col justify-between items-center pb-8`}>
-            <View
-              style={[
-                tailwind`flex items-center justify-center`,
-                {marginTop: screenHeight * 0.09},
-              ]}>
+          <View style={tailwind`absolute z-2 w-full h-full`}>
+            {/* Top Section */}
+            <View style={tailwind`w-full items-center pt-10`}>
               <Image style={tailwind`w-20 h-20`} source={Icon} />
               <View style={tailwind`mt-6 items-center`}>
                 <Image style={tailwind`w-62 h-12`} source={Logo} />
@@ -132,10 +128,8 @@ const LoginScreen = () => {
                   Where love begins with hello!
                 </Text>
               </View>
-            </View>
-            <View
-              style={tailwind`w-full flex items-center justify-center mt-4`}>
-              <View style={tailwind`w-11/12 p-6 rounded-2`}>
+
+              <View style={tailwind`w-11/12 mt-6`}>
                 <AuthLoginInput
                   fieldName="Email"
                   value={email}
@@ -156,43 +150,36 @@ const LoginScreen = () => {
                 <View
                   style={tailwind`w-full flex flex-row justify-end pr-2 mt-2`}>
                   <TouchableOpacity
-                    onPress={() => {
-                      navigation.navigate('ForgotPassword');
-                    }}>
-                    <View style={tailwind`bg-transparent`}>
-                      <Text style={tailwind`font-semibold text-white`}>
-                        Forgot Password?
-                      </Text>
-                    </View>
+                    onPress={() => navigation.navigate('ForgotPassword')}>
+                    <Text style={tailwind`font-semibold text-white text-sm`}>
+                      Forgot Password?
+                    </Text>
                   </TouchableOpacity>
                 </View>
-                <View style={tailwind`w-full flex flex-row justify-end`}>
-                  <AuthMainButton
-                    text={'Login'}
-                    click={login}
-                    loading={loading}
-                  />
-                </View>
-                <View
-                  style={tailwind`w-full flex-row justify-center items-center mt-4`}>
-                  <Text style={tailwind`text-base text-white font-semibold`}>
-                    I'm a new user.
+              </View>
+            </View>
+
+            {/* Bottom Section */}
+            <View
+              style={[
+                tailwind`absolute bottom-8 w-full items-center px-6`,
+                Platform.OS === 'ios' ? tailwind`mb-4` : null,
+              ]}>
+              <AuthMainButton text={'Login'} click={login} loading={loading} />
+
+              <View style={tailwind`flex-row justify-center items-center mt-4`}>
+                <Text style={tailwind`text-base text-white font-semibold`}>
+                  I'm a new user.
+                </Text>
+                <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
+                  <Text
+                    style={[
+                      tailwind`text-base font-bold ml-2`,
+                      {color: themeColors.primary},
+                    ]}>
+                    Sign Up
                   </Text>
-                  <TouchableWithoutFeedback
-                    onPress={() => {
-                      navigation.navigate('Signup');
-                    }}>
-                    <View>
-                      <Text
-                        style={[
-                          tailwind`text-base font-bold ml-2`,
-                          {color: themeColors.primary},
-                        ]}>
-                        Sign Up
-                      </Text>
-                    </View>
-                  </TouchableWithoutFeedback>
-                </View>
+                </TouchableOpacity>
               </View>
             </View>
           </View>

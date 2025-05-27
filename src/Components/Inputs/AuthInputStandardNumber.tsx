@@ -25,15 +25,22 @@ const AuthInputStandardNumber: React.FC<InputProps> = ({
   label,
 }) => {
   return (
-    <View style={tailwind`w-full flex justify-center rounded-2 mt-2`}>
-      <View style={tailwind``}>
-        <Text style={tailwind`italic text-lg font-semibold px-2 pb-2`}>
-          {label} {optional ? ' (optional)' : null}
+    <View style={tailwind`w-full mt-3`}>
+      {fieldName && (
+        <Text style={tailwind`italic text-base font-semibold px-2 pb-1`}>
+          {label}{' '}
+          {optional ? (
+            <Text style={tailwind`text-sm italic text-gray-400`}>
+              (optional)
+            </Text>
+          ) : (
+            <Text style={tailwind`text-red-500`}>*</Text>
+          )}
         </Text>
-      </View>
+      )}
       <View
         style={[
-          tailwind`w-full border rounded-full px-4 py-2`,
+          tailwind`w-full justify-center border rounded-full px-4 py-1`,
           {
             backgroundColor: themeColors.secondary,
             borderColor: themeColors.primary,
@@ -45,9 +52,8 @@ const AuthInputStandardNumber: React.FC<InputProps> = ({
           placeholder={fieldName}
           placeholderTextColor="gray"
           secureTextEntry={secure}
-          style={tailwind`text-base mb-1`}
-          multiline={false}
-          keyboardType="phone-pad"
+          style={tailwind`text-base mb-2.5`}
+          textAlignVertical={'center'}
           returnKeyType="done"
           onSubmitEditing={Keyboard.dismiss}
         />

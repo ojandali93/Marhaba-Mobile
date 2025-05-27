@@ -15,7 +15,7 @@ const ContinueButton: React.FC<ButtonProps> = ({text, click, loading}) => {
     <TouchableOpacity
       onPress={click}
       style={[
-        tailwind`flex flex-row justify-center items-center rounded-3 px-3 py-2`,
+        tailwind`flex flex-row justify-center items-center rounded-full px-3 py-2`,
         {
           borderColor: themeColors.primary,
           backgroundColor: themeColors.primary,
@@ -24,7 +24,7 @@ const ContinueButton: React.FC<ButtonProps> = ({text, click, loading}) => {
       {loading ? (
         <ActivityIndicator size={'small'} color={'white'} />
       ) : (
-        <Text style={tailwind`font-semibold text-white text-base`}>{text}</Text>
+        <Text style={tailwind`font-semibold text-white text-sm`}>{text}</Text>
       )}
       <ChevronsRight
         height={20}

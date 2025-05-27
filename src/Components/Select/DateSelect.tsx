@@ -72,7 +72,7 @@ const DateSelect: React.FC<InputProps> = ({fieldName, dob, setDate}) => {
           },
         ]}>
         <View style={tailwind``}>
-          <Text style={tailwind`italic text-lg font-semibold px-2 pb-2`}>
+          <Text style={tailwind`italic text-base font-semibold px-2 pb-1`}>
             {fieldName}
             <Text style={tailwind`text-red-500`}> * </Text>
           </Text>
@@ -80,7 +80,7 @@ const DateSelect: React.FC<InputProps> = ({fieldName, dob, setDate}) => {
         <TouchableOpacity onPress={() => setOpen(true)}>
           <Text
             style={[
-              tailwind`w-full border rounded-full px-3 py-3`,
+              tailwind`w-full border rounded-full px-4 py-3`,
               {
                 backgroundColor: themeColors.secondary,
                 borderColor: themeColors.primary,

@@ -14,7 +14,7 @@ const AuthMainButton: React.FC<ButtonProps> = ({text, click, loading}) => {
     <TouchableOpacity
       onPress={click}
       style={[
-        tailwind`w-full flex justify-center items-center rounded-full border-2 mt-6 py-3`,
+        tailwind`w-full flex justify-center items-center rounded-full border-2 mt-6 py-2`,
         {
           borderColor: themeColors.primary,
           backgroundColor: themeColors.primary,

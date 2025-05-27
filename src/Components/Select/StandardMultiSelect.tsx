@@ -42,7 +42,7 @@ const StandardMultiSelect = ({
               key={index}
               onPress={() => onSelect(option)}
               style={[
-                tailwind`rounded-full px-3 py-1 m-1 border`,
+                tailwind`rounded-full px-3.25 py-1.25 m-1 border`,
                 {
                   borderColor: themeColors.primary,
                   backgroundColor: isSelected
@@ -52,7 +52,7 @@ const StandardMultiSelect = ({
               ]}>
               <Text
                 style={[
-                  tailwind`text-sm font-semibold`,
+                  tailwind`text-sm`,
                   {
                     color: isSelected ? 'white' : 'black',
                   },

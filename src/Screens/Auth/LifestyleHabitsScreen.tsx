@@ -8,6 +8,7 @@ import {
   View,
   KeyboardAvoidingView,
   Platform,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
@@ -30,6 +31,8 @@ import {
   marriageStatusOptions,
 } from '../../Utils/SelectOptions';
 import {track} from '@amplitude/analytics-react-native';
+import ContinueButton from '../../Components/Buttons/ContinueButton';
+import {ChevronsLeft} from 'react-native-feather';
 const screenHeight = Dimensions.get('window').height;
 
 const LifestyleHabitsScreen = () => {
@@ -114,33 +117,41 @@ const LifestyleHabitsScreen = () => {
         {backgroundColor: themeColors.secondary},
       ]}>
       <View style={tailwind`w-11/12 h-10/12 flex`}>
-        <View
-          style={[
-            tailwind`flex`,
-            {marginTop: screenHeight * 0.06}, // 20% of screen height
-          ]}>
-          <View
-            style={tailwind`mt-2 flex flex-row justify-between items-center`}>
-            <Text
-              style={[
-                tailwind`mt-2 text-3xl font-semibold`,
-                {color: themeColors.primary},
-              ]}>
-              Lifestyle Habits
+        <View style={[tailwind`flex`, {marginTop: screenHeight * 0.07}]}>
+          <View style={tailwind`mt-2`}>
+            <View
+              style={tailwind`w-full flex flex-row items-center justify-between`}>
+              <View style={tailwind`flex flex-row items-center`}>
+                <TouchableOpacity onPress={() => navigation.goBack()}>
+                  <ChevronsLeft
+                    height={30}
+                    width={30}
+                    color={themeColors.primary}
+                    style={tailwind`mr-1`}
+                  />
+                </TouchableOpacity>
+                <Text
+                  style={[
+                    tailwind`text-3xl font-semibold`,
+                    {color: themeColors.primary},
+                  ]}>
+                  Lifestyle
+                </Text>
+              </View>
+              <TouchableOpacity
+                onPress={() => {
+                  track('Lifestyle Habits Skipped');
+                  navigation.navigate('Accept');
+                }}
+                style={tailwind`mt-2`}>
+                <Text style={tailwind`text-base font-semibold text-red-500`}>
+                  Skip
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <Text style={tailwind`mt-2 text-sm font-semibold text-gray-500`}>
+              Please fill out the following information.
             </Text>
-            <TouchableOpacity
-              onPress={() => {
-                track('Lifestyle Habits Skipped');
-                navigation.navigate('Accept');
-              }}
-              style={[
-                tailwind`mt-2 text-lg font-semibold`,
-                {color: themeColors.primary},
-              ]}>
-              <Text style={tailwind`text-base font-semibold text-red-500`}>
-                Skip
-              </Text>
-            </TouchableOpacity>
           </View>
         </View>
         <View style={tailwind`w-full flex justify-center`}></View>
@@ -209,18 +220,21 @@ const LifestyleHabitsScreen = () => {
           />
         </ScrollView>
       </View>
-      <View style={tailwind`absolute w-3/4 bottom-12`}>
-        <View style={tailwind` w-full flex flex-row justify-end`}>
-          <AuthMainButton
-            text={'Continue'}
-            click={redirectToPersonalityScreen}
-          />
+      <View
+        style={tailwind`w-full absolute bottom-0 flex flex-row justify-between px-5 mb-12`}>
+        <View style={tailwind`flex flex-row items-center`}>
+          <TouchableWithoutFeedback
+            onPress={() => {
+              navigation.popToTop();
+            }}>
+            <View style={tailwind``}>
+              <Text style={tailwind`text-sm font-bold text-red-400`}>
+                Cancel
+              </Text>
+            </View>
+          </TouchableWithoutFeedback>
         </View>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={tailwind`w-full items-center mt-4`}>
-          <Text>Back</Text>
-        </TouchableOpacity>
+        <ContinueButton text={'Terms'} click={redirectToPersonalityScreen} />
       </View>
     </KeyboardAvoidingView>
   );

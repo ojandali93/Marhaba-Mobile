@@ -182,7 +182,7 @@ const BottomTabNavigation = () => {
               ),
             })}
           />
-          <Tab.Screen
+          {/* <Tab.Screen
             name="Database"
             component={LoadDtabaseScreen}
             options={({route}) => ({
@@ -192,7 +192,7 @@ const BottomTabNavigation = () => {
                 </View>
               ),
             })}
-          />
+          /> */}
         </>
       )}
       <Tab.Screen

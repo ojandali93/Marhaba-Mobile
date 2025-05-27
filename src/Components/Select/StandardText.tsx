@@ -29,7 +29,7 @@ const StandardText: React.FC<InputProps> = ({
   return (
     <View style={tailwind`w-full mt-3`}>
       {label && (
-        <Text style={tailwind`italic text-lg font-semibold px-2 pb-2`}>
+        <Text style={tailwind`italic text-base font-semibold px-2 pb-1`}>
           {label}{' '}
           {optional ? (
             <Text style={tailwind`text-sm italic text-gray-400`}>
@@ -42,7 +42,7 @@ const StandardText: React.FC<InputProps> = ({
       )}
       <View
         style={[
-          tailwind`w-full border rounded-full px-4 py-2`,
+          tailwind`w-full justify-center border rounded-full px-4 py-1`,
           {
             backgroundColor: themeColors.secondary,
             borderColor: themeColors.primary,
@@ -55,7 +55,7 @@ const StandardText: React.FC<InputProps> = ({
           placeholderTextColor="gray"
           secureTextEntry={secure}
           multiline={multiline}
-          style={tailwind`text-base mb-1`}
+          style={tailwind`text-base mb-2.5`}
           textAlignVertical={multiline ? 'top' : 'center'}
           returnKeyType="done"
           onSubmitEditing={Keyboard.dismiss}
