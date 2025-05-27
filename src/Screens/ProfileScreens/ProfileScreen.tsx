@@ -87,7 +87,8 @@ const ProfileScreen = () => {
           tailwind`absolute left-0 right-0 bottom-19 rounded-t-2 ${
             activeTab === 'editProfile' ||
             activeTab === 'upgrade' ||
-            activeTab === 'Viewed'
+            activeTab === 'Viewed' ||
+            activeTab === 'visibility'
               ? 'h-10/12'
               : 'h-5/12'
           }`,

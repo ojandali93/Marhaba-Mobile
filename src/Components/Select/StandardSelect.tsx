@@ -21,9 +21,9 @@ const StandardSelect = ({
   label,
 }: GenderPickerProps) => {
   return (
-    <View style={tailwind`w-full mt-4`}>
+    <View style={tailwind`w-full mt-4 max-h-56`}>
       {/* Label */}
-      <Text style={tailwind`italic text-lg font-semibold px-2 pb-2`}>
+      <Text style={tailwind`italic text-base font-semibold pb-.5`}>
         {label}{' '}
         {optional ? (
           <Text>(optional)</Text>
@@ -34,7 +34,7 @@ const StandardSelect = ({
 
       {/* Scrollable Options with Max Height */}
       <ScrollView
-        style={tailwind`w-full max-h-56`}
+        style={tailwind`w-full max-h-56 mt-1`}
         contentContainerStyle={tailwind`flex-row flex-wrap`}>
         {options.map((option, index) => {
           const isSelected = selected === option;
@@ -43,7 +43,7 @@ const StandardSelect = ({
               key={index}
               onPress={() => onSelect(option)}
               style={[
-                tailwind`rounded-full px-3 py-1 m-1 border`,
+                tailwind`rounded-full px-3 py-1 mr-2 mb-1.5 border`,
                 {
                   borderColor: themeColors.primary,
                   backgroundColor: isSelected
@@ -53,7 +53,7 @@ const StandardSelect = ({
               ]}>
               <Text
                 style={[
-                  tailwind`text-sm font-semibold`,
+                  tailwind`text-sm`,
                   {
                     color: isSelected ? 'white' : 'black',
                   },

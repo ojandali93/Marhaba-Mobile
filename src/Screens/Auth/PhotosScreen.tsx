@@ -7,13 +7,14 @@ import {
   Modal,
   Text,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
 import AuthMainButton from '../../Components/Buttons/AuthMainButton';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
-import {Camera} from 'react-native-feather';
+import {Camera, ChevronsLeft} from 'react-native-feather';
 import {
   cropCenterImageForPhone,
   pickImageFromGallery,
@@ -21,6 +22,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import {track} from '@amplitude/analytics-react-native';
+import ContinueButton from '../../Components/Buttons/ContinueButton';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -211,16 +213,34 @@ const PhotosScreen = () => {
       )}
 
       <View style={tailwind`w-11/12 h-10/12 flex`}>
-        <View style={[tailwind`flex`, {marginTop: screenHeight * 0.06}]}>
+        <View style={[tailwind`flex`, {marginTop: screenHeight * 0.07}]}>
           <View style={tailwind`mt-2`}>
-            <Text
-              style={[
-                tailwind`mt-2 text-3xl font-semibold`,
-                {color: themeColors.primary},
-              ]}>
-              Photos
+            <View style={tailwind`w-full flex flex-row items-center`}>
+              <TouchableWithoutFeedback
+                style={tailwind`w-20 h-20`}
+                onPress={() => {
+                  navigation.goBack();
+                }}>
+                <View style={tailwind``}>
+                  <ChevronsLeft
+                    height={30}
+                    width={30}
+                    color={themeColors.primary}
+                    style={tailwind`mr-1`}
+                  />
+                </View>
+              </TouchableWithoutFeedback>
+              <Text
+                style={[
+                  tailwind`text-3xl font-semibold`,
+                  {color: themeColors.primary},
+                ]}>
+                Photos
+              </Text>
+            </View>
+            <Text style={tailwind`text-sm mt-1`}>
+              Show off your personality.
             </Text>
-            <Text style={tailwind`text-sm mt-1`}>Your best moments!</Text>
             <Text style={tailwind`text-sm mt-1 text-red-500`}>
               ** 1 image required **
             </Text>
@@ -231,7 +251,7 @@ const PhotosScreen = () => {
           <View style={tailwind`flex-1 flex-row flex-wrap`}>
             {uploadedImageUrls.map((_, index) => (
               <View
-                style={tailwind`w-1/3 h-48 items-center justify-center p-1`}
+                style={tailwind`w-1/3 h-52 items-center justify-center p-1`}
                 key={index}>
                 <TouchableOpacity
                   onPress={() => handlePickImage(index)}
@@ -269,18 +289,24 @@ const PhotosScreen = () => {
         </View>
       </View>
 
-      <View style={tailwind`absolute w-3/4 bottom-12`}>
-        <View style={tailwind` w-full flex flex-row justify-end`}>
-          <AuthMainButton
-            text={'Continue'}
-            click={redirectToPersonalityScreen}
-          />
+      <View
+        style={tailwind`w-full absolute bottom-0 flex flex-row justify-between px-5 mb-12`}>
+        <View style={tailwind`flex flex-row items-center`}>
+          <TouchableWithoutFeedback
+            onPress={() => {
+              navigation.popToTop();
+            }}>
+            <View style={tailwind``}>
+              <Text style={tailwind`text-base font-bold text-red-400`}>
+                Cancel
+              </Text>
+            </View>
+          </TouchableWithoutFeedback>
         </View>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={tailwind`w-full items-center mt-4`}>
-          <Text>Back</Text>
-        </TouchableOpacity>
+        <ContinueButton
+          text={'Preferences'}
+          click={redirectToPersonalityScreen}
+        />
       </View>
     </View>
   );

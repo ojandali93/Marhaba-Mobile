@@ -66,13 +66,13 @@ const DateSelect: React.FC<InputProps> = ({fieldName, dob, setDate}) => {
     <>
       <View
         style={[
-          tailwind`w-full h-14 flex justify-center rounded-2 mt-4`,
+          tailwind`w-full flex justify-center rounded-full mt-4`,
           {
             backgroundColor: themeColors.secondary,
           },
         ]}>
         <View style={tailwind``}>
-          <Text style={tailwind`italic text-lg font-semibold px-2 pb-2`}>
+          <Text style={tailwind`italic text-base font-semibold px-2 pb-1`}>
             {fieldName}
             <Text style={tailwind`text-red-500`}> * </Text>
           </Text>
@@ -80,7 +80,7 @@ const DateSelect: React.FC<InputProps> = ({fieldName, dob, setDate}) => {
         <TouchableOpacity onPress={() => setOpen(true)}>
           <Text
             style={[
-              tailwind`w-full border rounded-lg px-3 py-3`,
+              tailwind`w-full border rounded-full px-4 py-3`,
               {
                 backgroundColor: themeColors.secondary,
                 borderColor: themeColors.primary,
@@ -98,7 +98,7 @@ const DateSelect: React.FC<InputProps> = ({fieldName, dob, setDate}) => {
         <View style={tailwind`flex-1 justify-end bg-black bg-opacity-30`}>
           <View
             style={[
-              tailwind`rounded-xl p-4 pb-6 mx-4 mb-10`,
+              tailwind`rounded-full p-4 pb-6 mx-4 mb-10`,
               {
                 backgroundColor: colorScheme === 'dark' ? '#1c1c1e' : '#fff',
               },
@@ -150,7 +150,7 @@ const DateSelect: React.FC<InputProps> = ({fieldName, dob, setDate}) => {
             <TouchableOpacity
               onPress={confirmDate}
               style={[
-                tailwind`mt-4 py-4 rounded-2`,
+                tailwind`mt-4 py-4 rounded-full`,
                 {backgroundColor: themeColors.primary},
               ]}>
               <Text style={tailwind`text-center text-white text-base`}>

@@ -5,27 +5,52 @@ import {
   ScrollView,
   Text,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
 import AuthMainButton from '../../Components/Buttons/AuthMainButton';
 import StandardInputBordered from '../../Components/Inputs/StandardInputBordered';
-import PromptSelect from '../../Components/Select/PromptSelect';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {track} from '@amplitude/analytics-react-native';
+import {ChevronsLeft} from 'react-native-feather';
+import ContinueButton from '../../Components/Buttons/ContinueButton';
 
 const screenHeight = Dimensions.get('window').height;
+
+const promptList = [
+  'Who am I?',
+  // Light-hearted/fun
+  "What's your go-to guilty pleasure snack?",
+  'If I were a superhero, my power would be...',
+  'The weirdest talent I have is...',
+  'A perfect weekend includes...',
+
+  // Serious/personal
+  'Faith is important to me',
+  'My ideal partner is...',
+  'A value I live by is...',
+  'To me, marriage means...',
+  'In 5 years, I hope to...',
+  'Best advice I got was...',
+
+  // Fun questions
+  'If I could visit anywhere right now...',
+  'My dream job as a kid was...',
+  'On weekends I usually...',
+];
 
 const PersonalityScreen = () => {
   const navigation = useNavigation();
 
-  const [prompt, setPrompt] = useState<string>('');
-  const [currentPrompt, setCurrentPrompt] = useState<string>('');
   const [promptResponses, setPromptResponses] = useState<
-    {prompt: string; response: string}[]
-  >([]);
+    {
+      prompt: string;
+      response: string;
+    }[]
+  >(promptList.map(prompt => ({prompt, response: ''})));
 
   useFocusEffect(
     useCallback(() => {
@@ -33,18 +58,14 @@ const PersonalityScreen = () => {
       const loadStoredResponses = async () => {
         try {
           const stored = await AsyncStorage.getItem('prompts');
-          let parsed: {prompt: string; response: string}[] = [];
           if (stored) {
-            parsed = JSON.parse(stored);
+            const parsed = JSON.parse(stored);
+            const updated = promptList.map(prompt => {
+              const existing = parsed.find(p => p.prompt === prompt);
+              return existing || {prompt, response: ''};
+            });
+            setPromptResponses(updated);
           }
-
-          const hasWhoAmI = parsed.some(p => p.prompt === 'Who am I?');
-          if (!hasWhoAmI) {
-            parsed.unshift({prompt: 'Who am I?', response: ''});
-          }
-
-          setPromptResponses(parsed);
-          setCurrentPrompt('Who am I?');
         } catch (err) {
           console.error('Failed to load prompts:', err);
         }
@@ -54,17 +75,6 @@ const PersonalityScreen = () => {
     }, []),
   );
 
-  const updateSelectedPrompt = (selectedPrompt: string) => {
-    setCurrentPrompt(selectedPrompt);
-    const exists = promptResponses.find(p => p.prompt === selectedPrompt);
-    if (!exists) {
-      setPromptResponses(prev => [
-        ...prev,
-        {prompt: selectedPrompt, response: ''},
-      ]);
-    }
-  };
-
   const updateCurrentResponse = (prompt: string, text: string) => {
     setPromptResponses(prev =>
       prev.map(entry =>
@@ -73,22 +83,14 @@ const PersonalityScreen = () => {
     );
   };
 
-  const removePrompt = (promptToRemove: string) => {
-    if (promptToRemove === 'Who am I?') return;
-    setPromptResponses(prev => prev.filter(p => p.prompt !== promptToRemove));
-    if (currentPrompt === promptToRemove) {
-      setCurrentPrompt('');
-    }
-  };
-
   const redirectToCareer = () => {
     const validResponses = promptResponses.filter(
       p => p.response.trim().length > 0,
     );
-    if (validResponses.length >= 3) {
+    if (validResponses.length >= 1) {
       storeNextScreen(validResponses);
     } else {
-      Alert.alert('Responses', 'You must submit at least 3 prompt responses.');
+      Alert.alert('Responses', 'You must submit at least 1 prompt responses.');
     }
   };
 
@@ -104,70 +106,74 @@ const PersonalityScreen = () => {
         tailwind`flex-1 w-full h-full flex items-center`,
         {backgroundColor: themeColors.secondary},
       ]}>
-      <View style={tailwind`w-11/12 h-10/12 flex`}>
-        <View style={[tailwind`flex`, {marginTop: screenHeight * 0.06}]}>
-          <View style={tailwind`flex flex-row justify-between items-center`}>
-            <Text
-              style={[
-                tailwind`mt-2 text-3xl font-semibold`,
-                {color: themeColors.primary},
-              ]}>
-              About Me
+      <View style={tailwind`w-11/12 flex-1 flex mb-24`}>
+        <View style={[tailwind`flex`, {marginTop: screenHeight * 0.07}]}>
+          <View style={tailwind`mt-2`}>
+            <View
+              style={tailwind`w-full flex flex-row items-center justify-between`}>
+              <View style={tailwind`flex flex-row items-center`}>
+                <TouchableOpacity onPress={() => navigation.goBack()}>
+                  <ChevronsLeft
+                    height={30}
+                    width={30}
+                    color={themeColors.primary}
+                    style={tailwind`mr-1`}
+                  />
+                </TouchableOpacity>
+                <Text
+                  style={[
+                    tailwind`text-3xl font-semibold`,
+                    {color: themeColors.primary},
+                  ]}>
+                  Who am I?
+                </Text>
+              </View>
+              <TouchableOpacity
+                onPress={() => {
+                  track('Personality Skipped');
+                  navigation.navigate('LifestyleHabits');
+                }}
+                style={tailwind`mt-2`}>
+                <Text style={tailwind`text-base font-semibold text-red-500`}>
+                  Skip
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <Text style={tailwind`mt-2 text-sm font-semibold text-gray-500`}>
+              Answer as many prompts as you'd like.
             </Text>
-            <TouchableOpacity
-              onPress={() => {
-                track('Personality Skipped');
-                navigation.navigate('LifestyleHabits');
-              }}
-              style={[
-                tailwind`mt-2 text-lg font-semibold`,
-                {color: themeColors.primary},
-              ]}>
-              <Text style={tailwind`text-base font-semibold text-red-500`}>
-                Skip
-              </Text>
-            </TouchableOpacity>
           </View>
-          <Text style={[tailwind`mt-2 text-sm font-semibold text-gray-500`]}>
-            The more prompts you answer, the better matches we can find for you.
-          </Text>
-          <Text style={[tailwind`mt-1 text-sm font-semibold text-red-500`]}>
-            ** Minimum of 3 responses required **
-          </Text>
         </View>
-        <View style={[tailwind`w-full flex flex-col justify-center mt-4`]}>
-          <PromptSelect
-            fieldName="Prompts"
-            selected={prompt}
-            onSelect={updateSelectedPrompt}
-          />
-        </View>
-        <ScrollView
-          style={[tailwind`w-full h-8/12`, {marginTop: screenHeight * 0.01}]}>
-          {[...promptResponses].reverse().map(p => (
-            <View key={p.prompt} style={tailwind`flex-row items-center mb-2`}>
+
+        <ScrollView style={tailwind`w-full flex-1 mt-4`}>
+          {promptResponses.map(p => (
+            <View key={p.prompt} style={tailwind`mb-4`}>
               <StandardInputBordered
                 value={p.response}
                 changeValue={text => updateCurrentResponse(p.prompt, text)}
                 fieldName={p.prompt}
                 longContent
-                placeholder={'Enter response...'}
-                remove={p.prompt !== 'Who am I?'}
-                removeClick={() => removePrompt(p.prompt)}
+                placeholder={'Enter your answer...'}
               />
             </View>
           ))}
         </ScrollView>
       </View>
-      <View style={tailwind`absolute w-3/4 bottom-12`}>
-        <View style={tailwind` w-full flex flex-row justify-end`}>
-          <AuthMainButton text={'Continue'} click={redirectToCareer} />
+      <View
+        style={tailwind`w-full absolute bottom-0 flex flex-row justify-between px-5 mb-12`}>
+        <View style={tailwind`flex flex-row items-center`}>
+          <TouchableWithoutFeedback
+            onPress={() => {
+              navigation.popToTop();
+            }}>
+            <View style={tailwind``}>
+              <Text style={tailwind`text-sm font-bold text-red-400`}>
+                Cancel
+              </Text>
+            </View>
+          </TouchableWithoutFeedback>
         </View>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={tailwind`w-full items-center mt-4`}>
-          <Text>Back</Text>
-        </TouchableOpacity>
+        <ContinueButton text={'About You'} click={redirectToCareer} />
       </View>
     </View>
   );

@@ -30,10 +30,10 @@ const AuthLoginInput: React.FC<InputProps> = ({
   return (
     <View
       style={[
-        tailwind`w-full h-12 flex-row items-center px-3 rounded-2 border-2`,
+        tailwind`w-full flex-row items-center px-4 rounded-full border-2`,
         {
           borderColor: valid ? themeColors.primary : 'red',
-          backgroundColor: themeColors.secondary,
+          backgroundColor: themeColors.darkSecondaryOpacity,
         },
       ]}>
       {IconComponent && (
@@ -52,14 +52,7 @@ const AuthLoginInput: React.FC<InputProps> = ({
         placeholder={fieldName}
         placeholderTextColor={'grey'}
         secureTextEntry={secure}
-        style={[
-          tailwind`flex-1 text-base`,
-          {
-            paddingVertical: 8,
-            lineHeight: 24,
-            textAlignVertical: 'center',
-          },
-        ]}
+        style={[tailwind`flex-1 text-base py-3`]}
       />
     </View>
   );

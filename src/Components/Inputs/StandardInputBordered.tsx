@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   Dimensions,
+  Keyboard,
   Text,
   TextInput,
   TouchableOpacity,
@@ -41,23 +42,26 @@ const StandardInputBordered: React.FC<standardInput> = ({
       ]}>
       <View
         style={tailwind`w-full flex flex-row justify-between items-center mb-1.5`}>
-        <Text style={tailwind`text-base italic text-gray-600 px-2`}>
+        <Text style={tailwind`italic text-base font-semibold px-2 pb-1`}>
           {fieldName}
         </Text>
-        {remove && (
-          <TouchableOpacity onPress={removeClick} style={tailwind`p-1 mr-2`}>
-            <Trash2 height={18} width={18} color={themeColors.primary} />
-          </TouchableOpacity>
-        )}
       </View>
-      <View style={tailwind`px-3 border-2 border-slate-600 rounded-2`}>
+      <View
+        style={[
+          tailwind`border-2 rounded-3 px-3`,
+          {
+            borderColor: themeColors.primary,
+          },
+        ]}>
         <TextInput
           value={value}
           onChangeText={changeValue}
           multiline={longContent}
           placeholder={placeholder}
-          style={tailwind`text-base mb-2`}
+          style={tailwind`text-base mb-2.5 mt-1`}
+          textAlignVertical={'center'}
           placeholderTextColor={'grey'}
+          onSubmitEditing={Keyboard.dismiss}
         />
       </View>
     </View>

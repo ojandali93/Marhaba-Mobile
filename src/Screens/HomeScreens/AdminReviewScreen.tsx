@@ -30,7 +30,7 @@ if (Platform.OS === 'android') {
 
 const AdminReviewScreen = () => {
   const {userId, profile} = useProfile();
-  const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [passphrase, setPassphrase] = useState('');
   const [pin, setPin] = useState('');
   const [pendingProfiles, setPendingProfiles] = useState([]);
@@ -43,7 +43,7 @@ const AdminReviewScreen = () => {
   useFocusEffect(
     useCallback(() => {
       return () => {
-        setIsAuthenticated(true);
+        setIsAuthenticated(false);
         setExpandedIds({});
         setPassphrase('');
         setPin('');
@@ -241,6 +241,7 @@ const AdminReviewScreen = () => {
           value={passphrase}
           onChangeText={setPassphrase}
           placeholder="Enter Passphrase"
+          placeholderTextColor={themeColors.primary}
           style={tailwind`border border-gray-300 w-full mb-4 p-3 rounded`}
           secureTextEntry
         />
@@ -249,6 +250,7 @@ const AdminReviewScreen = () => {
           onChangeText={setPin}
           placeholder="Enter PIN"
           keyboardType="number-pad"
+          placeholderTextColor={themeColors.primary}
           style={tailwind`border border-gray-300 w-full mb-4 p-3 rounded`}
           secureTextEntry
         />

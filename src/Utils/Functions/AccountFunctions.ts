@@ -18,4 +18,4 @@ const createUserAccount = async (email: string, password: string, name: string) 
     });
 };
 
-module.exports = {createuserAccount}
+module.exports = {createUserAccount}

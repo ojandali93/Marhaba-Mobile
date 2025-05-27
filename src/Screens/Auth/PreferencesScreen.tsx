@@ -5,6 +5,7 @@ import {
   ScrollView,
   Text,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import tailwind from 'twrnc';
@@ -27,6 +28,8 @@ import {
 } from '../../Utils/SelectOptions';
 import StandardMultiSelect from '../../Components/Select/StandardMultiSelect';
 import {track} from '@amplitude/analytics-react-native';
+import {ChevronsLeft} from 'react-native-feather';
+import ContinueButton from '../../Components/Buttons/ContinueButton';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -120,19 +123,34 @@ const PreferencesScreen = () => {
         tailwind`flex-1 w-full h-full flex items-center`,
         {backgroundColor: themeColors.secondary},
       ]}>
-      <View style={tailwind`w-11/12 h-10/12 flex`}>
-        <View
-          style={[
-            tailwind`flex`,
-            {marginTop: screenHeight * 0.06}, // 20% of screen height
-          ]}>
+      <View style={tailwind`w-11/12 flex-1 flex pb-24`}>
+        <View style={[tailwind`flex`, {marginTop: screenHeight * 0.07}]}>
           <View style={tailwind`mt-2`}>
-            <Text
-              style={[
-                tailwind`mt-2 text-3xl font-semibold`,
-                {color: themeColors.primary},
-              ]}>
-              Partner Preferences
+            <View style={tailwind`w-full flex flex-row items-center`}>
+              <TouchableWithoutFeedback
+                style={tailwind`w-20 h-20`}
+                onPress={() => {
+                  navigation.goBack();
+                }}>
+                <View style={tailwind``}>
+                  <ChevronsLeft
+                    height={30}
+                    width={30}
+                    color={themeColors.primary}
+                    style={tailwind`mr-1`}
+                  />
+                </View>
+              </TouchableWithoutFeedback>
+              <Text
+                style={[
+                  tailwind`text-3xl font-semibold`,
+                  {color: themeColors.primary},
+                ]}>
+                Preferences
+              </Text>
+            </View>
+            <Text style={tailwind`text-sm mt-1`}>
+              Enter your details below.
             </Text>
           </View>
         </View>
@@ -203,18 +221,21 @@ const PreferencesScreen = () => {
           />
         </ScrollView>
       </View>
-      <View style={tailwind`absolute w-3/4 bottom-12`}>
-        <View style={tailwind` w-full flex flex-row justify-end`}>
-          <AuthMainButton
-            text={'Continue'}
-            click={redirectToPersonalityScreen}
-          />
+      <View
+        style={tailwind`w-full absolute bottom-0 flex flex-row justify-between px-5 mb-12`}>
+        <View style={tailwind`flex flex-row items-center`}>
+          <TouchableWithoutFeedback
+            onPress={() => {
+              navigation.popToTop();
+            }}>
+            <View style={tailwind``}>
+              <Text style={tailwind`text-base font-bold text-red-400`}>
+                Cancel
+              </Text>
+            </View>
+          </TouchableWithoutFeedback>
         </View>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={tailwind`w-full items-center mt-4`}>
-          <Text>Back</Text>
-        </TouchableOpacity>
+        <ContinueButton text={'Prompts'} click={redirectToPersonalityScreen} />
       </View>
     </View>
   );
