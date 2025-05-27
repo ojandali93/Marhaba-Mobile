@@ -35,6 +35,7 @@ import {useProfile} from '../../Context/ProfileContext';
 import axios from 'axios';
 import {calculateCompatibility} from '../../Utils/Functions/Comptability';
 import {track} from '@amplitude/analytics-react-native';
+import {getDistance} from 'geolib';
 
 interface Photo {
   photoUrl: string;
@@ -241,6 +242,32 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
     }
   };
 
+  const getDistanceInMiles = (
+    lat1: number,
+    lon1: number,
+    lat2: number,
+    lon2: number,
+  ) => {
+    const distanceInMeters = getDistance(
+      {latitude: lat1, longitude: lon1},
+      {latitude: lat2, longitude: lon2},
+    );
+    return (distanceInMeters / 1609.34).toFixed(1);
+  };
+
+  const distance =
+    profile?.latitude &&
+    profile?.longitude &&
+    userProfile?.latitude &&
+    userProfile?.longitude
+      ? getDistanceInMiles(
+          profile.latitude,
+          profile.longitude,
+          userProfile.latitude,
+          userProfile.longitude,
+        )
+      : null;
+
   const handleBlockProfile = async () => {
     track('Profile Blocked', {
       targetUserId: userId,
@@ -261,6 +288,8 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
       Alert.alert('Error', 'Failed to block profile. Please try again.');
     }
   };
+
+  console.log('job', profile.Career);
 
   return (
     <View style={tailwind`flex-1 relative`}>
@@ -347,9 +376,8 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                 {religion.religion
                   ? `${religion.religion}${
                       religion.sect ? ` (${religion.sect})` : ''
-                    } • `
+                    } `
                   : ''}
-                {career.job ?? ''}
               </Text>
               {background.map((bg: string, index: number) => (
                 <Text
@@ -363,15 +391,21 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
               ))}
             </View>
 
-            {(intentions.intentions || intentions.timeline) && (
-              <View style={tailwind`mt-1 px-3 pb-3`}>
-                <Text style={tailwind`font-semibold text-base text-white`}>
-                  {intentions.intentions}
-                  {intentions.timeline ? ' • ' : ''}
-                  {intentions.timeline}
-                </Text>
-              </View>
-            )}
+            <View style={tailwind`flex flex-row items-center justify-between`}>
+              {(intentions.intentions || intentions.timeline) && (
+                <View style={tailwind`mt-1 px-3 pb-3`}>
+                  <Text style={tailwind`font-semibold text-base text-white`}>
+                    {intentions.intentions}
+                    {career.job ? ' • ' : ''}
+                    {career.job}
+                  </Text>
+                </View>
+              )}
+              <Text style={tailwind`text-base font-semibold text-white mr-5`}>
+                {distance} mi away
+              </Text>
+            </View>
+
             {/* 
             {prompt?.prompt && (
               <View style={tailwind`mt-2 px-3`}>

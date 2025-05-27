@@ -487,6 +487,11 @@ const SingleProfileScreen = () => {
           <View style={tailwind`absolute w-full h-full bg-gray-300`} />
         )}
       </TouchableWithoutFeedback>
+      <TouchableOpacity
+        onPress={() => navigation.goBack()}
+        style={tailwind`absolute top-18 left-5 z-40 p-1 bg-black bg-opacity-40 rounded-full`}>
+        <ChevronsLeft height={28} width={28} color="white" />
+      </TouchableOpacity>
       {photos.length > 1 && (
         <View
           style={tailwind`absolute top-22 w-full flex-row justify-center z-30`}>

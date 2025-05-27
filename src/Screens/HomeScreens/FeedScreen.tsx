@@ -12,7 +12,7 @@ import {
 import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
 import FeedProfileComponent from '../../Components/Profiles/FeedProfileComponent';
-import {Check, Heart} from 'react-native-feather';
+import {Check, ChevronsDown, Heart} from 'react-native-feather';
 import {useProfile} from '../../Context/ProfileContext';
 import TutorialModal from '../../Components/Modals/TutorialModal';
 import {getDistance} from 'geolib';
@@ -38,32 +38,8 @@ const FeedScreen = () => {
   const [showMatchModal, setShowMatchModal] = useState<boolean>(false);
   const [matchedProfile, setMatchedProfile] = useState<any>(null);
   const [showTutorial, setShowTutorial] = useState(false);
-
-  const getDistanceInMiles = (
-    lat1: number,
-    lon1: number,
-    lat2: number,
-    lon2: number,
-  ) => {
-    const distanceInMeters = getDistance(
-      {latitude: lat1, longitude: lon1},
-      {latitude: lat2, longitude: lon2},
-    );
-    return (distanceInMeters / 1609.34).toFixed(1);
-  };
-
-  const distance =
-    selectedProfile?.latitude &&
-    selectedProfile?.longitude &&
-    profile?.latitude &&
-    profile?.longitude
-      ? getDistanceInMiles(
-          profile.latitude,
-          profile.longitude,
-          selectedProfile.latitude,
-          selectedProfile.longitude,
-        )
-      : null;
+  const [viewRelationships, setViewRelationships] = useState(profile?.mainView);
+  const [showViewOptions, setShowViewOptions] = useState(false);
 
   useLayoutEffect(() => {
     grabUserProfile(userId || '');
@@ -79,10 +55,6 @@ const FeedScreen = () => {
       })();
     }
   }, [profile]);
-
-  const handleToggleFullProfile = () => {
-    setShowFullProfile(!showFullProfile);
-  };
 
   useEffect(() => {
     setShowTutorial(!!profile?.tutorial);
@@ -518,6 +490,25 @@ const FeedScreen = () => {
     );
   }
 
+  const toggleViewOptions = () => setShowViewOptions(prev => !prev);
+
+  const updateView = async () => {
+    setViewRelationships('Social');
+    setShowViewOptions(false);
+    try {
+      await axios.put(
+        `https://marhaba-server.onrender.com/api/account/updateView`,
+        {
+          userId,
+          view: 'Social',
+        },
+      );
+      grabUserProfile(userId);
+    } catch (error) {
+      console.error('❌ Failed to update view:', error);
+    }
+  };
+
   return (
     <View
       style={[
@@ -527,6 +518,42 @@ const FeedScreen = () => {
       {!showFullProfile && (
         <View
           style={tailwind`absolute w-full flex-row justify-between items-center px-6 z-10 top-18`}>
+          <View
+            style={tailwind`flex-row justify-between items-center bg-white rounded-2 px-2 py-2`}>
+            <TouchableOpacity
+              onPress={toggleViewOptions}
+              style={tailwind`flex-row items-center`}>
+              <Text style={tailwind`text-base font-bold`}>
+                {viewRelationships === 'Relationships'
+                  ? 'Relationships'
+                  : 'Social'}
+              </Text>
+              <ChevronsDown
+                color={themeColors.primary}
+                strokeWidth={2.5}
+                height={18}
+                width={18}
+                style={tailwind`ml-2`}
+              />
+            </TouchableOpacity>
+          </View>
+
+          {/* Dropdown menu */}
+          {showViewOptions && (
+            <View
+              style={tailwind`absolute top-12 left-6 bg-white rounded-lg shadow-lg z-20`}>
+              <TouchableOpacity
+                onPress={() => setShowViewOptions(false)}
+                style={tailwind`p-3 border-b border-gray-200`}>
+                <Text style={tailwind`text-black`}>Stay on Relationships</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={updateView} style={tailwind`p-3`}>
+                <Text style={tailwind`text-black font-semibold`}>
+                  Switch to Social
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
           <View
             style={[
               tailwind`flex-row items-center p-2.5 py-2 rounded-2`,
@@ -556,21 +583,11 @@ const FeedScreen = () => {
               {likes === 100 ? '∞' : likes}
             </Text>
           </View>
-          {distance && (
-            <View
-              style={[
-                tailwind`p-2.5 py-2 rounded-2`,
-                {
-                  backgroundColor: themeColors.secondary,
-                  borderWidth: 1,
-                  borderColor: themeColors.primary,
-                },
-              ]}>
-              <Text style={tailwind`text-base font-semibold`}>
-                {distance} mi away
-              </Text>
-            </View>
-          )}
+          {/* <View style={tailwind`flex flex-row items-center justify-between`}>
+            <Text style={tailwind`text-base font-semibold text-white mr-5`}>
+              {distance} mi away
+            </Text>
+          </View> */}
         </View>
       )}
 

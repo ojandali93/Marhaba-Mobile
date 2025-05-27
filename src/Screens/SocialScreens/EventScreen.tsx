@@ -11,6 +11,7 @@ import {
   Alert,
   Modal,
   ActivityIndicator,
+  Linking,
 } from 'react-native';
 import tailwind from 'twrnc';
 import axios from 'axios';
@@ -19,6 +20,7 @@ import {
   Calendar,
   Check,
   ChevronsLeft,
+  Map,
   MapPin,
   MoreHorizontal,
   Plus,
@@ -33,6 +35,8 @@ import {
 import {useProfile} from '../../Context/ProfileContext';
 import {track} from '@amplitude/analytics-react-native';
 import {useNavigation} from '@react-navigation/native';
+import {addToken} from '../../Utils/Storeage';
+import Geolocation from '@react-native-community/geolocation';
 
 const EVENT_LOCATION = {
   latitude: 33.961, // replace with actual event location
@@ -61,6 +65,7 @@ const EventScreen = ({route}) => {
   const navigation = useNavigation();
   const [showOptions, setShowOptions] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
+  const [withinDistance, setWithinDistance] = useState(false);
 
   const currentUserId = userId;
 
@@ -79,34 +84,12 @@ const EventScreen = ({route}) => {
   const [selectedReason, setSelectedReason] = useState('');
   const [customReason, setCustomReason] = useState('');
 
-  const handleCheckIn = async () => {
-    try {
-      const {data, error} = await axios.post(
-        `https://marhaba-server.onrender.com/api/events/createCheckin`,
-        {
-          eventId: eventId,
-          userId: userId,
-        },
-      );
-      if (error) {
-        console.error('Error checking in:', error);
-        Alert.alert('Error', 'Failed to check in. Please try again.');
-      } else {
-        console.log('event details', data.data);
-        setAttendees(data.data);
-        getEventCheckins();
-        Alert.alert('Checked In', 'You have been checked in to the event');
-      }
-    } catch (error) {
-      console.error('Error fetching event posts:', error);
-    }
-  };
-
   useLayoutEffect(() => {
     grabEventDetails();
-    getEventPosts();
     getEventCheckins();
     getEventRsvp();
+    getEventPosts();
+    getUserLocation();
   }, []);
 
   const grabEventDetails = async () => {
@@ -123,17 +106,76 @@ const EventScreen = ({route}) => {
 
   const getEventCheckins = async () => {
     try {
-      const {data, error} = await axios.post(
+      const {data} = await axios.post(
         `https://marhaba-server.onrender.com/api/events/eventAttend`,
-        {
-          eventId: eventId,
-        },
+        {eventId},
       );
-      console.log('event checkins', data.data);
       setAttendees(data.data);
       setCheckedIn(data.data.some(att => att.userId.userId === userId));
     } catch (error) {
-      console.error('Error fetching event posts:', error);
+      console.error('Error fetching check-ins:', error);
+    }
+  };
+
+  const getUserLocation = () => {
+    Geolocation.getCurrentPosition(
+      position => {
+        const {latitude, longitude} = position.coords;
+        if (event?.latitude && event?.longitude) {
+          const distance = calculateDistance(
+            latitude,
+            longitude,
+            event.latitude,
+            event.longitude,
+          );
+          setWithinDistance(distance <= 7);
+        }
+      },
+      error => {
+        console.error('Geolocation error:', error);
+        Alert.alert('Location Error', 'Failed to get your location.');
+      },
+      {enableHighAccuracy: true, timeout: 10000, maximumAge: 1000},
+    );
+  };
+
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const toRad = x => (x * Math.PI) / 180;
+    const R = 3958.8; // miles
+    const dLat = toRad(lat2 - lat1);
+    const dLon = toRad(lon2 - lon1);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(toRad(lat1)) *
+        Math.cos(toRad(lat2)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  };
+
+  const handleCheckIn = async () => {
+    if (!withinDistance) {
+      Alert.alert(
+        'Too Far',
+        'You must be within 7 miles of the event to check in.',
+      );
+      return;
+    }
+    try {
+      const {data} = await axios.post(
+        `https://marhaba-server.onrender.com/api/events/createCheckin`,
+        {
+          eventId,
+          userId,
+        },
+      );
+      setAttendees(data.data);
+      getEventCheckins();
+      Alert.alert('Checked In', 'You have been checked in to the event.');
+    } catch (error) {
+      console.error('Error checking in:', error);
+      Alert.alert('Error', 'Failed to check in.');
     }
   };
 
@@ -328,6 +370,14 @@ const EventScreen = ({route}) => {
     }
   };
 
+  const openMaps = (address: string) => {
+    const encodedAddress = encodeURIComponent(address);
+    const url = `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`;
+    Linking.openURL(url).catch(err =>
+      console.error('❌ Failed to open maps:', err),
+    );
+  };
+
   if (!event) {
     return (
       <View style={tailwind`flex-1 justify-center items-center`}>
@@ -378,6 +428,18 @@ const EventScreen = ({route}) => {
             <MapPin height={16} width={16} color={themeColors.primary} />
             <Text style={tailwind`text-sm ml-1`}>{event.location}</Text>
           </View>
+          <TouchableOpacity
+            onPress={() => openMaps(event.address)}
+            style={tailwind`flex-row items-center my-1`}>
+            <Map height={16} width={16} color={themeColors.primary} />
+            <Text
+              style={[
+                tailwind`text-sm ml-1 underline`,
+                {color: themeColors.primary},
+              ]}>
+              {event.address}
+            </Text>
+          </TouchableOpacity>
           <View style={tailwind`flex-row items-center my-1`}>
             <Calendar height={16} width={16} color={themeColors.primary} />
             <Text style={tailwind`text-sm ml-1`}>
@@ -411,7 +473,12 @@ const EventScreen = ({route}) => {
 
                 return (
                   <View key={index} style={tailwind`mr-3 relative`}>
-                    <TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => {
+                        navigation.navigate('SingleProfile', {
+                          profile: user.userId,
+                        });
+                      }}>
                       <Image
                         source={{uri: mainImage}}
                         style={tailwind`w-14 h-14 rounded-full`}
