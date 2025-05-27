@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
-  Image,
+  ImageBackground,
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
@@ -14,15 +14,7 @@ import {
 import tailwind from 'twrnc';
 import axios from 'axios';
 import themeColors from '../../Utils/custonColors';
-import {
-  Calendar,
-  MapPin,
-  Users,
-  ChevronsDown,
-  Map as MapIcon,
-  Navigation,
-  Map,
-} from 'react-native-feather';
+import {Calendar, MapPin, Users, ChevronsDown} from 'react-native-feather';
 import {useNavigation} from '@react-navigation/native';
 import {useProfile} from '../../Context/ProfileContext';
 
@@ -76,14 +68,6 @@ const SocialScreen = () => {
     }
   };
 
-  const openMaps = (address: string) => {
-    const encodedAddress = encodeURIComponent(address);
-    const url = `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`;
-    Linking.openURL(url).catch(err =>
-      console.error('❌ Failed to open maps:', err),
-    );
-  };
-
   if (loading) {
     return (
       <View style={tailwind`flex-1 justify-center items-center`}>
@@ -128,77 +112,64 @@ const SocialScreen = () => {
         )}
       </View>
 
-      <ScrollView contentContainerStyle={tailwind`pb-8`}>
+      <ScrollView contentContainerStyle={tailwind`pb-8 px-3`}>
         {events.map(event => (
-          <TouchableOpacity
+          <View
             key={event.id}
-            onPress={() => navigation.navigate('Event', {eventId: event.id})}
-            style={[
-              tailwind`flex-row rounded-lg overflow-hidden m-3 items-center`,
-              {backgroundColor: themeColors.darkGrey},
-            ]}>
-            <Image
-              source={{
-                uri: event.imageUrl || 'https://via.placeholder.com/150',
-              }}
-              style={{
-                width: screenWidth * 0.33,
-                height: 150,
-                resizeMode: 'cover',
-                borderRadius: 6,
-                marginLeft: 8,
-              }}
-            />
-
-            <View style={tailwind`p-3 flex-1`}>
-              <Text
-                style={tailwind`text-xl font-bold text-white`}
-                numberOfLines={2}>
-                {event.title}
-              </Text>
-
-              <View
-                style={tailwind`flex-row items-center justify-between my-1`}>
-                <View style={tailwind`flex-row items-center my-1`}>
-                  <MapPin height={16} width={16} color={themeColors.primary} />
-                  <Text
-                    style={tailwind`text-sm text-gray-300 ml-1 flex-shrink`}>
-                    {event.location}
+            style={tailwind`rounded-2 overflow-hidden mb-6 shadow-md w-1/2`}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('Event', {eventId: event.id})}>
+              <ImageBackground
+                source={{
+                  uri: event.imageUrl || 'https://via.placeholder.com/150',
+                }}
+                style={tailwind`w-full h-64 justify-between`}
+                imageStyle={tailwind`rounded-2xl`}>
+                <View style={tailwind`p-3`}>
+                  <Text style={tailwind`text-white text-xl font-bold`}>
+                    {event.title}
                   </Text>
                 </View>
-                <TouchableOpacity
-                  onPress={() => openMaps(event.address)}
-                  style={tailwind`ml-2`}>
-                  <Map height={16} width={16} color={themeColors.primary} />
-                </TouchableOpacity>
-              </View>
 
-              <View style={tailwind`flex-row items-center my-1`}>
-                <Calendar height={16} width={16} color={themeColors.primary} />
-                <Text style={tailwind`text-sm text-gray-300 ml-1`}>
-                  {event.formattedDayOfWeek} {event.formattedMonth}{' '}
-                  {event.formattedDate} {event.formattedTime}
-                </Text>
-              </View>
+                <View
+                  style={[
+                    tailwind`p-3 flex-row justify-between items-end rounded-b-2`,
+                    {backgroundColor: 'rgba(0, 0, 0, 0.4)'},
+                  ]}>
+                  <View>
+                    <View style={tailwind`flex-row items-center mb-1`}>
+                      <MapPin height={16} width={16} color="white" />
+                      <Text style={tailwind`text-white text-sm ml-2`}>
+                        {event.location}
+                      </Text>
+                    </View>
+                    <View style={tailwind`flex-row items-center`}>
+                      <Users height={16} width={16} color="white" />
+                      <Text style={tailwind`text-white text-sm ml-2`}>
+                        {event.Event_Rsvp.length} / {event.capacity}
+                      </Text>
+                    </View>
+                  </View>
+                  <View>
+                    <Text style={tailwind`text-white text-sm mt-1`}>
+                      {event.formattedMonth} {event.formattedDate}
+                    </Text>
+                  </View>
+                </View>
+              </ImageBackground>
+            </TouchableOpacity>
 
-              <View style={tailwind`flex-row items-center my-1`}>
-                <Users height={16} width={16} color={themeColors.primary} />
-                <Text style={tailwind`text-sm text-gray-300 ml-1`}>
-                  {event.Event_Rsvp.length} / {event.capacity}
-                </Text>
-              </View>
-
-              <View
-                style={[
-                  tailwind`flex-row items-center my-1 p-2 rounded-2 justify-center`,
-                  {backgroundColor: themeColors.primary},
-                ]}>
-                <Text style={tailwind`text-white font-semibold`}>
-                  Attending
-                </Text>
-              </View>
-            </View>
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                tailwind`py-1 rounded-2 items-center mt-2`,
+                {backgroundColor: themeColors.primary},
+              ]}
+              onPress={() => navigation.navigate('Event', {eventId: event.id})}>
+              <Text style={tailwind`text-white font-semibold text-base`}>
+                {event.isAttending ? 'Attending' : 'Will Attend'}
+              </Text>
+            </TouchableOpacity>
+          </View>
         ))}
       </ScrollView>
     </SafeAreaView>

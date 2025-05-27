@@ -74,7 +74,7 @@ const SettingsView = ({updateTab}: SettingsViewProps) => {
     <View style={tailwind`flex-1`}>
       <TouchableOpacity
         onPress={() => updateTab('profile')}
-        style={tailwind`w-full flex flex-row items-center mb-3 mt-2`}>
+        style={tailwind`w-full flex flex-row items-center`}>
         <ChevronsLeft height={30} width={30} color={themeColors.primary} />
         <Text
           style={[

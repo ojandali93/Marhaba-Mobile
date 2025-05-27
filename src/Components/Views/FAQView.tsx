@@ -14,7 +14,7 @@ const FAQView = ({updateTab}: MenuViewProps) => {
     <View style={tailwind`flex-1`}>
       <TouchableOpacity
         onPress={() => updateTab('settings')}
-        style={tailwind`w-full flex flex-row items-center mb-3 mt-2`}>
+        style={tailwind`w-full flex flex-row items-center`}>
         <ChevronsLeft height={30} width={30} color={themeColors.primary} />
         <Text
           style={[
@@ -34,7 +34,7 @@ const FAQView = ({updateTab}: MenuViewProps) => {
               ]}>
               {item.question}
             </Text>
-            <Text style={tailwind`text-sm text-white`}>{item.answer}</Text>
+            <Text style={tailwind`text-sm `}>{item.answer}</Text>
           </View>
         ))}
       </View>

@@ -33,7 +33,7 @@ const EditProfileModalContent = ({
     <View style={tailwind`flex-1 mb-3`}>
       <TouchableOpacity
         onPress={() => updateTab('profile')}
-        style={tailwind`w-full flex flex-row items-center mb-3 mt-2`}>
+        style={tailwind`w-full flex flex-row items-center mb-3`}>
         <ChevronsLeft height={30} width={30} color={themeColors.primary} />
         <Text
           style={[

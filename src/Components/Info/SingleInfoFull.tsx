@@ -23,17 +23,17 @@ const SingleInfoFull: React.FC<SingleInfoFullProps> = ({
   return (
     <View
       style={[
-        tailwind`flex flex-col rounded-md py-2 px-3`,
+        tailwind`flex flex-col rounded-2 py-2 px-2`,
         {
+          borderWidth: 1,
           borderColor: themeColors.primary,
-          backgroundColor: themeColors.darkGrey,
+          backgroundColor: themeColors.secondary,
         },
-        containerStyle,
       ]}>
       {label != '' && (
         <Text
           style={[
-            tailwind`text-sm italic text-white`, // Adjusted color slightly for standard label
+            tailwind`text-sm italic`, // Adjusted color slightly for standard label
             labelStyle, // Apply custom label styles
           ]}>
           {label}:
@@ -41,7 +41,7 @@ const SingleInfoFull: React.FC<SingleInfoFullProps> = ({
       )}
       <Text
         style={[
-          tailwind`text-lg font-bold text-white mt-1`, // Added slight top margin
+          tailwind`text-base font-semibold mt-1`, // Added slight top margin
           valueStyle, // Apply custom value styles
         ]}>
         {displayValue}

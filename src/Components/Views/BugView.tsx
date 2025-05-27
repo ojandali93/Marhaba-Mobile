@@ -56,7 +56,7 @@ const BugView = ({updateTab}: MenuViewProps) => {
       </TouchableOpacity>
 
       {/* User Info */}
-      <Text style={tailwind`text-base text-white mb-4`}>
+      <Text style={tailwind`text-base  mb-4`}>
         Thank you for taking the time to report a bug — we truly appreciate it.
         Your feedback helps us improve Marhaba for everyone. Our team will
         review the issue, and while some bugs may take longer to investigate, we
@@ -64,9 +64,7 @@ const BugView = ({updateTab}: MenuViewProps) => {
         journey!
       </Text>
       {/* Message Input */}
-      <Text style={tailwind`text-base font-semibold mb-2 text-white`}>
-        Message
-      </Text>
+      <Text style={tailwind`text-base font-semibold mb-2 `}>Message</Text>
       <TextInput
         placeholder="Write your message here..."
         placeholderTextColor={themeColors.primary}
@@ -92,7 +90,7 @@ const BugView = ({updateTab}: MenuViewProps) => {
           tailwind`p-4 rounded-xl`,
           {backgroundColor: themeColors.primary},
         ]}>
-        <Text style={tailwind`text-white text-center text-base font-semibold`}>
+        <Text style={tailwind` text-center text-base font-semibold`}>
           Submit
         </Text>
       </TouchableOpacity>

@@ -81,14 +81,12 @@ const NoticiationsView = ({updateTab}: SettingsViewProps) => {
             tailwind`px-2 py-1.5 rounded-2`,
             {backgroundColor: themeColors.primary},
           ]}>
-          <Text style={tailwind`text-base font-semibold text-white`}>Save</Text>
+          <Text style={tailwind`text-base font-semibold `}>Save</Text>
         </TouchableOpacity>
       </View>
       <View style={tailwind`flex-1`}>
         <View style={tailwind`flex-row items-center justify-between mb-1`}>
-          <Text style={tailwind`text-base font-semibold text-white`}>
-            Messages
-          </Text>
+          <Text style={tailwind`text-base font-semibold `}>Messages</Text>
           <View style={{transform: [{scaleX: 0.8}, {scaleY: 0.8}]}}>
             <Switch
               value={messages}
@@ -99,9 +97,7 @@ const NoticiationsView = ({updateTab}: SettingsViewProps) => {
           </View>
         </View>
         <View style={tailwind`flex-row items-center justify-between mb-1`}>
-          <Text style={tailwind`text-base font-semibold text-white`}>
-            Matches
-          </Text>
+          <Text style={tailwind`text-base font-semibold `}>Matches</Text>
           <View style={{transform: [{scaleX: 0.8}, {scaleY: 0.8}]}}>
             <Switch
               value={matches}
@@ -112,9 +108,7 @@ const NoticiationsView = ({updateTab}: SettingsViewProps) => {
           </View>
         </View>
         <View style={tailwind`flex-row items-center justify-between mb-1`}>
-          <Text style={tailwind`text-base font-semibold text-white`}>
-            Likes
-          </Text>
+          <Text style={tailwind`text-base font-semibold `}>Likes</Text>
           <View style={{transform: [{scaleX: 0.8}, {scaleY: 0.8}]}}>
             <Switch
               value={likes}
@@ -125,9 +119,7 @@ const NoticiationsView = ({updateTab}: SettingsViewProps) => {
           </View>
         </View>
         <View style={tailwind`flex-row items-center justify-between mb-1`}>
-          <Text style={tailwind`text-base font-semibold text-white`}>
-            Weekly Views
-          </Text>
+          <Text style={tailwind`text-base font-semibold `}>Weekly Views</Text>
           <View style={{transform: [{scaleX: 0.8}, {scaleY: 0.8}]}}>
             <Switch
               value={weeklyViews}
@@ -138,9 +130,7 @@ const NoticiationsView = ({updateTab}: SettingsViewProps) => {
           </View>
         </View>
         <View style={tailwind`flex-row items-center justify-between mb-1`}>
-          <Text style={tailwind`text-base font-semibold text-white`}>
-            Updates
-          </Text>
+          <Text style={tailwind`text-base font-semibold `}>Updates</Text>
           <View style={{transform: [{scaleX: 0.8}, {scaleY: 0.8}]}}>
             <Switch
               value={miscellanious}

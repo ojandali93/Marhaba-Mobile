@@ -69,12 +69,7 @@ const BottomTabNavigation = () => {
     }
   }, [userId, profile]);
 
-  const transparentScreens = [
-    'Feeds',
-    'SingleProfile',
-    'SingleProfileSearch',
-    'Profiles',
-  ];
+  const transparentScreens = [''];
 
   const getTabBarStyle = route => {
     const focusedRoute = getFocusedRouteNameFromRoute(route) ?? route.name;
@@ -96,7 +91,7 @@ const BottomTabNavigation = () => {
   };
 
   const renderIcon = (IconComponent, focused) => {
-    const strokeColor = focused ? themeColors.primary : themeColors.secondary;
+    const strokeColor = focused ? themeColors.primary : 'black';
 
     return (
       <IconComponent

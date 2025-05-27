@@ -210,8 +210,8 @@ const UpgradeView = ({updateTab}) => {
       </TouchableOpacity>
 
       <View style={tailwind`mt-5`}>
-        <Text style={tailwind`text-lg text-white`}>Your current plan:</Text>
-        <Text style={tailwind`text-2xl font-bold mt-1 text-white`}>
+        <Text style={tailwind`text-lg `}>Your current plan:</Text>
+        <Text style={tailwind`text-2xl font-bold mt-1 `}>
           {tiers.find(t => t.id === currentTier)?.name}
         </Text>
       </View>
@@ -223,7 +223,7 @@ const UpgradeView = ({updateTab}) => {
             'https://app.termly.io/policy-viewer/policy.html?policyUUID=36e1fc4b-c6f8-47a7-b03f-8fd1e1144c89',
           )
         }>
-        <Text style={tailwind`underline text-gray-300`}>
+        <Text style={tailwind`underline text-gray-800`}>
           View Privacy Policy
         </Text>
       </TouchableOpacity>
@@ -235,7 +235,7 @@ const UpgradeView = ({updateTab}) => {
             'https://app.termly.io/policy-viewer/policy.html?policyUUID=2c96703e-b201-4b10-8414-c9a70374f352',
           )
         }>
-        <Text style={tailwind`underline text-gray-300`}>
+        <Text style={tailwind`underline text-gray-800`}>
           View Terms of Use (EULA)
         </Text>
       </TouchableOpacity>
@@ -269,7 +269,7 @@ const UpgradeView = ({updateTab}) => {
                 </Text>
                 <Text
                   style={[
-                    tailwind`text-white`,
+                    tailwind``,
                     {
                       color: isCurrent
                         ? themeColors.darkSecondary

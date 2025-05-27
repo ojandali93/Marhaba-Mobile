@@ -44,7 +44,7 @@ const ContactUsView = ({updateTab}: MenuViewProps) => {
       {/* Header */}
       <TouchableOpacity
         onPress={() => updateTab('settings')}
-        style={tailwind`flex-row items-center mb-4`}>
+        style={tailwind`flex-row items-center mb-3`}>
         <ChevronsLeft height={30} width={30} color={themeColors.primary} />
         <Text
           style={[
@@ -56,15 +56,13 @@ const ContactUsView = ({updateTab}: MenuViewProps) => {
       </TouchableOpacity>
 
       {/* User Info */}
-      <Text style={tailwind`text-base text-center text-white mb-4`}>
+      <Text style={tailwind`text-base text-center  mb-4`}>
         We appreciate you reaching out to us. Whether you have feedback, a
         question, or need help with your account, we're here to support you.
         Please allow up to 48 hours for a member of our team to respond.
       </Text>
       {/* Message Input */}
-      <Text style={tailwind`text-base font-semibold mb-2 text-white`}>
-        Message
-      </Text>
+      <Text style={tailwind`text-base font-semibold mb-2 `}>Message</Text>
       <TextInput
         placeholder="Write your message here..."
         placeholderTextColor={themeColors.primary}
@@ -90,7 +88,7 @@ const ContactUsView = ({updateTab}: MenuViewProps) => {
           tailwind`p-4 rounded-xl`,
           {backgroundColor: themeColors.primary},
         ]}>
-        <Text style={tailwind`text-white text-center text-base font-semibold`}>
+        <Text style={tailwind` text-center text-base font-semibold`}>
           Submit
         </Text>
       </TouchableOpacity>

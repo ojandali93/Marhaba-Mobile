@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import {
   Image,
   Modal,
+  SafeAreaView,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -66,23 +67,92 @@ const ProfileScreen = () => {
   }
 
   return (
-    <View
+    <SafeAreaView
       style={[
         tailwind`w-full h-full`,
         {backgroundColor: themeColors.secondary},
       ]}>
-      <View style={tailwind`absolute flex-1 w-full h-full`}>
-        <View style={tailwind`flex-1`}>
-          <Image
-            source={{uri: profile?.Photos[0].photoUrl}}
-            style={[
-              tailwind`w-full h-full`,
-              {resizeMode: 'cover', alignSelf: 'flex-start'},
-            ]}
-          />
+      <View style={tailwind``}>
+        <View style={tailwind`w-full h-42`}>
+          <ScrollView
+            style={tailwind`flex-1 p-2`}
+            horizontal
+            showsHorizontalScrollIndicator={false}>
+            {profile.Photos.map((photo, index) => (
+              <Image
+                key={index}
+                source={{uri: photo.photoUrl}}
+                style={tailwind`h-full w-24 rounded-3 mr-2`}
+              />
+            ))}
+          </ScrollView>
         </View>
       </View>
-      <View
+      <View style={tailwind`flex-1 p-2`}>
+        {activeTab === 'profile' && (
+          <>
+            <View
+              style={tailwind`w-full flex flex-row items-center justify-between`}>
+              <Text
+                style={[
+                  tailwind`text-3xl font-bold`,
+                  {color: themeColors.primary},
+                ]}>
+                {profile.name} ({getAgeFromDOB(profile.About[0].dob)})
+              </Text>
+              <Text style={tailwind`text-3xl font-semibold`}>
+                {countryFlagMap[profile.About[0].background] ?? ''}
+              </Text>
+            </View>
+            <View style={tailwind``}>
+              <Text style={tailwind`text-base`}>
+                {profile?.About?.[0]?.height
+                  ? `${profile.About[0].height} • `
+                  : ''}
+                {profile?.Religion?.length > 0 && profile.Religion[0].religion
+                  ? `${profile.Religion[0].religion}${
+                      profile.Religion[0].sect
+                        ? ` (${profile.Religion[0].sect})`
+                        : ''
+                    } • `
+                  : ''}
+                {profile?.Career?.length > 0 ? profile.Career[0].job : ''}
+              </Text>
+            </View>
+          </>
+        )}
+        <ScrollView style={tailwind`flex-1 mb-8`}>
+          {activeTab === 'profile' && <MenuView updateTab={setActiveTab} />}
+          {activeTab === 'settings' && (
+            <SettingsView updateTab={setActiveTab} />
+          )}
+          {activeTab === 'faq' && <FAQView updateTab={setActiveTab} />}
+          {activeTab === 'contact' && (
+            <ContactUsView updateTab={setActiveTab} />
+          )}
+          {activeTab === 'bug' && <BugView updateTab={setActiveTab} />}
+          {activeTab === 'terms' && <TermsView updateTab={setActiveTab} />}
+          {activeTab === 'privacy' && <PrivacyView updateTab={setActiveTab} />}
+          {activeTab === 'editProfile' && (
+            <EditProfileModalContent updateTab={setActiveTab} />
+          )}
+          {activeTab === 'upgrade' && <UpgradeView updateTab={setActiveTab} />}
+          {activeTab === 'Viewed' && <ViewedView updateTab={setActiveTab} />}
+          {activeTab === 'proSettings' && (
+            <ProSettingsView updateTab={setActiveTab} />
+          )}
+          {activeTab === 'notifications' && (
+            <NoticiationsView updateTab={setActiveTab} />
+          )}
+          {activeTab === 'visibility' && (
+            <VisbilityViews updateTab={setActiveTab} />
+          )}
+          {activeTab === 'blockedUsers' && (
+            <BlockedUserViews updateTab={setActiveTab} />
+          )}
+        </ScrollView>
+      </View>
+      {/* <View
         style={[
           tailwind`absolute left-0 right-0 bottom-19 rounded-t-2 ${
             activeTab === 'editProfile' ||
@@ -166,8 +236,8 @@ const ProfileScreen = () => {
             </Text>
           </View>
         </ScrollView>
-      </View>
-    </View>
+      </View> */}
+    </SafeAreaView>
   );
 };
 

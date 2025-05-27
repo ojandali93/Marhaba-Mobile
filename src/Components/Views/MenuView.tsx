@@ -134,7 +134,7 @@ const MenuView = ({updateTab}: MenuViewProps) => {
   }, [profile]);
 
   return (
-    <View style={tailwind`flex-1`}>
+    <View style={tailwind`flex-1 mt-3`}>
       <TouchableOpacity
         onPress={() => updateTab('editProfile')}
         style={[
@@ -268,6 +268,16 @@ const MenuView = ({updateTab}: MenuViewProps) => {
         </Text>
         <ChevronsRight height={24} width={24} color={themeColors.primary} />
       </TouchableOpacity>
+      <View style={tailwind`w-full flex flex-row justify-center mt-3`}>
+        <Text style={tailwind`text-sm font-semibold`}>
+          Marhabah Inc. © 2025 All Rights Reserved.
+        </Text>
+      </View>
+      <View style={tailwind`w-full flex flex-row justify-center mb-3`}>
+        <Text style={tailwind`text-sm font-semibold`}>
+          V. 1.0.1 (May 12, 2025)
+        </Text>
+      </View>
     </View>
   );
 };
