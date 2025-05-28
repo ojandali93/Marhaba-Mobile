@@ -543,10 +543,46 @@ export const tutorialScreens = [
     icon: 'User',
   },
   {
+    key: 'toggleView',
+    title: 'Mode',
+    description: 'Toggle between Social and Relationship views at the top. Social helps you meet in person, Relationship helps you find love.',
+    icon: 'Users',
+  },
+  {
+    key: 'dislikeButton',
+    title: 'Dislike',
+    description: 'Not interested? Tap the X to pass on a profile. You won’t see them again.',
+    icon: 'X',
+  },
+  {
+    key: 'superlikeButton',
+    title: 'Superlike',
+    description: 'Send a message and superlike someone to show serious interest. Stand out instantly.',
+    icon: 'Heart',
+  },
+  {
+    key: 'likeButton',
+    title: 'Like',
+    description: 'Tap the checkmark to like someone. If they like you back, it’s a match!',
+    icon: 'Check',
+  },
+  {
+    key: 'expandProfile',
+    title: 'Expand',
+    description: 'Tap anywhere on a profile card to expand it. View deeper details, prompts, and photos.',
+    icon: 'ChevronsUp',
+  },
+  {
+    key: 'respect',
+    title: 'Respect',
+    description: 'Respect is the foundation of any relationship. Show respect to others and they will show it back.',
+    icon: 'ThumbsUp',
+  },
+  {
     key: 'enjoy',
     title: 'Enjoy',
     description: 'Time for you to enjoy Marhabah and find your perfect match!',
-    icon: 'ThumbsUp',
+    icon: 'Star',
   },
 ];
 

@@ -1048,7 +1048,7 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
           onPress={() => {
             setShowFullProfile(!showFullProfile);
           }}
-          style={tailwind`absolute left-2 p-2 rounded-full shadow-lg bg-stone-400`}>
+          style={tailwind`absolute right-2 p-2 rounded-full shadow-lg bg-stone-400`}>
           {showFullProfile ? (
             <ChevronsDown
               height={24}

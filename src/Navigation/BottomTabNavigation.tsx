@@ -10,6 +10,9 @@ import {
   Shield,
   User,
   FileText,
+  Home,
+  Star,
+  Check,
 } from 'react-native-feather';
 import tailwind from 'twrnc';
 import themeColors from '../Utils/custonColors';
@@ -120,7 +123,7 @@ const BottomTabNavigation = () => {
           options={({route}) => ({
             tabBarIcon: ({focused}) => (
               <View style={tailwind`items-center`}>
-                {renderIcon(Grid, focused)}
+                {renderIcon(Home, focused)}
               </View>
             ),
           })}
@@ -132,7 +135,7 @@ const BottomTabNavigation = () => {
           options={({route}) => ({
             tabBarIcon: ({focused}) => (
               <View style={tailwind`items-center`}>
-                {renderIcon(Grid, focused)}
+                {renderIcon(Home, focused)}
               </View>
             ),
           })}
@@ -160,7 +163,7 @@ const BottomTabNavigation = () => {
         options={({route}) => ({
           tabBarIcon: ({focused}) => (
             <View style={tailwind`items-center`}>
-              {renderIcon(Zap, focused)}
+              {renderIcon(Grid, focused)}
             </View>
           ),
         })}

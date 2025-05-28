@@ -14,7 +14,13 @@ import {
 import tailwind from 'twrnc';
 import axios from 'axios';
 import themeColors from '../../Utils/custonColors';
-import {Calendar, MapPin, Users, ChevronsDown} from 'react-native-feather';
+import {
+  Calendar,
+  MapPin,
+  Users,
+  ChevronsDown,
+  Heart,
+} from 'react-native-feather';
 import {useNavigation} from '@react-navigation/native';
 import {useProfile} from '../../Context/ProfileContext';
 
@@ -79,44 +85,19 @@ const SocialScreen = () => {
   return (
     <SafeAreaView
       style={[tailwind`flex-1`, {backgroundColor: themeColors.secondary}]}>
-      <View
-        style={tailwind`w-full px-4 pt-4 pb-2 z-10 relative bg-[${themeColors.secondary}]`}>
-        <TouchableOpacity
-          onPress={() => setShowDropdown(prev => !prev)}
-          style={tailwind`flex-row items-center`}>
-          <Text style={tailwind`text-2xl font-semibold`}>
-            {viewRelationships === 'Relationships' ? 'Relationships' : 'Social'}
-          </Text>
-          <ChevronsDown
-            height={20}
-            width={20}
-            color={themeColors.primary}
-            style={tailwind`ml-2`}
-          />
-        </TouchableOpacity>
-
-        {showDropdown && (
-          <View
-            style={tailwind`absolute top-16 left-4 w-48 bg-white rounded-lg shadow-lg z-20`}>
-            <TouchableOpacity
-              onPress={updateView}
-              style={tailwind`p-3 border-b border-gray-200`}>
-              <Text style={tailwind`text-black`}>Switch to Relationships</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => setShowDropdown(false)}
-              style={tailwind`p-3`}>
-              <Text style={tailwind`text-black`}>Stay in Social</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-      </View>
-
+      <TouchableOpacity
+        onPress={updateView}
+        style={[
+          tailwind`absolute z-10 left-2 bottom-22 p-2.25 rounded-full shadow-lg`,
+          {backgroundColor: themeColors.primary},
+        ]}>
+        <Heart height={20} width={20} color={'white'} strokeWidth={3} />
+      </TouchableOpacity>
       <ScrollView contentContainerStyle={tailwind`pb-8 px-3`}>
         {events.map(event => (
           <View
             key={event.id}
-            style={tailwind`rounded-2 overflow-hidden mb-6 shadow-md w-1/2`}>
+            style={tailwind`rounded-2 overflow-hidden mb-6 shadow-md w-[48%]`}>
             <TouchableOpacity
               onPress={() => navigation.navigate('Event', {eventId: event.id})}>
               <ImageBackground

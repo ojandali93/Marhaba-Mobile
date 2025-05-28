@@ -12,7 +12,7 @@ import {
 import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
 import FeedProfileComponent from '../../Components/Profiles/FeedProfileComponent';
-import {Check, ChevronsDown, Heart} from 'react-native-feather';
+import {Check, ChevronsDown, Heart, Users} from 'react-native-feather';
 import {useProfile} from '../../Context/ProfileContext';
 import TutorialModal from '../../Components/Modals/TutorialModal';
 import {getDistance} from 'geolib';
@@ -515,6 +515,14 @@ const FeedScreen = () => {
         tailwind`w-full h-full`,
         {backgroundColor: themeColors.secondary},
       ]}>
+      <TouchableOpacity
+        onPress={updateView}
+        style={[
+          tailwind`absolute z-10 left-2 bottom-22 p-2.25 rounded-full shadow-lg`,
+          {backgroundColor: themeColors.primary},
+        ]}>
+        <Users height={20} width={20} color={'white'} strokeWidth={3} />
+      </TouchableOpacity>
       <FeedProfileComponent
         profile={selectedProfile}
         dislikeProfile={dislikeProfile}

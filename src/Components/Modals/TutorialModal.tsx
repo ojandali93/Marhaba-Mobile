@@ -21,7 +21,12 @@ const arrowPositionsPercent: Record<string, number> = {
   Likes: 0.27,
   Recommended: 0.45,
   Chat: 0.64,
-  Profile: 0.82,
+  Profile: 0.86,
+  Mode: 0.02,
+  Dislike: 0.2,
+  Superlike: 0.45,
+  Like: 0.7,
+  Expand: 0.94,
 };
 
 const TutorialModal = ({
@@ -118,11 +123,22 @@ const TutorialModal = ({
 
     const left = screenWidth * percent;
 
+    const raiseArrowKeys = [
+      'toggleView',
+      'dislikeButton',
+      'likeButton',
+      'superlikeButton',
+      'expandProfile',
+    ];
+
+    const isRaised = raiseArrowKeys.includes(key);
+    const bottomOffset = isRaised ? 130 : 80;
+
     return (
       <Animated.View
         style={{
           position: 'absolute',
-          bottom: 100,
+          bottom: bottomOffset,
           left,
           alignItems: 'center',
           opacity: fadeAnim,
