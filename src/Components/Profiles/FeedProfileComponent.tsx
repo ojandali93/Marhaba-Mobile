@@ -406,7 +406,7 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
               {prompts[0]?.response && (
                 <View style={tailwind`mt-2`}>
                   <Text
-                    numberOfLines={2}
+                    numberOfLines={1}
                     style={tailwind`font-semibold text-base`}>
                     {`"${prompts[0].response}"`}
                   </Text>
