@@ -138,20 +138,18 @@ const EitherOrEditView = () => {
   return (
     <View>
       <TouchableOpacity
-        style={tailwind`w-full flex flex-col mt-2`}
+        style={tailwind`w-full flex flex-col mt-2 px-2`}
         onPress={() => setExpanded(!expanded)}>
         <View
           style={[
             tailwind`w-full flex flex-row items-center justify-between p-3 rounded-2`,
-            {backgroundColor: themeColors.darkGrey},
+            {backgroundColor: themeColors.darkSecondary},
           ]}>
           <View style={tailwind`flex flex-row items-center`}>
-            <Text style={tailwind`text-base font-semibold text-white`}>
-              Either / Or
-            </Text>
+            <Text style={tailwind`text-base font-semibold`}>Either / Or</Text>
             {isEmpty && (
               <View
-                style={tailwind`w-2 h-2 rounded-full bg-yellow-400 mr-2 ml-3`}
+                style={tailwind`w-2 h-2 rounded-full bg-orange-400 mr-2 ml-3`}
               />
             )}
           </View>

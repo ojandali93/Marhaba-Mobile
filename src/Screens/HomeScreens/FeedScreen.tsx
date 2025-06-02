@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   Alert,
   Modal,
+  Image,
 } from 'react-native';
 import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
@@ -148,7 +149,7 @@ const FeedScreen = () => {
     }
   };
 
-  const dislikeProfile = async (profileId: string) => {
+  const dislikeProfile = async (profileId: string, reason: string) => {
     track('Profile Disliked', {
       targetUserId: userId,
     });
@@ -169,11 +170,12 @@ const FeedScreen = () => {
             targetUserId: existingInteraction.targetUserId,
             userInteraction: existingInteraction.userInteraction,
             targetInteraction: 'disliked',
+            targetReason: reason,
+            userReason: existingInteraction.userReason,
             viewed: true,
             approved: true,
             viewed_at: new Date().toISOString(),
             approved_at: new Date().toISOString(),
-            message: null,
           },
         );
         return;
@@ -186,11 +188,12 @@ const FeedScreen = () => {
           targetUserId: profileId,
           userInteraction: 'disliked',
           targetInteraction: null,
+          userReason: reason,
+          targetReason: null,
           viewed: false,
           approved: false,
           viewed_at: null,
           approved_at: null,
-          message: null,
         },
       );
 
@@ -206,15 +209,26 @@ const FeedScreen = () => {
     }
   };
 
-  const likeProfile = async (profileId: string, profile: any) => {
+  const likeProfile = async (
+    profileId: string,
+    profile: any,
+    reason: string,
+  ) => {
+    console.log(
+      `🚀 likeProfile called: profileId=${profileId}, reason=${reason}`,
+    );
+
     track('Profile Liked', {
       targetUserId: userId,
     });
-    console.log(`likes: ${likes}`);
+
+    console.log(`👍 Current likes: ${likes}`);
+
     if (likes === 0) {
       track('Out of Likes', {
         targetUserId: userId,
       });
+
       Alert.alert('Out of Likes', 'Upgrade to Pro to get more!', [
         {text: 'Cancel', style: 'cancel'},
         {
@@ -222,19 +236,33 @@ const FeedScreen = () => {
           onPress: () => navigation.navigate('Profiles'),
         },
       ]);
+
       return;
-    } else if (likes && likes > 0) {
-      console.log(`likes: ${likes}`);
+    }
+
+    if (likes && likes > 0) {
+      console.log(`✅ Likes remaining: ${likes - 1}`);
       setLikes(prev => (prev ? prev - 1 : null));
 
       try {
+        console.log(
+          `🔍 Checking existing interaction for profileId=${profileId}`,
+        );
         const checkRes = await axios.get(
           `https://marhaba-server.onrender.com/api/user/matchStatus/${userId}/${profileId}`,
         );
 
-        const existingInteraction = checkRes.data?.data[0];
+        console.log('✅ matchStatus response:', checkRes.data);
 
+        const existingInteraction = checkRes.data?.data?.[0];
+        console.log('🗂 existingInteraction:', existingInteraction);
+
+        // === CASE 1: Already interacted -> convert to match
         if (existingInteraction) {
+          console.log(
+            `🔄 Updating interaction ID=${existingInteraction.id} to match`,
+          );
+
           const updatedRes = await axios.put(
             `https://marhaba-server.onrender.com/api/user/updateInteraction`,
             {
@@ -243,38 +271,57 @@ const FeedScreen = () => {
               targetUserId: existingInteraction.targetUserId,
               userInteraction: existingInteraction.userInteraction,
               targetInteraction: 'liked',
+              targetReason: reason,
+              userReason: existingInteraction.userReason,
               viewed: true,
               approved: true,
               viewed_at: new Date().toISOString(),
               approved_at: new Date().toISOString(),
-              message: null,
             },
           );
+
+          console.log('✅ Updated interaction response:', updatedRes.data);
+
           track('Match Approved', {
             targetUserId: userId,
           });
+
           updateMatchStatus(existingInteraction.id);
           createConversation(profileId);
           setMatchedProfile(profile);
           setShowMatchModal(true);
-          const notificationsProfile = profile.Notifications[0];
-          if (notificationsProfile.matches) {
+
+          console.log('🔔 Checking notificationsProfile for match...');
+          const notificationsProfile = profile.Notifications
+            ? profile.Notifications[0]
+            : null;
+
+          console.log('notificationsProfile:', notificationsProfile);
+
+          if (notificationsProfile && notificationsProfile.matches) {
+            console.log('📤 Sending "New Match" notification...');
             try {
               await axios.post(
                 'https://marhaba-server.onrender.com/api/notifications/send',
                 {
-                  token: profile.apnToken, // this is the *receiver* of the like
+                  token: profile.apnToken,
                   title: 'New Match!',
                   body: 'You have a new match!',
                 },
               );
-              console.log('📤 Notification sent to liked profile');
+              console.log('✅ Notification sent to liked profile');
             } catch (err) {
-              console.error('❌ Failed to send push notification:', err);
+              console.error('❌ Failed to send "New Match" notification:', err);
             }
           }
+
           return;
         }
+
+        // === CASE 2: No prior interaction -> create new "like"
+        console.log(
+          '✨ No existing interaction, creating new LIKE interaction',
+        );
 
         const response = await axios.post(
           `https://marhaba-server.onrender.com/api/user/interaction`,
@@ -283,160 +330,57 @@ const FeedScreen = () => {
             targetUserId: profileId,
             userInteraction: 'liked',
             targetInteraction: null,
+            userReason: reason,
+            targetReason: null,
             viewed: false,
             approved: false,
             viewed_at: null,
             approved_at: null,
-            message: null,
           },
         );
+
+        console.log('✅ New like interaction response:', response.data);
 
         if (response.data?.success) {
           track('Profile Liked', {
             targetUserId: userId,
           });
-          console.log(`✅ Liked profile: ${profile.apnToken}`);
+
+          console.log(`✅ Profile liked successfully: profileId=${profileId}`);
+
           createViewed(profileId);
           fetchUsage();
           removeTopProfile();
-          const notificationsProfile = profile.Notifications[0];
-          if (notificationsProfile.likes) {
+
+          console.log('🔔 Checking notificationsProfile for like...');
+          const notificationsProfile = profile.Notifications
+            ? profile.Notifications[0]
+            : null;
+
+          console.log('notificationsProfile:', notificationsProfile);
+
+          if (notificationsProfile && notificationsProfile.likes) {
+            console.log('📤 Sending "New Like" notification...');
             try {
               await axios.post(
                 'https://marhaba-server.onrender.com/api/notifications/send',
                 {
-                  token: profile.apnToken, // this is the *receiver* of the like
+                  token: profile.apnToken,
                   title: 'New Like!',
                   body: 'Someone liked your profile!',
                 },
               );
-              console.log('📤 Notification sent to liked profile');
+              console.log('✅ Notification sent to liked profile');
             } catch (err) {
-              console.error('❌ Failed to send push notification:', err);
+              console.error('❌ Failed to send "New Like" notification:', err);
             }
           }
         }
       } catch (error) {
-        console.error(`❌ Error liking profile ${profileId}:`, error);
-      }
-    }
-  };
-
-  const superLikeProfile = async (
-    profileId: string,
-    message?: string,
-    profile: any,
-  ) => {
-    track('Profile Super Liked', {
-      targetUserId: userId,
-    });
-    if (superLikes === 0) {
-      track('Out of Super Likes', {
-        targetUserId: userId,
-      });
-      Alert.alert('Out of Super Likes', 'Upgrade to Pro to get more!', [
-        {text: 'Cancel', style: 'cancel'},
-        {
-          text: 'Upgrade',
-          onPress: () => navigation.navigate('Profiles'),
-        },
-      ]);
-      return;
-    } else if (superLikes > 0) {
-      setSuperLikes(prev => (prev ? prev - 1 : null));
-
-      try {
-        const checkRes = await axios.get(
-          `https://marhaba-server.onrender.com/api/user/matchStatus/${userId}/${profileId}`,
+        console.error(
+          `❌ Error in likeProfile (profileId=${profileId}):`,
+          error,
         );
-
-        const existingInteraction = checkRes.data?.data[0];
-
-        if (existingInteraction) {
-          const updatedRes = await axios.put(
-            `https://marhaba-server.onrender.com/api/user/updateInteraction`,
-            {
-              id: existingInteraction.id,
-              userId: existingInteraction.userId,
-              targetUserId: existingInteraction.targetUserId,
-              userInteraction: existingInteraction.userInteraction,
-              targetInteraction: 'super',
-              viewed: true,
-              approved: true,
-              viewed_at: new Date().toISOString(),
-              approved_at: new Date().toISOString(),
-              message: message,
-            },
-          );
-          track('Match Approved', {
-            targetUserId: userId,
-          });
-          updateMatchStatus(existingInteraction.id);
-          createConversation(profileId);
-          setMatchedProfile(profile);
-          setShowMatchModal(true);
-          const notificationsProfile = profile.Notifications[0];
-          if (notificationsProfile.matches) {
-            try {
-              await axios.post(
-                'https://marhaba-server.onrender.com/api/notifications/send',
-                {
-                  token: profile.apnToken, // this is the *receiver* of the like
-                  title: 'New Match!',
-                  body: 'You have a new match!',
-                },
-              );
-              console.log('📤 Notification sent to liked profile');
-            } catch (err) {
-              console.error('❌ Failed to send push notification:', err);
-            }
-          }
-          removeTopProfile();
-          return;
-        }
-
-        const response = await axios.post(
-          `https://marhaba-server.onrender.com/api/user/interaction`,
-          {
-            userId: userId,
-            targetUserId: profileId,
-            userInteraction: 'super',
-            targetInteraction: null,
-            viewed: false,
-            approved: false,
-            viewed_at: null,
-            approved_at: null,
-            message: message,
-          },
-        );
-
-        if (response.data?.success) {
-          track('Profile Super Liked', {
-            targetUserId: userId,
-          });
-          console.log(`✅ Super liked profile: ${profileId}`);
-          createViewed(profileId);
-          fetchUsage();
-          removeTopProfile();
-          const notificationsProfile = profile.Notifications[0];
-          if (notificationsProfile.likes) {
-            try {
-              await axios.post(
-                'https://marhaba-server.onrender.com/api/notifications/send',
-                {
-                  token: profile.apnToken, // this is the *receiver* of the like
-                  title: 'New Super Like!',
-                  body: 'Someone super liked your profile!',
-                },
-              );
-              console.log('📤 Notification sent to liked profile');
-            } catch (err) {
-              console.error('❌ Failed to send push notification:', err);
-            }
-          }
-        }
-      } catch (error) {
-        console.error(`❌ Error super liking profile ${profileId}:`, error);
       }
     }
   };
@@ -490,52 +434,18 @@ const FeedScreen = () => {
     );
   }
 
-  const toggleViewOptions = () => setShowViewOptions(prev => !prev);
-
-  const updateView = async () => {
-    setViewRelationships('Social');
-    setShowViewOptions(false);
-    try {
-      await axios.put(
-        `https://marhaba-server.onrender.com/api/account/updateView`,
-        {
-          userId,
-          view: 'Social',
-        },
-      );
-      grabUserProfile(userId);
-    } catch (error) {
-      console.error('❌ Failed to update view:', error);
-    }
-  };
-
   return (
     <View
       style={[
         tailwind`w-full h-full`,
         {backgroundColor: themeColors.secondary},
       ]}>
-      <TouchableOpacity
-        onPress={updateView}
-        style={[
-          tailwind`absolute z-10 left-2 bottom-22 p-2.25 rounded-full shadow-lg`,
-          {backgroundColor: themeColors.primary},
-        ]}>
-        <Users height={20} width={20} color={'white'} strokeWidth={3} />
-      </TouchableOpacity>
       <FeedProfileComponent
         profile={selectedProfile}
         dislikeProfile={dislikeProfile}
         likeProfile={likeProfile}
-        superlikeProfile={superLikeProfile}
         showFullProfile={showFullProfile}
         setShowFullProfile={setShowFullProfile}
-        handleToggleFullProfile={() => {
-          setShowFullProfile(prev => !prev);
-          track(`Full Profile ${showFullProfile ? 'Opened' : 'Closed'}`, {
-            targetUserId: userId,
-          });
-        }}
       />
 
       <Modal

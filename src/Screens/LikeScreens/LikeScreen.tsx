@@ -12,6 +12,7 @@ import {
   RefreshControl,
   ScrollView,
   TouchableWithoutFeedback,
+  Alert,
 } from 'react-native';
 import axios from 'axios';
 import tailwind from 'twrnc';
@@ -19,6 +20,7 @@ import {
   Check,
   ChevronsDown,
   Heart,
+  Maximize,
   MessageSquare,
   X,
 } from 'react-native-feather';
@@ -51,6 +53,8 @@ const imageSize = (width - itemPadding * (numColumns + 1)) / numColumns;
 const LikeScreen = () => {
   const {profile, userId, markLikesAsViewed} = useProfile();
   const navigation = useNavigation();
+
+  console.log('like main profile', profile);
 
   const [loading, setLoading] = useState<boolean>(true);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
@@ -289,38 +293,17 @@ const LikeScreen = () => {
                 <Text style={tailwind`text-white text-2xl font-bold`}>
                   {item.likerProfile.name}
                 </Text>
-                <Text style={tailwind`text-white text-2xl font-bold ml-3`}>
-                  {JSON.parse(item.likerProfile.About[0].background)
-                    .slice(0, 2)
-                    .map((bg: string, idx: number) => (
-                      <Text key={idx} style={tailwind`text-xl font-bold ml-3`}>
-                        {countryFlagMap[bg] ?? ''}
-                      </Text>
-                    ))}
-                </Text>
               </View>
               <View style={tailwind`flex flex-row items-center w-full`}>
                 {item.approved === false || item.approved === null ? (
                   <View
-                    style={tailwind`w-full flex flex-row items-center justify-between`}>
+                    style={tailwind`w-full flex flex-row items-center justify-end`}>
                     <TouchableOpacity
-                      onPress={() => handleRejectLike(item.id)}
-                      style={tailwind`p-2 bg-red-400 rounded-full`}>
-                      <X
-                        height={28}
-                        width={28}
-                        color={'white'}
-                        strokeWidth={2}
-                      />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() =>
-                        handleApproveLike(item, item.likerProfile.userId)
-                      }
-                      style={tailwind`p-2 bg-green-400 rounded-full`}>
-                      <Check
-                        height={28}
-                        width={28}
+                      onPress={() => handleViewProfile(item.likerProfile)}
+                      style={tailwind`p-3 bg-slate-400 rounded-full`}>
+                      <Maximize
+                        height={20}
+                        width={20}
                         color={'white'}
                         strokeWidth={2}
                       />
@@ -328,18 +311,29 @@ const LikeScreen = () => {
                   </View>
                 ) : (
                   <>
-                    <TouchableOpacity
-                      onPress={() => {
-                        navigation.navigate('Conversations');
-                      }}
-                      style={tailwind` p-3 bg-neutral-400 rounded-full`}>
-                      <MessageSquare
-                        height={20}
-                        width={20}
-                        color={'white'}
-                        strokeWidth={2}
-                      />
-                    </TouchableOpacity>
+                    {item.targetInteraction === 'disliked' ? (
+                      <View style={tailwind` p-3 bg-neutral-400 rounded-full`}>
+                        <X
+                          height={20}
+                          width={20}
+                          color={'white'}
+                          strokeWidth={2}
+                        />
+                      </View>
+                    ) : (
+                      <TouchableOpacity
+                        onPress={() => {
+                          navigation.navigate('Conversations');
+                        }}
+                        style={tailwind` p-3 bg-neutral-400 rounded-full`}>
+                        <MessageSquare
+                          height={20}
+                          width={20}
+                          color={'white'}
+                          strokeWidth={2}
+                        />
+                      </TouchableOpacity>
+                    )}
                   </>
                 )}
               </View>
@@ -488,29 +482,28 @@ const LikeScreen = () => {
       style={[tailwind`flex-1`, {backgroundColor: themeColors.secondary}]}>
       <TouchableOpacity
         onPress={() => {
-          if (profile?.tier === 3) setShowDropdown(prev => !prev);
+          setShowDropdown(prev => !prev);
         }}
         style={tailwind`w-full flex flex-row items-center p-4 rounded-2`}>
         <Text style={tailwind`text-2xl font-bold text-gray-800 mr-1`}>
-          {viewType === 'likes' ? 'Likes' : 'Viewed You'}
+          {viewType === 'likes' ? 'Connections' : 'Viewed You'}
         </Text>
-        {profile?.tier === 3 && (
-          <ChevronsDown height={20} width={20} color={themeColors.primary} /> // simple chevron down
-        )}
+        <ChevronsDown height={20} width={20} color={themeColors.primary} />
       </TouchableOpacity>
-      {showDropdown && profile?.tier === 3 && (
+      {showDropdown && (
         <View
           style={[
-            tailwind`absolute top-28 left-2 z-50 rounded-2 shadow p-2`,
+            tailwind`absolute top-28 left-2 z-50 shadow p-2 border-2 border-gray-300
+            `,
             {
-              backgroundColor: themeColors.darkSecondary,
+              backgroundColor: themeColors.secondary,
             },
           ]}>
           <TouchableOpacity
             onPress={() => {
-              setViewType('likes');
+              profile?.tier === 3 ? setViewType('likes') : null;
               setShowDropdown(false);
-              fetchLikes(); // reuse your existing function
+              fetchLikes();
             }}>
             <Text
               style={[
@@ -521,17 +514,19 @@ const LikeScreen = () => {
                   backgroundColor:
                     viewType === 'likes'
                       ? themeColors.primary
-                      : themeColors.darkSecondary,
+                      : themeColors.secondary,
                 },
               ]}>
-              Likes
+              Connections
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
-              setViewType('views');
+              profile?.tier === 3
+                ? setViewType('views')
+                : Alert.alert('You do not have access');
               setShowDropdown(false);
-              // fetchViews(); // you'll need to define this
+              fetchViews();
             }}>
             <Text
               style={[
@@ -542,10 +537,10 @@ const LikeScreen = () => {
                   backgroundColor:
                     viewType === 'views'
                       ? themeColors.primary
-                      : themeColors.darkSecondary,
+                      : themeColors.secondary,
                 },
               ]}>
-              Viewed You
+              {profile?.tier === 3 ? 'Viewed You' : 'Viewed You (Pro+)'}
             </Text>
           </TouchableOpacity>
         </View>
@@ -564,7 +559,7 @@ const styles = StyleSheet.create({
   },
   gridItem: {
     width: imageSize,
-    height: imageSize * 1.25,
+    height: imageSize * 1.5,
     margin: itemPadding / 2,
     borderRadius: 12,
     overflow: 'hidden',

@@ -22,11 +22,11 @@ const arrowPositionsPercent: Record<string, number> = {
   Recommended: 0.45,
   Chat: 0.64,
   Profile: 0.86,
-  Mode: 0.02,
-  Dislike: 0.2,
+  Mode: 0.018,
+  Dislike: 0.18,
   Superlike: 0.45,
-  Like: 0.7,
-  Expand: 0.94,
+  Like: 0.73,
+  Expand: 0.89,
 };
 
 const TutorialModal = ({

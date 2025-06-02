@@ -114,7 +114,7 @@ const PreferencesScreen = () => {
     await AsyncStorage.setItem('PR_AgeMin', ageRange[0].toString());
     await AsyncStorage.setItem('PR_AgeMax', ageRange[1].toString());
     track('Preferences Completed');
-    navigation.navigate('Personality');
+    navigation.navigate('LifestyleHabits');
   };
 
   return (

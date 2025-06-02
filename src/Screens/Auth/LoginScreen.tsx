@@ -120,7 +120,7 @@ const LoginScreen = () => {
             ]}></View>
           <View style={tailwind`absolute z-2 w-full h-full`}>
             {/* Top Section */}
-            <View style={tailwind`w-full items-center pt-10`}>
+            <View style={tailwind`w-full items-center pt-20`}>
               <Image style={tailwind`w-20 h-20`} source={Icon} />
               <View style={tailwind`mt-6 items-center`}>
                 <Image style={tailwind`w-62 h-12`} source={Logo} />

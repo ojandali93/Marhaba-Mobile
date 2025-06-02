@@ -170,20 +170,20 @@ const EditIntent = () => {
   return (
     <View>
       <TouchableOpacity
-        style={tailwind`w-full flex flex-col mt-2`}
+        style={tailwind`w-full flex flex-col mt-2 px-2`}
         onPress={() => setExpandProfile(!expandProfile)}>
         <View
           style={[
             tailwind`w-full flex flex-row items-center justify-between p-3 rounded-2`,
-            {backgroundColor: themeColors.darkGrey},
+            {backgroundColor: themeColors.darkSecondary},
           ]}>
           <View style={tailwind`flex flex-row items-center`}>
-            <Text style={tailwind`text-base font-semibold text-white`}>
+            <Text style={tailwind`text-base font-semibold`}>
               Relationship Intent
             </Text>
             {isEmpty && (
               <View
-                style={tailwind`w-2 h-2 rounded-full bg-yellow-400 mr-2 ml-3`}
+                style={tailwind`w-2 h-2 rounded-full bg-orange-400 mr-2 ml-3`}
               />
             )}
           </View>

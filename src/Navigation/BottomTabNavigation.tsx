@@ -13,6 +13,7 @@ import {
   Home,
   Star,
   Check,
+  Users,
 } from 'react-native-feather';
 import tailwind from 'twrnc';
 import themeColors from '../Utils/custonColors';
@@ -112,42 +113,26 @@ const BottomTabNavigation = () => {
     tabBarShowLabel: false,
   });
 
-  console.log('profile.view', profile.mainView);
-
   return (
     <Tab.Navigator screenOptions={screenOptions}>
-      {profile.mainView === 'Relationships' ? (
-        <Tab.Screen
-          name="Feeds"
-          component={FeedStackNavigation}
-          options={({route}) => ({
-            tabBarIcon: ({focused}) => (
-              <View style={tailwind`items-center`}>
-                {renderIcon(Home, focused)}
-              </View>
-            ),
-          })}
-        />
-      ) : (
-        <Tab.Screen
-          name="Social"
-          component={SocialStackNavigation}
-          options={({route}) => ({
-            tabBarIcon: ({focused}) => (
-              <View style={tailwind`items-center`}>
-                {renderIcon(Home, focused)}
-              </View>
-            ),
-          })}
-        />
-      )}
+      <Tab.Screen
+        name="Feeds"
+        component={FeedStackNavigation}
+        options={({route}) => ({
+          tabBarIcon: ({focused}) => (
+            <View style={tailwind`items-center`}>
+              {renderIcon(Home, focused)}
+            </View>
+          ),
+        })}
+      />
       <Tab.Screen
         name="List"
         component={LikeStackNavigation}
         options={({route}) => ({
           tabBarIcon: ({focused}) => (
             <View style={tailwind`items-center`}>
-              {renderIcon(Heart, focused)}
+              {renderIcon(Users, focused)}
               {unViewedInteractions && (
                 <View
                   style={tailwind`absolute top--.25 right--1 w-2.5 h-2.5 bg-red-500 rounded-full`}

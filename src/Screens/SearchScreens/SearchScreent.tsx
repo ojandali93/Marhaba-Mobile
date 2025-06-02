@@ -15,7 +15,15 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import tailwind from 'twrnc';
-import {Check, Heart, Settings, Sliders, X} from 'react-native-feather';
+import {
+  Check,
+  ChevronsDown,
+  ChevronsUp,
+  Heart,
+  Settings,
+  Sliders,
+  X,
+} from 'react-native-feather';
 
 import themeColors from '../../Utils/custonColors';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
@@ -71,6 +79,9 @@ const SearchScreent = () => {
   const [error, setError] = useState<string | null>(null);
   const [users, setUsers] = useState<ProcessedInteraction[]>([]);
   const [showFilterModal, setShowFilterModal] = useState(false);
+
+  const [showViewProfile, setShowViewProfile] = useState<string>('Profiles');
+  const [showSearchModal, setShowSearchModal] = useState<boolean>(false);
 
   const DISTANCE_MAP = {
     'Close (50 miles)': 50,
@@ -140,24 +151,7 @@ const SearchScreent = () => {
   };
 
   const fetchUsers = async () => {
-    console.log('distance', distance);
     const currentDistance = DISTANCE_MAP[distance];
-    console.log('currentDistance', currentDistance);
-
-    console.log('age min', ageMin);
-    console.log('age max', ageMax);
-    console.log('gender', gender);
-    console.log('background', background);
-    console.log('religion', religion);
-    console.log('sect', sect);
-    console.log('views', views);
-    console.log('smoke', smoke);
-    console.log('drink', drink);
-    console.log('hasKids', hasKids);
-    console.log('wantsKids', wantsKids);
-    console.log('lookingFor', lookingFor);
-    console.log('timeline', timeline);
-    console.log('relocate', relocate);
 
     try {
       const response = await axios.post(
@@ -312,7 +306,77 @@ const SearchScreent = () => {
           tailwind`w-full flex flex-row items-center justify-between px-4 p-4 rounded-2`,
           {backgroundColor: themeColors.secondary},
         ]}>
-        <Text style={tailwind`text-2xl font-bold text-gray-800`}>Search</Text>
+        <TouchableOpacity
+          onPress={() => {
+            setShowSearchModal(!showSearchModal);
+          }}
+          style={tailwind`flex flex-row items-center`}>
+          <Text style={tailwind`text-2xl font-bold text-gray-800`}>
+            Search {showViewProfile === 'Profiles' ? 'Profiles' : 'Prompts'}
+          </Text>
+          {/* {showSearchModal ? (
+            <ChevronsUp height={24} width={24} color={themeColors.primary} />
+          ) : (
+            <ChevronsDown height={24} width={24} color={themeColors.primary} />
+          )} */}
+        </TouchableOpacity>
+        {/* {showSearchModal && (
+          <View
+            style={[
+              tailwind`absolute top-12 left-2 z-50 shadow p-2 border-2 border-gray-300 rounded-2
+            `,
+              {
+                backgroundColor: themeColors.secondary,
+              },
+            ]}>
+            <TouchableOpacity
+              onPress={() => {
+                profile?.tier === 3 ? setShowViewProfile('Profiles') : null;
+                setShowSearchModal(false);
+              }}>
+              <Text
+                style={[
+                  tailwind`${
+                    showViewProfile === 'Profiles'
+                      ? 'text-white'
+                      : 'text-gray-800'
+                  } text-lg p-2 rounded-2`,
+                  {
+                    backgroundColor:
+                      showViewProfile === 'Profiles'
+                        ? themeColors.primary
+                        : themeColors.secondary,
+                  },
+                ]}>
+                Search Profiles
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                profile?.tier === 3 ? setShowViewProfile('Prompts') : null;
+                setShowSearchModal(false);
+              }}>
+              <Text
+                style={[
+                  tailwind`${
+                    showViewProfile === 'Prompts'
+                      ? 'text-white'
+                      : 'text-gray-800'
+                  } text-lg p-2 rounded-2`,
+                  {
+                    backgroundColor:
+                      showViewProfile === 'Prompts'
+                        ? themeColors.primary
+                        : themeColors.secondary,
+                  },
+                ]}>
+                {profile?.tier === 3
+                  ? 'Search Prompts'
+                  : 'Search Prompts (Pro+)'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )} */}
         <TouchableOpacity
           onPress={() => {
             setShowFilterModal(!showFilterModal);
@@ -321,7 +385,7 @@ const SearchScreent = () => {
         </TouchableOpacity>
       </View>
 
-      {renderContent()}
+      {showViewProfile === 'Profiles' ? renderContent() : null}
 
       <FilterModal
         visible={showFilterModal}

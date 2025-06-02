@@ -1,6 +1,6 @@
 import {useFocusEffect} from '@react-navigation/native';
 import React, {useCallback, useState} from 'react';
-import {Text, TouchableOpacity, View} from 'react-native';
+import {Text, TouchableOpacity, View, ScrollView} from 'react-native';
 import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
 import {ChevronsDown, ChevronsUp} from 'react-native-feather';
@@ -8,44 +8,60 @@ import EditTextInput from '../Select/EditTextInput';
 import axios from 'axios';
 import {useProfile} from '../../Context/ProfileContext';
 
+const PROMPTS_CONFIG = [
+  {key: 't_who', prompt: 'Who am I?'},
+  {key: 't_makes_me', prompt: 'What makes me, me?'},
+  {key: 't_weekends', prompt: 'On weekends, you’ll usually find me…'},
+  {key: 't_friends', prompt: 'My friends would describe me as…'},
+  {key: 't_master', prompt: 'A skill I would instantly like to master is…'},
+  {key: 't_make_time', prompt: 'One thing I always make time for is…'},
+  {key: 't_love', prompt: 'When it comes to love, I believe…'},
+  {key: 't_faith', prompt: 'Faith and values play a role in my life...'},
+  {key: 't_appreciate', prompt: 'I appreciate when someone…'},
+  {key: 't_lifestyle', prompt: 'The lifestyle I’m building includes…'},
+  {key: 't_refuse', prompt: 'A value I refuse to compromise on is…'},
+  {key: 't_show', prompt: 'When I care about someone…'},
+  {key: 't_grow', prompt: 'I’ve grown the most through…'},
+  {key: 't_life', prompt: 'I feel most at peace when…'},
+  {key: 't_moment', prompt: 'One moment that shaped how I love is…'},
+  {key: 't_deepl', prompt: 'I feel deeply connected to people when…'},
+  {key: 't_partner', prompt: 'The kind of partner I strive to be is…'},
+  {key: 't_lifelong', prompt: 'What I want most in a lifelong partnership is…'},
+];
+
 const EditPromptsView = () => {
   const {profile, userId, grabUserProfile} = useProfile();
   const [expanded, setExpanded] = useState(false);
   const [changeDetected, setChangeDetected] = useState(false);
-
-  const [prompts, setPrompts] = useState<{id: string; prompt: string}[]>([]);
-  const [originalPrompts, setOriginalPrompts] = useState<string[]>([]);
+  const [promptValues, setPromptValues] = useState({});
+  const [originalPromptValues, setOriginalPromptValues] = useState({});
   const [isEmpty, setIsEmpty] = useState(false);
+
   useFocusEffect(
     useCallback(() => {
       loadPrompts();
-    }, []),
+    }, [profile]),
   );
 
   const loadPrompts = () => {
-    const profilePrompts = profile?.Prompts || [];
+    const initialValues = {};
+    PROMPTS_CONFIG.forEach(({key}) => {
+      initialValues[key] = profile.Prompts[0]?.[key] || '';
+    });
 
-    const formatted = profilePrompts.map(p => ({
-      id: p.id,
-      prompt: p.prompt,
-      response: p.response || '',
-    }));
+    setPromptValues(initialValues);
+    setOriginalPromptValues(initialValues);
 
-    setPrompts(formatted);
-    setOriginalPrompts(formatted.map(p => p.response));
-
-    const isEmpty =
-      profilePrompts.length === 0 || formatted.every(p => !p.response?.trim());
-
-    setIsEmpty(isEmpty);
+    const empty = Object.values(initialValues).every(val => !val?.trim());
+    setIsEmpty(empty);
   };
 
-  const updatePrompt = (index: number, newText: string) => {
-    const updated = [...prompts];
-    updated[index].response = newText; // ✅ update response
-    setPrompts(updated);
-    const hasChanged = updated.some(
-      (p, i) => p.response !== originalPrompts[i],
+  const updatePrompt = (key, newText) => {
+    const updated = {...promptValues, [key]: newText};
+    setPromptValues(updated);
+
+    const hasChanged = Object.keys(updated).some(
+      k => updated[k] !== originalPromptValues[k],
     );
     setChangeDetected(hasChanged);
   };
@@ -56,15 +72,12 @@ const EditPromptsView = () => {
         'https://marhaba-server.onrender.com/api/account/updatePrompts',
         {
           userId,
-          prompts: prompts.map(p => ({
-            prompt: p.prompt,
-            response: p.response, // ✅ send the response
-          })),
+          prompts: {...promptValues}, // Send as { t_who: "...", t_makes_me: "...", etc }
         },
       );
 
       if (response.data.success) {
-        setOriginalPrompts(prompts.map(p => p.response)); // ✅ update with response
+        setOriginalPromptValues({...promptValues});
         setChangeDetected(false);
         await grabUserProfile(userId || '');
         loadPrompts();
@@ -80,20 +93,18 @@ const EditPromptsView = () => {
   return (
     <View>
       <TouchableOpacity
-        style={tailwind`w-full flex flex-col mt-2`}
+        style={tailwind`w-full flex flex-col mt-2 px-2`}
         onPress={() => setExpanded(!expanded)}>
         <View
           style={[
             tailwind`w-full flex flex-row items-center justify-between p-3 rounded-2`,
-            {backgroundColor: themeColors.darkGrey},
+            {backgroundColor: themeColors.darkSecondary},
           ]}>
           <View style={tailwind`flex flex-row items-center`}>
-            <Text style={tailwind`text-base font-semibold text-white`}>
-              Prompts
-            </Text>
+            <Text style={tailwind`text-base font-semibold`}>Prompts</Text>
             {isEmpty && (
               <View
-                style={tailwind`w-2 h-2 rounded-full bg-yellow-400 mr-2 ml-3`}
+                style={tailwind`w-2 h-2 rounded-full bg-orange-400 mr-2 ml-3`}
               />
             )}
           </View>
@@ -118,21 +129,21 @@ const EditPromptsView = () => {
       </TouchableOpacity>
 
       {expanded && (
-        <View
+        <ScrollView
           style={[
-            tailwind` pb-4 mb-3 mt-4 rounded-3`,
+            tailwind`max-h-[600px] pb-4 mb-3 mt-4 rounded-3`,
             {backgroundColor: themeColors.secondary},
           ]}>
-          {prompts.map((p, index) => (
+          {PROMPTS_CONFIG.map(({key, prompt}) => (
             <EditTextInput
-              key={p.id}
-              fieldName={p.prompt}
-              selected={p.response}
-              onSelect={newText => updatePrompt(index, newText)}
+              key={key}
+              fieldName={prompt}
+              selected={promptValues[key]}
+              onSelect={newText => updatePrompt(key, newText)}
               multiline
             />
           ))}
-        </View>
+        </ScrollView>
       )}
     </View>
   );

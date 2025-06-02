@@ -113,7 +113,7 @@ const LookingForScreen = () => {
     await AsyncStorage.setItem('LF_FirstStep', firstStep);
     await AsyncStorage.setItem('LF_Parents', parents);
     track('Looking For Completed');
-    navigation.navigate('Photos');
+    navigation.navigate('T0Prompts');
   };
 
   return (
@@ -240,7 +240,10 @@ const LookingForScreen = () => {
             </View>
           </TouchableWithoutFeedback>
         </View>
-        <ContinueButton text={'Photos'} click={redirectToPersonalityScreen} />
+        <ContinueButton
+          text={'Who am I?'}
+          click={redirectToPersonalityScreen}
+        />
       </View>
     </View>
   );

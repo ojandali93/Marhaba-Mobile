@@ -9,7 +9,6 @@ import {
 } from 'react-native';
 import themeColors from '../../Utils/custonColors';
 import tailwind from 'twrnc';
-import {Trash, Trash2, X} from 'react-native-feather';
 
 interface standardInput {
   value: string;
@@ -22,6 +21,7 @@ interface standardInput {
 }
 
 const screenHeight = Dimensions.get('window').height;
+const CHARACTER_LIMIT = 200;
 
 const StandardInputBordered: React.FC<standardInput> = ({
   value,
@@ -32,38 +32,52 @@ const StandardInputBordered: React.FC<standardInput> = ({
   removeClick,
   remove,
 }) => {
+  const handleTextChange = (text: string) => {
+    if (text.length <= CHARACTER_LIMIT) {
+      changeValue(text);
+    }
+  };
+
   return (
     <View
       style={[
         tailwind`w-full flex justify-center`,
-        {
-          backgroundColor: themeColors.secondary,
-        },
+        {backgroundColor: themeColors.secondary},
       ]}>
-      <View
-        style={tailwind`w-full flex flex-row justify-between items-center mb-1.5`}>
-        <Text style={tailwind`italic text-base font-semibold px-2 pb-1`}>
+      {/* Label */}
+      <View style={tailwind`w-full flex flex-row justify-between items-center`}>
+        <Text style={tailwind`italic text-base font-semibold px-2 `}>
           {fieldName}
         </Text>
+        {remove && removeClick && (
+          <TouchableOpacity onPress={removeClick}>
+            <Text style={tailwind`text-red-500 text-sm`}>Remove</Text>
+          </TouchableOpacity>
+        )}
       </View>
+
+      {/* Input Field */}
       <View
         style={[
           tailwind`border-2 rounded-3 px-3`,
-          {
-            borderColor: themeColors.primary,
-          },
+          {borderColor: themeColors.primary},
         ]}>
         <TextInput
           value={value}
-          onChangeText={changeValue}
+          onChangeText={handleTextChange}
           multiline={longContent}
           placeholder={placeholder}
-          style={tailwind`text-base mb-2.5 mt-1`}
+          style={tailwind`text-base mb-2.5`}
           textAlignVertical={'center'}
           placeholderTextColor={'grey'}
           onSubmitEditing={Keyboard.dismiss}
         />
       </View>
+
+      {/* Character Counter */}
+      <Text style={tailwind`text-right text-xs mt-1 pr-1 text-gray-400`}>
+        {CHARACTER_LIMIT - value.length}
+      </Text>
     </View>
   );
 };

@@ -3,7 +3,6 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import FeedScreen from '../Screens/HomeScreens/FeedScreen';
 import SearchScreent from '../Screens/SearchScreens/SearchScreent';
 import SingleProfileScreen from '../Screens/ProfileScreens/SingleProfileScreen';
-import SingleProfileScreenLike from '../Screens/ProfileScreens/SingleProfileScreenLike';
 
 const Stack = createNativeStackNavigator();
 
@@ -13,7 +12,7 @@ const SearchStackNavigation = () => {
       <Stack.Screen name="Search" component={SearchScreent} />
       <Stack.Screen
         name="SingleProfileSearch"
-        component={SingleProfileScreenLike}
+        component={SingleProfileScreen}
       />
     </Stack.Navigator>
   );

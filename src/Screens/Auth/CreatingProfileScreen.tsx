@@ -25,7 +25,7 @@ const CreatingProfileScreen = () => {
           [{text: 'OK'}],
         );
 
-        await AsyncStorage.clear();
+        // await AsyncStorage.clear();
         navigation.navigate('Login');
       })();
     }, 6000); // 20 seconds
@@ -46,7 +46,7 @@ const CreatingProfileScreen = () => {
       })
       .then(response => {
         track('Account Created');
-        console.log('account response:', response);
+        console.log('account response:', response.data.data);
         createProfile(response.data.data);
       })
       .catch(error => {
@@ -59,6 +59,7 @@ const CreatingProfileScreen = () => {
   const createProfile = async (userId: string) => {
     const email = await AsyncStorage.getItem('SU_email');
     const name = await AsyncStorage.getItem('E_name');
+    console.log('creating profile: ', userId);
 
     axios
       .post('https://marhaba-server.onrender.com/api/account/createProfile', {
@@ -252,15 +253,49 @@ const CreatingProfileScreen = () => {
 
   const createPropmts = async (userId: string) => {
     try {
-      const raw = await AsyncStorage.getItem('prompts');
-      const parsedPrompts = raw ? JSON.parse(raw) : [];
-
-      console.log('🧠 Parsed prompts to send:', parsedPrompts);
-
+      const t_who = await AsyncStorage.getItem('T0_WhoAmI');
+      const t_makes_me = await AsyncStorage.getItem('T0_WhatMakesMe');
+      const t_weekends = await AsyncStorage.getItem('T1_Weekends');
+      const t_friends = await AsyncStorage.getItem('T1_Friends');
+      const t_master = await AsyncStorage.getItem('T1_Mastger');
+      const t_make_time = await AsyncStorage.getItem('T1_MakeTime');
+      const t_daily = await AsyncStorage.getItem('T1_Daily');
+      const t_love = await AsyncStorage.getItem('T2_Love');
+      const t_faith = await AsyncStorage.getItem('T2_Faith');
+      const t_appreciate = await AsyncStorage.getItem('T2_Appreciate');
+      const t_lifestyle = await AsyncStorage.getItem('T2_Lifestyle');
+      const t_refuse = await AsyncStorage.getItem('T3_Refuse');
+      const t_show = await AsyncStorage.getItem('T3_Show');
+      const t_grow = await AsyncStorage.getItem('T3_Grown');
+      const t_life = await AsyncStorage.getItem('T3_Life');
+      const t_moment = await AsyncStorage.getItem('T4_Moment');
+      const t_deepl = await AsyncStorage.getItem('T4_Deeply');
+      const t_partner = await AsyncStorage.getItem('T4_Partner');
+      const t_lifelong = await AsyncStorage.getItem('T4_Lifelong');
       axios
         .post('https://marhaba-server.onrender.com/api/account/createPrompts', {
           userId,
-          prompts: parsedPrompts, // ✅ Always an array
+          prompts: {
+            t_who,
+            t_makes_me,
+            t_weekends,
+            t_friends,
+            t_master,
+            t_make_time,
+            t_daily,
+            t_love,
+            t_faith,
+            t_appreciate,
+            t_lifestyle,
+            t_refuse,
+            t_show,
+            t_grow,
+            t_life,
+            t_moment,
+            t_deepl,
+            t_partner,
+            t_lifelong,
+          }, // ✅ Always an array
         })
         .then(response => {
           track('Prompts Created');

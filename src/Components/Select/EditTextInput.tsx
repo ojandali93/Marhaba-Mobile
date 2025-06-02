@@ -18,6 +18,7 @@ interface EditTextInputProps {
   selected: string;
   onSelect: (value: string) => void;
   multiline?: boolean;
+  placeholder?: string;
 }
 
 const EditTextInput = ({
@@ -25,6 +26,7 @@ const EditTextInput = ({
   selected,
   onSelect,
   multiline = false,
+  placeholder = 'Enter response...',
 }: EditTextInputProps) => {
   const [modalVisible, setModalVisible] = useState(false);
   const isDarkMode = useColorScheme() === 'dark';
@@ -39,14 +41,14 @@ const EditTextInput = ({
           {fieldName}
         </Text>
       </View>
-      <View
-        style={tailwind`border-2 border-slate-600 rounded-2 px-2 py-1 mt-1`}>
+      <View style={tailwind`border-2 rounded-2 px-2 py-1 mt-1`}>
         <TextInput
-          style={tailwind`w-full text-lg text-gray-800 pb-1`}
           value={selected}
           onChangeText={onSelect}
-          placeholder={fieldName}
           multiline={multiline}
+          placeholder={placeholder || 'Enter response...'}
+          placeholderTextColor={'#999'}
+          style={tailwind` text-base p-3 rounded-lg text-black`}
         />
       </View>
     </TouchableOpacity>

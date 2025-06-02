@@ -258,7 +258,6 @@ export const ProfileProvider = ({children}: {children: React.ReactNode}) => {
   };
 
   const grabUserMatches = async () => {
-    console.log('profile', JSON.stringify(profile.Preferences[0]));
     const distanceLabel = profile.Preferences[0].distance;
     const distance = convertDistanceLabelToMiles(distanceLabel);
     const latitude = profile.latitude;
@@ -266,7 +265,6 @@ export const ProfileProvider = ({children}: {children: React.ReactNode}) => {
     const ageMin = profile.Preferences[0].ageMin;
     const ageMax = profile.Preferences[0].ageMax;
     const gender = profile.Preferences[0].gender;
-    console.log('gender', gender);
     try {
       const response = await axios.post(
         `https://marhaba-server.onrender.com/api/user/getMatches`,
@@ -281,6 +279,7 @@ export const ProfileProvider = ({children}: {children: React.ReactNode}) => {
         },
       );
       if (response.data) {
+        console.log('matched profiles:', response.data.matches);
         setMatchedProfiles(response.data.matches);
       }
     } catch (error) {

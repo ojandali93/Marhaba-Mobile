@@ -134,34 +134,30 @@ const MenuView = ({updateTab}: MenuViewProps) => {
   }, [profile]);
 
   return (
-    <View style={tailwind`flex-1 mt-3`}>
+    <View style={tailwind`flex-1 mt-3 px-2`}>
       <TouchableOpacity
-        onPress={() => updateTab('editProfile')}
+        onPress={() => navigation.navigate('EditProfile')}
         style={[
           tailwind`flex-row justify-between items-center p-4 rounded-2`,
-          {backgroundColor: themeColors.darkGrey},
+          {backgroundColor: themeColors.darkSecondary},
         ]}>
         <View style={tailwind`flex flex-row items-center`}>
-          <Text style={tailwind`text-base font-semibold text-white`}>
-            Edit Profile
-          </Text>
+          <Text style={tailwind`text-base font-semibold`}>Edit Profile</Text>
           {incompleteProfile && (
             <View
-              style={tailwind`w-2 h-2 rounded-full bg-yellow-400 mr-2 ml-3`}
+              style={tailwind`w-2 h-2 rounded-full bg-orange-500 mr-2 ml-3`}
             />
           )}
         </View>
         <ChevronsRight height={24} width={24} color={themeColors.primary} />
       </TouchableOpacity>
       <TouchableOpacity
-        onPress={() => updateTab('settings')}
+        onPress={() => navigation.navigate('SubSettings')}
         style={[
           tailwind`flex-row justify-between items-center p-4 rounded-2 mt-2`,
-          {backgroundColor: themeColors.darkGrey},
+          {backgroundColor: themeColors.darkSecondary},
         ]}>
-        <Text style={tailwind`text-base font-semibold text-white`}>
-          Settings
-        </Text>
+        <Text style={tailwind`text-base font-semibold`}>Settings</Text>
         <ChevronsRight height={24} width={24} color={themeColors.primary} />
       </TouchableOpacity>
       <TouchableOpacity
@@ -169,23 +165,19 @@ const MenuView = ({updateTab}: MenuViewProps) => {
           track('Viewed Upgrade Screen', {
             targetUserId: profile.userId,
           });
-          updateTab('upgrade');
+          navigation.navigate('UpgradeTiers');
         }}
         style={[
           tailwind`flex-row justify-between items-center p-4 rounded-2 mt-2`,
-          {backgroundColor: themeColors.darkGrey},
+          {backgroundColor: themeColors.darkSecondary},
         ]}>
-        <Text
-          style={[
-            tailwind`text-base font-semibold`,
-            {color: themeColors.primary},
-          ]}>
+        <Text style={tailwind`text-base font-semibold`}>
           Upgrade to Pro (30% off)
         </Text>
         <ChevronsRight height={24} width={24} color={themeColors.primary} />
       </TouchableOpacity>
 
-      <TouchableOpacity
+      {/* <TouchableOpacity
         onPress={() => {
           track('toggles between social and relationships', {
             targetUserId: profile.userId,
@@ -193,66 +185,56 @@ const MenuView = ({updateTab}: MenuViewProps) => {
         }}
         style={[
           tailwind`flex-row justify-between items-center p-4 rounded-2 mt-2`,
-          {backgroundColor: themeColors.darkGrey},
+          {backgroundColor: themeColors.darkSecondary},
         ]}>
-        <Text
-          style={[
-            tailwind`text-base font-semibold`,
-            {color: themeColors.primary},
-          ]}>
+        <Text style={tailwind`text-base font-semibold`}>
           {viewRelationships === 'Social' ? 'Social' : 'Relationships'}
         </Text>
 
         <View style={{transform: [{scale: 0.7}]}}>
           <Switch value={viewRelationships} onValueChange={updateView} />
         </View>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
 
       {profile.tier === 3 && (
         <TouchableOpacity
           onPress={() => updateTab('Viewed')}
           style={[
             tailwind`flex-row justify-between items-center p-4 rounded-2 mt-2`,
-            {backgroundColor: themeColors.darkGrey},
+            {backgroundColor: themeColors.darkSecondary},
           ]}>
-          <Text style={tailwind`text-base font-semibold text-white`}>
-            Recently Viewed
-          </Text>
+          <Text style={tailwind`text-base font-semibold`}>Recently Viewed</Text>
           <ChevronsRight height={24} width={24} color={themeColors.primary} />
         </TouchableOpacity>
       )}
       <TouchableOpacity
-        onPress={() => updateTab('visibility')}
+        onPress={() => navigation.navigate('Visibility')}
         style={[
           tailwind`flex-row justify-between items-center p-4 rounded-2 mt-2`,
-          {backgroundColor: themeColors.darkGrey},
+          {backgroundColor: themeColors.darkSecondary},
         ]}>
-        <Text style={tailwind`text-base font-semibold text-white`}>
-          Visibility
-        </Text>
+        <Text style={tailwind`text-base font-semibold`}>Visibility</Text>
         <View style={tailwind`flex-row items-center gap-2`}>
-          <Text style={tailwind`text-base font-semibold text-white`}>
+          <Text style={tailwind`text-base font-semibold`}>
             {profile.visibility}
           </Text>
           <ChevronsRight height={24} width={24} color={themeColors.primary} />
         </View>
       </TouchableOpacity>
       <TouchableOpacity
-        onPress={() => updateTab('notifications')}
+        onPress={() => navigation.navigate('Notifications')}
         style={[
           tailwind`flex-row justify-between items-center p-4 rounded-2 mt-2`,
-          {backgroundColor: themeColors.darkGrey},
+          {backgroundColor: themeColors.darkSecondary},
         ]}>
-        <Text style={tailwind`text-base font-semibold text-white`}>
-          Notifications
-        </Text>
+        <Text style={tailwind`text-base font-semibold`}>Notifications</Text>
         <ChevronsRight height={24} width={24} color={themeColors.primary} />
       </TouchableOpacity>
       <TouchableOpacity
         onPress={logout}
         style={[
           tailwind`flex-row justify-between items-center p-4 rounded-2 mt-2`,
-          {backgroundColor: themeColors.darkGrey},
+          {backgroundColor: themeColors.darkSecondary},
         ]}>
         <Text style={tailwind`text-base font-bold text-red-600`}>Logout</Text>
         <ChevronsRight height={24} width={24} color={themeColors.primary} />
@@ -261,7 +243,7 @@ const MenuView = ({updateTab}: MenuViewProps) => {
         onPress={handleDeleteAccount}
         style={[
           tailwind`flex-row justify-between items-center p-4 rounded-2 mt-2 mb-2`,
-          {backgroundColor: themeColors.darkGrey},
+          {backgroundColor: themeColors.darkSecondary},
         ]}>
         <Text style={tailwind`text-base font-bold text-red-600`}>
           Delete Account

@@ -39,18 +39,7 @@ import axios from 'axios';
 import {calculateCompatibility} from '../../Utils/Functions/Comptability';
 import {track} from '@amplitude/analytics-react-native';
 import {getDistance} from 'geolib';
-
-interface Photo {
-  photoUrl: string;
-}
-
-interface Tag {
-  tag: string;
-}
-
-interface Communication {
-  style: string;
-}
+import {getSharedSimilarities} from '../../Utils/Functions/Simlarities';
 
 interface LoveLanguage {
   language: string;
@@ -61,20 +50,12 @@ interface Prompt {
   response?: string;
 }
 
-interface Value {
-  value: string;
-}
-
 interface FeedSummaryProps {
   profile: any;
-  likesLeft?: number;
-  dislikeProfile: (profileId: string) => void;
-  likeProfile: (profileId: string, profile: any) => void;
-  superlikeProfile: (profileId: string, message?: string, profile: any) => void;
+  dislikeProfile: (profileId: string, reason: string) => void;
+  likeProfile: (profileId: string, profile: any, reason: string) => void;
   isInteracting?: boolean;
-  onExpandPress?: () => void;
   showFullProfile: boolean;
-  handleToggleFullProfile: () => void;
   setShowFullProfile: (showFullProfile: boolean) => void;
 }
 
@@ -82,11 +63,8 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
   profile,
   dislikeProfile,
   likeProfile,
-  superlikeProfile,
   isInteracting = false,
-  onExpandPress,
   showFullProfile,
-  handleToggleFullProfile,
   setShowFullProfile,
 }) => {
   const {userId, profile: userProfile} = useProfile();
@@ -102,6 +80,11 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
   const [selectedReason, setSelectedReason] = useState('');
   const [customReason, setCustomReason] = useState('');
 
+  const [showDecisionModal, setShowDecisionModal] = useState(false);
+  const [decisionType, setDecisionType] = useState<'like' | 'dislike' | ''>('');
+  const [selectedDecisionReason, setSelectedDecisionReason] = useState('');
+  const [customDecisionReason, setCustomDecisionReason] = useState('');
+
   const [showCompatibilityModal, setShowCompatibilityModal] = useState(false);
 
   if (!profile) return null;
@@ -115,8 +98,9 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
 
   const PLACEHOLDER = '—';
 
-  const user = profile;
-  const profileId = profile.userId;
+  const user = profile.user2Profile;
+  const profileId = profile.user2Profile.userId;
+  const similarities = getSharedSimilarities(userProfile, user);
   const about =
     Array.isArray(user?.About) && user.About.length > 0 ? user.About[0] : {};
   const career =
@@ -134,7 +118,9 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
     Array.isArray(user?.Preferences) && user.Preferences.length > 0
       ? user.Preferences[0]
       : {};
-  const prompts = Array.isArray(user?.Prompts) ? user.Prompts : [];
+
+  const prompts = Array.isArray(user?.Prompts) ? user.Prompts[0] : [];
+  console.log('selected profile', prompts);
   const relationships =
     Array.isArray(user?.Relationships) && user.Relationships.length > 0
       ? user.Relationships[0]
@@ -172,43 +158,72 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
     setPhotoIndex(prev => (prev + 1) % photos.length);
   };
 
-  const handleSendSuperlike = () => {
-    if (!profileId) {
-      console.error('Cannot super like profile, profile ID is missing.');
-      setIsModalVisible(false);
-      setSuperlikeMessage('');
-      return;
-    }
-    setIsModalVisible(false);
-    superlikeProfile(profileId, superlikeMessage.trim(), profile);
-    setSuperlikeMessage('');
-  };
-
   const handleLikeProfile = () => {
     if (!profileId || isInteracting) {
-      console.warn(
-        'Cannot like profile, profile ID is missing or interaction in progress.',
-      );
+      console.warn('Cannot like profile');
       return;
     }
-    setShowFullProfile(false);
-    likeProfile(profileId, profile);
+    setDecisionType('like');
+    setShowDecisionModal(true); // 👈 Show modal first
   };
 
   const handleDislikeProfile = () => {
     if (!profileId || isInteracting) {
+      console.warn('Cannot dislike profile');
+      return;
+    }
+    setDecisionType('dislike');
+    setShowDecisionModal(true); // 👈 Show modal first
+  };
+
+  const submitDecision = async () => {
+    console.log('submit decision');
+
+    // Determine final reason
+    const finalReason =
+      selectedDecisionReason === 'Other'
+        ? customDecisionReason.trim()
+        : selectedDecisionReason;
+
+    if (!finalReason) {
+      Alert.alert('Missing Reason', 'Please select or enter a reason.');
+      return;
+    }
+
+    if (!profileId || isInteracting) {
       console.warn(
-        'Cannot dislike profile, profile ID is missing or interaction in progress.',
+        'Cannot submit decision — profileId missing or interaction in progress.',
       );
       return;
     }
-    setShowFullProfile(false);
-    dislikeProfile(profileId);
-  };
 
-  const handleCancelModal = () => {
-    setIsModalVisible(false);
-    setSuperlikeMessage('');
+    // Like or Dislike logic
+    if (decisionType === 'like') {
+      console.log('Calling likeProfile with reason:', finalReason);
+      likeProfile(profileId, profile, finalReason);
+    } else if (decisionType === 'dislike') {
+      console.log('Calling dislikeProfile with reason:', finalReason);
+      dislikeProfile(profileId, finalReason);
+    } else {
+      console.warn('Unknown decision type:', decisionType);
+      return;
+    }
+
+    // Reset modal state
+    setShowDecisionModal(false);
+    setDecisionType('');
+    setSelectedDecisionReason('');
+    setCustomDecisionReason('');
+
+    // Optional: Track the decision (Amplitude)
+    track(
+      `Profile ${decisionType === 'like' ? 'Liked' : 'Disliked'} with Reason`,
+      {
+        profileId,
+        reason: finalReason,
+        targetUserId: userId,
+      },
+    );
   };
 
   const handleReportProfile = async () => {
@@ -291,16 +306,13 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
   };
 
   const screenWidth = Dimensions.get('window').width;
-  const indicatorCount = photos.length || 1;
-  const totalPadding = indicatorCount * 4; // px-2 on both sides = 4px per item
-  const itemWidth = (screenWidth - totalPadding) / indicatorCount;
 
   return (
     <SafeAreaView
       style={[tailwind`flex-1`, {backgroundColor: themeColors.secondary}]}>
       {!showFullProfile ? (
         <>
-          <View style={tailwind`w-full h-16/24 px-3`}>
+          <View style={tailwind`w-full h-15/24 px-3`}>
             <TouchableWithoutFeedback onPress={handleImageTap}>
               {photoUrl ? (
                 <Image
@@ -316,23 +328,33 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
               style={tailwind`absolute left-3 right-3 top-4 w-full items-center`}>
               <View
                 style={tailwind`flex-row w-11/12 justify-center items-center rounded-full`}>
-                {photos.map((_, idx) => (
-                  <View
-                    key={idx}
-                    style={[
-                      tailwind`mx-1 h-1.5 rounded-full`,
-                      {
-                        width: screenWidth / photos.length - 24,
-                        opacity: idx === photoIndex ? 1 : 0.5,
-                        backgroundColor:
-                          idx === photoIndex
-                            ? themeColors.primary
-                            : themeColors.secondary,
-                      },
-                    ]}
-                  />
-                ))}
+                {photos.length > 1 &&
+                  photos.map((_, idx) => (
+                    <View
+                      key={idx}
+                      style={[
+                        tailwind`mx-1 h-1.5 rounded-full`,
+                        {
+                          width: screenWidth / photos.length - 24,
+                          opacity: idx === photoIndex ? 1 : 0.5,
+                          backgroundColor:
+                            idx === photoIndex
+                              ? themeColors.primary
+                              : themeColors.secondary,
+                        },
+                      ]}
+                    />
+                  ))}
               </View>
+            </View>
+            <View
+              style={[
+                tailwind`absolute bottom-3 left-5 py-1 px-3 rounded-3`,
+                {backgroundColor: themeColors.primary},
+              ]}>
+              <Text style={tailwind`text-base text-white font-semibold`}>
+                {intentions.intentions}
+              </Text>
             </View>
             <View style={tailwind`absolute bottom-3 right-5`}>
               <TouchableOpacity
@@ -342,7 +364,7 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                   {backgroundColor: themeColors.primary},
                 ]}>
                 <Text style={tailwind`text-base text-white font-semibold`}>
-                  {calculateCompatibility(profile, userProfile)}% match
+                  {profile.score}% match
                 </Text>
               </TouchableOpacity>
             </View>
@@ -390,28 +412,45 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                   </Text>
                 ))}
               </View>
-              <View
-                style={tailwind`flex flex-row items-center justify-between`}>
-                {(intentions.intentions || intentions.timeline) && (
-                  <View style={tailwind``}>
-                    <Text style={tailwind`text-base`}>
-                      {intentions.intentions}
-                      {career.job ? ' • ' : ''}
-                      {career.job}
-                    </Text>
-                  </View>
-                )}
-                <Text style={tailwind`text-base`}>{distance} mi away</Text>
-              </View>
-              {prompts[0]?.response && (
-                <View style={tailwind`mt-2`}>
+              <View style={tailwind`mt-1`}>
+                {prompts.t_who && (
                   <Text
-                    numberOfLines={1}
+                    numberOfLines={prompts.t_makes_me ? 1 : 2}
                     style={tailwind`font-semibold text-base`}>
-                    {`"${prompts[0].response}"`}
+                    {`"${prompts.t_who}"`}
                   </Text>
-                </View>
-              )}
+                )}
+                {prompts.t_makes_me && (
+                  <Text
+                    numberOfLines={prompts.t_who ? 1 : 2}
+                    style={tailwind`font-semibold text-base`}>
+                    {`"${prompts.t_makes_me}"`}
+                  </Text>
+                )}
+              </View>
+              <View style={tailwind`mt-2`}>
+                <Text style={tailwind`mb-1 text-base font-semibold`}>
+                  Shared Similarities
+                </Text>
+                {similarities.length > 0 ? (
+                  <View style={tailwind`flex flex-row flex-wrap`}>
+                    {similarities.map((item, index) => (
+                      <View
+                        key={index}
+                        style={[
+                          tailwind`px-3 py-1 rounded-full mr-2 mb-2`,
+                          {backgroundColor: themeColors.primary},
+                        ]}>
+                        <Text style={tailwind`text-white text-sm`}>{item}</Text>
+                      </View>
+                    ))}
+                  </View>
+                ) : (
+                  <Text style={tailwind`text-base italic text-gray-500`}>
+                    No obvious similarities yet
+                  </Text>
+                )}
+              </View>
             </View>
           </View>
         </>
@@ -460,7 +499,7 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                 <SingleInfoFull label="Timeline" value={intentions.timeline} />
               </View>
             </View>
-            <View style={tailwind`flex flex-row items-center mt-8`}>
+            <View style={tailwind`flex flex-row items-center mt-2`}>
               <View style={tailwind`pr-2 w-1/2`}>
                 <SingleInfoFull
                   label="Background"
@@ -482,7 +521,7 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                 />
               </View>
             </View>
-            <View style={tailwind`flex flex-row items-center mt-8`}>
+            <View style={tailwind`flex flex-row items-center mt-2`}>
               <View style={tailwind`pr-2 w-1/2`}>
                 <SingleInfoFull
                   label="Religion"
@@ -514,6 +553,251 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
                 />
               </View>
             </View>
+
+            <View style={tailwind`mt-8`}>
+              {(prompts.t_who !== null || prompts.t_makes_me !== null) && (
+                <Text
+                  style={[
+                    tailwind`text-xl font-bold mb-1`,
+                    {color: themeColors.primary},
+                  ]}>
+                  I am...
+                </Text>
+              )}
+              {prompts.t_who && (
+                <View style={tailwind`flex flex-row items-center mt-2`}>
+                  <View style={tailwind`w-full`}>
+                    <SingleInfoFull label="Who am I?" value={prompts.t_who} />
+                  </View>
+                </View>
+              )}
+              {prompts.t_makes_me && (
+                <View style={tailwind`flex flex-row items-center mt-2`}>
+                  <View style={tailwind`w-full`}>
+                    <SingleInfoFull
+                      label="What makes me, me?"
+                      value={prompts.t_makes_me}
+                    />
+                  </View>
+                </View>
+              )}
+              {(prompts.t_weekends !== null ||
+                prompts.t_friends !== null ||
+                prompts.t_master !== null ||
+                prompts.t_make_time !== null) && (
+                <Text
+                  style={[
+                    tailwind`text-xl font-bold mb-1 mt-4`,
+                    {color: themeColors.primary},
+                  ]}>
+                  Light & Relatable
+                </Text>
+              )}
+              {prompts.t_weekends && (
+                <View style={tailwind`flex flex-row items-center mt-2`}>
+                  <View style={tailwind`w-full`}>
+                    <SingleInfoFull
+                      label="On weekends, you’ll usually find me…"
+                      value={prompts.t_weekends}
+                    />
+                  </View>
+                </View>
+              )}
+              {prompts.t_friends && (
+                <View style={tailwind`flex flex-row items-center mt-2`}>
+                  <View style={tailwind`w-full`}>
+                    <SingleInfoFull
+                      label="My friends would describe me as…"
+                      value={prompts.t_friends}
+                    />
+                  </View>
+                </View>
+              )}
+              {prompts.t_master && (
+                <View style={tailwind`flex flex-row items-center mt-2`}>
+                  <View style={tailwind`w-full`}>
+                    <SingleInfoFull
+                      label="A skill I would instatnly like to master is…"
+                      value={prompts.t_master}
+                    />
+                  </View>
+                </View>
+              )}
+              {prompts.t_make_time && (
+                <View style={tailwind`flex flex-row items-center mt-2`}>
+                  <View style={tailwind`w-full`}>
+                    <SingleInfoFull
+                      label="One thing I always make time for is…"
+                      value={prompts.t_make_time}
+                    />
+                  </View>
+                </View>
+              )}
+              {/* {prompts.t_daily && (
+                <View style={tailwind`flex flex-row items-center mt-2`}>
+                  <View style={tailwind`w-full`}>
+                    <SingleInfoFull label="Daily" value={prompts.t_daily} />
+                  </View>
+                </View>
+              )} */}
+              {(prompts.t_love !== null ||
+                prompts.t_faith !== null ||
+                prompts.t_appreciate !== null ||
+                prompts.t_lifestyle !== null) && (
+                <Text
+                  style={[
+                    tailwind`text-xl font-bold mb-1 mt-4`,
+                    {color: themeColors.primary},
+                  ]}>
+                  Intentions & Identity
+                </Text>
+              )}
+              {prompts.t_love && (
+                <View style={tailwind`flex flex-row items-center mt-2`}>
+                  <View style={tailwind`w-full`}>
+                    <SingleInfoFull
+                      label="When it comes to love, I believe…"
+                      value={prompts.t_love}
+                    />
+                  </View>
+                </View>
+              )}
+              {prompts.t_faith && (
+                <View style={tailwind`flex flex-row items-center mt-2`}>
+                  <View style={tailwind`w-full`}>
+                    <SingleInfoFull
+                      label="Faith and values play a role in my life..."
+                      value={prompts.t_faith}
+                    />
+                  </View>
+                </View>
+              )}
+              {prompts.t_appreciate && (
+                <View style={tailwind`flex flex-row items-center mt-2`}>
+                  <View style={tailwind`w-full`}>
+                    <SingleInfoFull
+                      label="I appreciate when someone…"
+                      value={prompts.t_appreciate}
+                    />
+                  </View>
+                </View>
+              )}
+              {prompts.t_lifestyle && (
+                <View style={tailwind`flex flex-row items-center mt-2`}>
+                  <View style={tailwind`w-full`}>
+                    <SingleInfoFull
+                      label="The lifestyle I’m building includes…"
+                      value={prompts.t_lifestyle}
+                    />
+                  </View>
+                </View>
+              )}
+              {(prompts.t_refuse !== null ||
+                prompts.t_show !== null ||
+                prompts.t_grow !== null ||
+                prompts.t_life !== null) && (
+                <Text
+                  style={[
+                    tailwind`text-xl font-bold mb-1 mt-4`,
+                    {color: themeColors.primary},
+                  ]}>
+                  Depth & Emotions
+                </Text>
+              )}
+              {prompts.t_refuse && (
+                <View style={tailwind`flex flex-row items-center mt-2`}>
+                  <View style={tailwind`w-full`}>
+                    <SingleInfoFull
+                      label="A value I refuse to compromise on…"
+                      value={prompts.t_refuse}
+                    />
+                  </View>
+                </View>
+              )}
+              {prompts.t_show && (
+                <View style={tailwind`flex flex-row items-center mt-2`}>
+                  <View style={tailwind`w-full`}>
+                    <SingleInfoFull
+                      label="When I care about someone…"
+                      value={prompts.t_show}
+                    />
+                  </View>
+                </View>
+              )}
+              {prompts.t_grow && (
+                <View style={tailwind`flex flex-row items-center mt-2`}>
+                  <View style={tailwind`w-full`}>
+                    <SingleInfoFull
+                      label="I’ve grown the most through…"
+                      value={prompts.t_grow}
+                    />
+                  </View>
+                </View>
+              )}
+              {prompts.t_life && (
+                <View style={tailwind`flex flex-row items-center mt-2`}>
+                  <View style={tailwind`w-full`}>
+                    <SingleInfoFull
+                      label="I feel most at peace when…"
+                      value={prompts.t_life}
+                    />
+                  </View>
+                </View>
+              )}
+              {(prompts.t_moment !== null ||
+                prompts.t_deep !== null ||
+                prompts.t_partner !== null ||
+                prompts.t_lifelong !== null) && (
+                <Text
+                  style={[
+                    tailwind`text-xl font-bold mb-1 mt-4`,
+                    {color: themeColors.primary},
+                  ]}>
+                  Bonding
+                </Text>
+              )}
+              {prompts.t_moment && (
+                <View style={tailwind`flex flex-row items-center mt-2`}>
+                  <View style={tailwind`w-full`}>
+                    <SingleInfoFull
+                      label="Moment that shaped how I love…"
+                      value={prompts.t_moment}
+                    />
+                  </View>
+                </View>
+              )}
+              {prompts.t_deep && (
+                <View style={tailwind`flex flex-row items-center mt-2`}>
+                  <View style={tailwind`w-full`}>
+                    <SingleInfoFull
+                      label="I feel deeply connected when…"
+                      value={prompts.t_deep}
+                    />
+                  </View>
+                </View>
+              )}
+              {prompts.t_partner && (
+                <View style={tailwind`flex flex-row items-center mt-2`}>
+                  <View style={tailwind`w-full`}>
+                    <SingleInfoFull
+                      label="The partner I strive to be is…"
+                      value={prompts.t_partner}
+                    />
+                  </View>
+                </View>
+              )}
+              {prompts.t_lifelong && (
+                <View style={tailwind`flex flex-row items-center mt-2`}>
+                  <View style={tailwind`w-full`}>
+                    <SingleInfoFull
+                      label="What I want in alifelong partnership is…"
+                      value={prompts.t_lifelong}
+                    />
+                  </View>
+                </View>
+              )}
+            </View>
+
             <View style={tailwind`flex flex-row items-center mt-10`}>
               <View style={tailwind`w-full`}>
                 <SingleInfoFull
@@ -1071,27 +1355,28 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
             tailwind`p-2 rounded-full shadow-lg`,
             {backgroundColor: isInteracting ? '#fca5a5' : '#f87171'},
           ]}>
-          <X height={24} width={24} color={'white'} strokeWidth={3} />
+          <X height={20} width={20} color={'white'} strokeWidth={3} />
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => {
-            setIsModalVisible(true);
-          }}
+          onPress={handleLikeProfile}
           style={[
-            tailwind`p-2 rounded-2 shadow-lg mx-4 px-6`,
+            tailwind`py-2.5 rounded-2 shadow-lg mx-4 px-6`,
             {
               backgroundColor: isInteracting ? '#6ee7b7' : themeColors.primary,
             },
           ]}>
           <Text style={tailwind`text-white text-lg font-semibold`}>
-            Send Message
+            Connect
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={handleLikeProfile}
-          style={tailwind`p-2 rounded-full shadow-lg bg-emerald-500`}>
-          <Check height={24} width={24} color={'white'} strokeWidth={3} />
-        </TouchableOpacity>
+        <View style={tailwind`p-2 rounded-full`}>
+          <X
+            height={24}
+            width={24}
+            color={themeColors.secondary}
+            strokeWidth={3}
+          />
+        </View>
       </View>
       <Modal
         visible={showReportBlockModal}
@@ -1263,56 +1548,107 @@ const FeedProfileComponent: React.FC<FeedSummaryProps> = ({
         </View>
       </Modal>
       <Modal
-        animationType="slide"
-        transparent={true}
-        visible={isModalVisible}
-        onRequestClose={handleCancelModal}>
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            style={tailwind`flex-1 justify-center bg-black bg-opacity-50 px-4`}>
-            <View
-              style={[
-                tailwind`bg-white p-5 rounded-xl`,
-                {backgroundColor: themeColors.secondary},
-              ]}>
-              <Text style={tailwind`text-xl font-bold text-center mb-4`}>
-                Add a message (Optional)
-              </Text>
-              <TextInput
-                style={tailwind`border-b-2 border-b-gray-600 p-3 mb-4 text-base`}
-                placeholder="Make your Super Like stand out..."
-                value={superlikeMessage}
-                onChangeText={setSuperlikeMessage}
-                maxLength={140}
-                multiline
-                textAlignVertical="top"
-                placeholderTextColor={'gray'}
-              />
-              <View style={tailwind`flex-row justify-between`}>
-                <TouchableOpacity
-                  onPress={handleCancelModal}
-                  style={tailwind`px-5 py-3 rounded-md bg-gray-300`}>
-                  <Text style={tailwind`text-base font-semibold text-gray-700`}>
-                    Cancel
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={handleSendSuperlike}
+        visible={showDecisionModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowDecisionModal(false)}>
+        <View
+          style={tailwind`flex-1 justify-center items-center bg-black bg-opacity-60 px-4`}>
+          <View
+            style={[
+              tailwind`w-full p-5 rounded-lg`,
+              {backgroundColor: themeColors.secondary},
+            ]}>
+            <Text style={tailwind`text-xl font-bold text-center mb-4`}>
+              {decisionType === 'like'
+                ? 'What made you like this profile?'
+                : 'What made you dislike this profile?'}
+            </Text>
+            <Text
+              style={tailwind`text-sm italic text-center mb-3 text-gray-500`}>
+              Your feedback is anonymous and helps us improve the algorithm.
+            </Text>
+
+            {/* Reasons based on decision type */}
+            {(decisionType === 'like'
+              ? [
+                  'Great personality',
+                  'Shared values',
+                  'Attractive photos',
+                  'Good first impression',
+                  'Other', // <== Always include "Other"
+                ]
+              : [
+                  'Not my type',
+                  'Low compatibility',
+                  'Dealbreaker traits',
+                  'Concerns about values',
+                  'Concerns about lifestyle',
+                  'Other', // <== Always include "Other"
+                ]
+            ).map(reason => (
+              <TouchableOpacity
+                key={reason}
+                onPress={() => setSelectedDecisionReason(reason)}
+                style={[
+                  tailwind`py-2 px-4 rounded-md mb-2`,
+                  {
+                    backgroundColor:
+                      selectedDecisionReason === reason
+                        ? themeColors.primary
+                        : themeColors.darkSecondary,
+                  },
+                ]}>
+                <Text
                   style={[
-                    tailwind`px-5 py-3 rounded-md flex-row items-center`,
-                    {backgroundColor: themeColors.primary},
+                    tailwind`text-base font-semibold`,
+                    {
+                      color:
+                        selectedDecisionReason === reason ? 'white' : 'black',
+                    },
                   ]}>
-                  <Send height={18} width={18} color="white" />
-                  <Text
-                    style={tailwind`text-base font-semibold text-white ml-2`}>
-                    Send Super Like
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </KeyboardAvoidingView>
-        </TouchableWithoutFeedback>
+                  {reason}
+                </Text>
+              </TouchableOpacity>
+            ))}
+
+            {/* Optional text input if Other selected */}
+            {selectedDecisionReason === 'Other' && (
+              <TextInput
+                style={tailwind`border border-gray-600 rounded-md p-3 mt-2 text-base`}
+                placeholder="Describe your reason..."
+                placeholderTextColor="gray"
+                value={customDecisionReason}
+                onChangeText={setCustomDecisionReason}
+                maxLength={225}
+              />
+            )}
+
+            {/* Submit */}
+            <TouchableOpacity
+              onPress={submitDecision}
+              style={[
+                tailwind`mt-4 py-3 px-5 rounded-md`,
+                {backgroundColor: themeColors.primary},
+              ]}>
+              <Text style={tailwind`text-white text-center font-semibold`}>
+                Submit
+              </Text>
+            </TouchableOpacity>
+
+            {/* Cancel */}
+            <TouchableOpacity
+              onPress={() => {
+                setShowDecisionModal(false);
+                setDecisionType('');
+                setSelectedDecisionReason('');
+                setCustomDecisionReason('');
+              }}
+              style={tailwind`mt-4`}>
+              <Text style={tailwind`text-center text-gray-400`}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
       </Modal>
     </SafeAreaView>
   );

@@ -198,20 +198,18 @@ const EditPhotosView = () => {
   return (
     <View>
       <TouchableOpacity
-        style={tailwind`w-full flex flex-col`}
+        style={tailwind`w-full flex flex-col px-2`}
         onPress={() => setExpandPhotos(!expandPhotos)}>
         <View
           style={[
             tailwind`w-full flex flex-row items-center justify-between p-3 rounded-2`,
-            {backgroundColor: themeColors.darkGrey},
+            {backgroundColor: themeColors.darkSecondary},
           ]}>
           <View style={tailwind`flex flex-row items-center`}>
-            <Text style={tailwind`text-base font-semibold text-white`}>
-              Photos
-            </Text>
+            <Text style={tailwind`text-base font-semibold`}>Photos</Text>
             {isEmpty && (
               <View
-                style={tailwind`w-2 h-2 rounded-full bg-yellow-400 mr-2 ml-3`}
+                style={tailwind`w-2 h-2 rounded-full bg-orange-400 mr-2 ml-3`}
               />
             )}
           </View>
@@ -242,7 +240,8 @@ const EditPhotosView = () => {
       </TouchableOpacity>
       <View style={tailwind`flex-1`}>
         {expandPhotos && (
-          <View style={tailwind`w-full flex flex-row items-center mb-5 mt-4`}>
+          <View
+            style={tailwind`w-full flex flex-row items-center mb-5 mt-4 px-2`}>
             <View style={tailwind`flex-1 flex-row flex-wrap`}>
               {uploadedImageUrls.map((_, index) => (
                 <View

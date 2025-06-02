@@ -72,8 +72,16 @@ const Conversations = () => {
       );
 
       if (response.data?.data.length > 0) {
-        console.log('conversations', response.data?.data);
-        setConversations(response.data?.data);
+        console.log('✅ All conversations:', response.data?.data);
+
+        // 👉 Filter for ACTIVE conversations only
+        const activeConversations = response.data?.data.filter(
+          conversation => conversation.status === 'active',
+        );
+
+        console.log('✅ Active conversations:', activeConversations);
+
+        setConversations(activeConversations);
       } else {
         console.warn(
           'No conversations found or invalid data format:',

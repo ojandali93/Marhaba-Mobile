@@ -27,7 +27,11 @@ import LifestyleHabitsScreen from '../Screens/Auth/LifestyleHabitsScreen';
 import ReligionScreen from '../Screens/Auth/ReligionScreen';
 import EulaScreen from '../Screens/Auth/EULAScreen';
 import CommunityScreen from '../Screens/Auth/CommunityScreen';
-
+import T1Prompts from '../Screens/Auth/T1Prompts';
+import AboutMeScreen from '../Screens/Auth/AboutMeScreen';
+import T2Prompts from '../Screens/Auth/T2Prompts';
+import T3Prompts from '../Screens/Auth/T3Prompts';
+import T4Prompts from '../Screens/Auth/T4Prompts';
 const Stack = createNativeStackNavigator();
 
 const AuthStack = () => {
@@ -59,6 +63,11 @@ const AuthStack = () => {
       <Stack.Screen name="Religion" component={ReligionScreen} />
       <Stack.Screen name="Eula" component={EulaScreen} />
       <Stack.Screen name="Community" component={CommunityScreen} />
+      <Stack.Screen name="T0Prompts" component={AboutMeScreen} />
+      <Stack.Screen name="T1Prompts" component={T1Prompts} />
+      <Stack.Screen name="T2Prompts" component={T2Prompts} />
+      <Stack.Screen name="T3Prompts" component={T3Prompts} />
+      <Stack.Screen name="T4Prompts" component={T4Prompts} />
     </Stack.Navigator>
   );
 };

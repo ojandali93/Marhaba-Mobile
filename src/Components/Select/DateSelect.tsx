@@ -98,7 +98,7 @@ const DateSelect: React.FC<InputProps> = ({fieldName, dob, setDate}) => {
         <View style={tailwind`flex-1 justify-end bg-black bg-opacity-30`}>
           <View
             style={[
-              tailwind`rounded-full p-4 pb-6 mx-4 mb-10`,
+              tailwind`rounded-3 p-4 pb-6 mx-4 mb-10`,
               {
                 backgroundColor: colorScheme === 'dark' ? '#1c1c1e' : '#fff',
               },

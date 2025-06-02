@@ -80,16 +80,14 @@ const EditSocialsView = () => {
   return (
     <View>
       <TouchableOpacity
-        style={tailwind`w-full flex flex-col mt-2`}
+        style={tailwind`w-full flex flex-col mt-2 px-2  `}
         onPress={() => setExpandSocials(!expandSocials)}>
         <View
           style={[
             tailwind`w-full flex flex-row items-center justify-between p-3 rounded-2`,
-            {backgroundColor: themeColors.darkGrey},
+            {backgroundColor: themeColors.darkSecondary},
           ]}>
-          <Text style={tailwind`text-base font-semibold text-white`}>
-            Social Handles
-          </Text>
+          <Text style={tailwind`text-base font-semibold`}>Social Handles</Text>
           {expandSocials ? (
             changeDetected ? (
               <TouchableOpacity onPress={updateSocials}>
