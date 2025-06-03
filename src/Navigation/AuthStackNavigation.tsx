@@ -16,7 +16,6 @@ import IdentityThirdScreen from '../Screens/Auth/IdentityThirdScreen';
 import CoreScreen from '../Screens/Auth/CoreScreen';
 import ConflictScreen from '../Screens/Auth/ConflictScreen';
 import AttachmentScreen from '../Screens/Auth/AttachmentScreen';
-import CommunicationScreen from '../Screens/Auth/LifestyleScreen';
 import LifestyleScreen from '../Screens/Auth/LifestyleScreen';
 import FutureScreen from '../Screens/Auth/FutureScreen';
 import AcceptScreen from '../Screens/Auth/AcceptScreen';
@@ -32,6 +31,7 @@ import AboutMeScreen from '../Screens/Auth/AboutMeScreen';
 import T2Prompts from '../Screens/Auth/T2Prompts';
 import T3Prompts from '../Screens/Auth/T3Prompts';
 import T4Prompts from '../Screens/Auth/T4Prompts';
+import VideoScreen from '../Screens/Auth/VideoScreen';
 const Stack = createNativeStackNavigator();
 
 const AuthStack = () => {
@@ -68,6 +68,7 @@ const AuthStack = () => {
       <Stack.Screen name="T2Prompts" component={T2Prompts} />
       <Stack.Screen name="T3Prompts" component={T3Prompts} />
       <Stack.Screen name="T4Prompts" component={T4Prompts} />
+      <Stack.Screen name="Video" component={VideoScreen} />
     </Stack.Navigator>
   );
 };

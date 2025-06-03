@@ -88,7 +88,7 @@ const T4Prompts = () => {
     await AsyncStorage.setItem('T4_Partner', partner);
     await AsyncStorage.setItem('T4_Lifelong', lifelong);
     track('T2 Prompts Completed');
-    navigation.navigate('Photos');
+    navigation.navigate('Video');
   };
 
   return (

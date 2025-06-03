@@ -26,6 +26,33 @@ export const pickImageFromGallery = async () => {
   });
 };
 
+export const pickVideoFromGallery = async () => {
+  return new Promise((resolve, reject) => {
+    launchImageLibrary(
+      {
+        mediaType: 'video',
+        quality: 0.8,
+        maxWidth: 2500,
+        maxHeight: 2500,
+        includeBase64: false,
+        selectionLimit: 1,
+      },
+      async (response) => {
+        if (response.didCancel) {
+          resolve(null); // User cancelled
+        } else if (response.errorCode) {
+          reject(new Error(response.errorMessage || 'Video pick failed'));
+        } else {
+          const asset = response.assets?.[0];
+          console.log('✅ Video picked:', JSON.stringify(asset));
+          resolve(asset || null); // Return the image object or null
+        }
+      }
+    );
+  });
+};
+
+
 const TARGET_ASPECT_RATIO = 9 / 16; // Portrait mode
 
 export const cropCenterImageForPhone = async (
