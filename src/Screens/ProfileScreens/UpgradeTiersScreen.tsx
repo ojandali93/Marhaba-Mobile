@@ -1,5 +1,5 @@
 // UpgradeTiersScreen.js
-import React, {useState, useRef} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import {
   View,
   Text,
@@ -15,21 +15,18 @@ import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
 import {useNavigation} from '@react-navigation/native';
 import {ChevronsLeft} from 'react-native-feather';
-import axios from 'axios';
 import {useProfile} from '../../Context/ProfileContext';
+import * as RNIap from 'react-native-iap';
+import axios from 'axios';
 
 const {width: screenWidth} = Dimensions.get('window');
 
 // Tier definitions
 const tiers = [
   {
-    name: 'Marhabah Free',
-    price: 'Free',
-    perks: ['Basic matching', 'Basic chat', 'Browse profiles'],
-  },
-  {
     name: 'Marhabah Pro',
     price: '$4.99 / week',
+    productId: 'marhabah_pro_499',
     perks: [
       'See who liked you',
       'Unlimited likes',
@@ -40,6 +37,7 @@ const tiers = [
   {
     name: 'Marhabah Pro+',
     price: '$8.99 / week',
+    productId: 'marhabah_pro_plus_899',
     perks: [
       'All Pro features',
       'Advanced filters',
@@ -50,51 +48,79 @@ const tiers = [
   },
 ];
 
-// Mapping names to DB values
-const tierMapping = {
-  'Marhabah Free': 1,
-  'Marhabah Pro': 2,
-  'Marhabah Pro+': 3,
-};
-
 const UpgradeTiersScreen = () => {
   const navigation = useNavigation();
-  const [loadingTier, setLoadingTier] = useState(null);
   const {profile, userId} = useProfile();
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollRef = useRef(null);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const handleUpgrade = async tierName => {
-    setLoadingTier(tierName);
+  // Initialize IAP
+  useEffect(() => {
+    RNIap.initConnection()
+      .then(() => {
+        console.log('✅ IAP connection initialized');
+        getProducts();
+      })
+      .catch(err => {
+        console.error('❌ IAP connection error:', err);
+      });
 
-    const tier = tierMapping[tierName];
+    return () => {
+      RNIap.endConnection();
+    };
+  }, []);
 
+  // Fetch products from App Store
+  const getProducts = async () => {
     try {
-      const response = await axios.put(
-        'https://marhaba-server.onrender.com/api/user/upgrade',
+      const productIds = tiers.map(t => t.productId);
+      console.log('🔍 Trying to fetch these product IDs:', productIds);
+
+      const storeProducts = await RNIap.getSubscriptions({
+        skus: productIds,
+      });
+
+      console.log('📦 Fetched products from App Store:', storeProducts);
+
+      setProducts(storeProducts);
+    } catch (err) {
+      console.error('❌ Error fetching products:', err);
+    }
+  };
+
+  // Purchase flow
+  const purchaseSubscription = async productId => {
+    try {
+      setLoading(true);
+      const purchase = await RNIap.requestSubscription(productId);
+      console.log('✅ Purchase successful:', purchase);
+
+      const receipt = purchase.transactionReceipt;
+
+      if (!receipt) {
+        throw new Error('Missing receipt');
+      }
+
+      // 🔥 NOW hit your verify-subscription endpoint!
+      const response = await axios.post(
+        'https://marhabah-backend.onrender.com/api/subscription/verify-subscription',
         {
           userId,
-          tier,
+          productId,
+          receiptData: receipt,
         },
       );
 
-      if (response.data.success) {
-        console.log(`✅ Tier updated to ${tierName}`);
+      console.log('✅ Receipt verification response:', response.data);
 
-        // Simulate processing
-        setTimeout(() => {
-          setLoadingTier(null);
-          Alert.alert('You are all set!', `You have upgraded to ${tierName}.`);
-        }, 2000);
-      } else {
-        console.error('⚠️ Failed to update tier:', response.data.error);
-        setLoadingTier(null);
-        Alert.alert('Error', 'Failed to upgrade your tier. Please try again.');
-      }
-    } catch (error) {
-      console.error('❌ Error updating tier:', error);
-      setLoadingTier(null);
-      Alert.alert('Error', 'An unexpected error occurred. Please try again.');
+      Alert.alert('Success', 'Subscription purchase completed!');
+    } catch (err) {
+      console.error('❌ Purchase error:', err);
+      Alert.alert('Error', 'Purchase could not be completed.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -135,7 +161,8 @@ const UpgradeTiersScreen = () => {
         scrollEventThrottle={16}
         contentContainerStyle={tailwind`flex-grow`}>
         {tiers.map((tier, index) => {
-          const isCurrentTier = profile?.tier === tierMapping[tier.name];
+          const isCurrentTier = profile?.tier === (index === 0 ? 2 : 3); // Assuming your tiers: Pro = 2, Pro+ = 3
+
           return (
             <View
               key={index}
@@ -161,14 +188,14 @@ const UpgradeTiersScreen = () => {
               </Text>
 
               {/* Price */}
-              <Text style={tailwind`text-center text-2xl mb-4 `}>
+              <Text style={tailwind`text-center text-2xl mb-4`}>
                 {tier.price}
               </Text>
 
               {/* Perks */}
               <View style={tailwind`mb-6`}>
                 {tier.perks.map((perk, i) => (
-                  <Text key={i} style={tailwind`text-base  mb-2 text-center`}>
+                  <Text key={i} style={tailwind`text-base mb-2 text-center`}>
                     • {perk}
                   </Text>
                 ))}
@@ -176,8 +203,8 @@ const UpgradeTiersScreen = () => {
 
               {/* Action Button */}
               <TouchableOpacity
-                disabled={loadingTier !== null || isCurrentTier}
-                onPress={() => handleUpgrade(tier.name)}
+                disabled={loading || isCurrentTier}
+                onPress={() => purchaseSubscription(tier.productId)}
                 style={[
                   tailwind`mt-4 p-3 rounded-2 items-center`,
                   {
@@ -186,11 +213,13 @@ const UpgradeTiersScreen = () => {
                       : themeColors.primary,
                   },
                 ]}>
-                {loadingTier === tier.name ? (
+                {loading ? (
                   <ActivityIndicator color="#fff" />
                 ) : (
-                  <Text style={tailwind` text-base font-semibold`}>
-                    {isCurrentTier ? 'Current Plan' : `Switch to ${tier.name}`}
+                  <Text style={tailwind`text-base font-semibold text-white`}>
+                    {isCurrentTier
+                      ? 'Current Plan'
+                      : `Subscribe to ${tier.name}`}
                   </Text>
                 )}
               </TouchableOpacity>
@@ -230,14 +259,20 @@ const UpgradeTiersScreen = () => {
           <Text
             style={tailwind`text-blue-400 underline`}
             onPress={() =>
-              openLink('https://yourwebsite.com/terms-of-service')
+              openLink(
+                'https://app.termly.io/policy-viewer/policy.html?policyUUID=6c415447-ebe1-4647-9104-e89d1c3879c8',
+              )
             }>
             Terms of Service
           </Text>{' '}
           and{' '}
           <Text
             style={tailwind`text-blue-400 underline`}
-            onPress={() => openLink('https://yourwebsite.com/eula')}>
+            onPress={() =>
+              openLink(
+                'https://app.termly.io/policy-viewer/policy.html?policyUUID=2c96703e-b201-4b10-8414-c9a70374f352',
+              )
+            }>
             End User License Agreement (EULA)
           </Text>
           .

@@ -28,6 +28,28 @@ if (Platform.OS === 'android') {
     UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
+const promptLabels = {
+  t_who: 'Who am I?',
+  t_makes_me: 'What makes me, me?',
+  t_weekends: 'On weekends, you’ll usually find me…',
+  t_friends: 'My friends would describe me as…',
+  t_master: 'A skill I would instantly like to master is…',
+  t_make_time: 'One thing I always make time for is…',
+  t_daily: 'My daily rituals include…', // You didn’t list this one, placeholder text
+  t_love: 'When it comes to love, I believe…',
+  t_faith: 'Faith and values play a role in my life...',
+  t_appreciate: 'I appreciate when someone…',
+  t_lifestyle: 'The lifestyle I’m building includes…',
+  t_refuse: 'A value I refuse to compromise on is…',
+  t_show: 'When I care about someone…',
+  t_grow: 'I’ve grown the most through…',
+  t_life: 'I feel most at peace when…',
+  t_moment: 'One moment that shaped how I love is…',
+  t_deepl: 'I feel deeply connected to people when…',
+  t_partner: 'The kind of partner I strive to be is…',
+  t_lifelong: 'What I want most in a lifelong partnership is…',
+};
+
 const AdminReviewScreen = () => {
   const {userId, profile} = useProfile();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -65,6 +87,7 @@ const AdminReviewScreen = () => {
       const res = await axios.get(
         `https://marhaba-server.onrender.com/api/admin/pendingProfiles`,
       );
+      console.log('selected profile: ', JSON.stringify(res.data.data));
       setPendingProfiles(res.data.data);
     } catch (err) {
       console.error('❌ Error fetching profiles:', err);
@@ -265,6 +288,8 @@ const AdminReviewScreen = () => {
     );
   }
 
+  const promptRow = profile.Prompts?.[0] || {};
+
   return (
     <View style={[tailwind`flex-1`, {backgroundColor: themeColors.secondary}]}>
       <View
@@ -336,72 +361,76 @@ const AdminReviewScreen = () => {
                 <View style={tailwind`w-full flex flex-row justify-between`}>
                   <Text>Religion:</Text>
                   <Text style={tailwind`text-gray-700 mb-2`}>
-                    {profile.Religion?.[0].religion}
+                    {profile.Religion[0]?.religion}
                   </Text>
                 </View>
                 <View style={tailwind`w-full flex flex-row justify-between`}>
                   <Text>Sect:</Text>
                   <Text style={tailwind`text-gray-700 mb-2`}>
-                    {profile.Religion?.[0].sect}
+                    {profile.Religion[0]?.sect}
                   </Text>
                 </View>
                 <View style={tailwind`w-full flex flex-row justify-between`}>
                   <Text>Views:</Text>
                   <Text style={tailwind`text-gray-700 mb-2`}>
-                    {profile.Religion?.[0].practicing || 'Not Specified'}
+                    {profile.Religion[0]?.practicing || 'Not Specified'}
                   </Text>
                 </View>
                 <View style={tailwind`w-full flex flex-row justify-between`}>
                   <Text>Smoke:</Text>
                   <Text style={tailwind`text-gray-700 mb-2`}>
-                    {profile.Habits?.[0].smoking}
+                    {profile.Habits[0]?.smoking}
                   </Text>
                 </View>
                 <View style={tailwind`w-full flex flex-row justify-between`}>
                   <Text>Drink:</Text>
                   <Text style={tailwind`text-gray-700 mb-2`}>
-                    {profile.Habits?.[0].drinking}
+                    {profile.Habits[0]?.drinking}
                   </Text>
                 </View>
                 <View style={tailwind`w-full flex flex-row justify-between`}>
                   <Text>Has Kids:</Text>
                   <Text style={tailwind`text-gray-700 mb-2`}>
-                    {profile.Habits?.[0].hasKids}
+                    {profile.Habits[0]?.hasKids}
                   </Text>
                 </View>
                 <View style={tailwind`w-full flex flex-row justify-between`}>
                   <Text>Wants Kids:</Text>
                   <Text style={tailwind`text-gray-700 mb-2`}>
-                    {profile.Habits?.[0].wantsKids}
+                    {profile.Habits[0]?.wantsKids}
                   </Text>
                 </View>
                 <Text style={tailwind`font-bold text-lg py-2`}>Prompts:</Text>
-                {(profile.Prompts || []).map((p, idx) => (
-                  <TouchableOpacity
-                    key={p.id}
-                    onPress={() => toggleFlagPrompt(profile.userId, p.prompt)}>
-                    <Text
-                      style={tailwind`${
-                        (flaggedPrompts[profile.userId] || []).includes(
-                          p.prompt,
-                        )
-                          ? 'text-red-500 font-bold italic pb-2'
-                          : 'text-gray-700  font-bold italic pb-2'
-                      }`}>
-                      {p.prompt}:
-                    </Text>
-                    <Text
-                      style={tailwind`${
-                        (flaggedPrompts[profile.userId] || []).includes(
-                          p.prompt,
-                        )
-                          ? 'text-red-500 italic pb-2'
-                          : 'text-gray-700 italic pb-2'
-                      }`}>
-                      {p.response}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
+                {Object.entries(promptLabels).map(([key, label]) => {
+                  const response = promptRow[key];
+
+                  // Skip if no response
+                  if (!response) return null;
+
+                  return (
+                    <TouchableOpacity
+                      key={key}
+                      onPress={() => toggleFlagPrompt(profile.userId, key)}
+                      style={tailwind`mb-2`}>
+                      <Text
+                        style={tailwind`${
+                          (flaggedPrompts[profile.userId] || []).includes(key)
+                            ? 'text-red-500 font-bold italic'
+                            : 'text-gray-700 font-bold italic'
+                        }`}>
+                        {label}
+                      </Text>
+                      <Text
+                        style={tailwind`${
+                          (flaggedPrompts[profile.userId] || []).includes(key)
+                            ? 'text-red-500 italic'
+                            : 'text-gray-700 italic'
+                        }`}>
+                        {response}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
                 <Text style={tailwind`font-bold text-lg py-2`}>Photos:</Text>
                 <View style={tailwind`flex-row flex-wrap justify-between`}>
                   {(profile.Photos || []).map((p, idx) => (
