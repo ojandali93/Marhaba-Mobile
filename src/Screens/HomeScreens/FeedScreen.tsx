@@ -27,14 +27,13 @@ const FeedScreen = () => {
     userId,
     profile,
     matchedProfiles,
-    setMatchedProfiles,
+    fetchWeeklyLikeCount,
+    likesThisWeek,
   } = useProfile();
 
   const [selectedProfile, setSelectedProfile] = useState<any>(null);
   const [results, setResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [likes, setLikes] = useState<number>(0);
-  const [superLikes, setSuperLikes] = useState<number>(0);
   const [showFullProfile, setShowFullProfile] = useState<boolean>(false);
   const [showMatchModal, setShowMatchModal] = useState<boolean>(false);
   const [matchedProfile, setMatchedProfile] = useState<any>(null);
@@ -44,7 +43,7 @@ const FeedScreen = () => {
 
   useLayoutEffect(() => {
     grabUserProfile(userId || '');
-    fetchUsage();
+    fetchWeeklyLikeCount(userId, profile?.tier);
   }, []);
 
   useEffect(() => {
@@ -79,7 +78,6 @@ const FeedScreen = () => {
       await axios.put(`https://marhaba-server.onrender.com/api/user/approved`, {
         id: interactionId,
       });
-      console.log(`✅ Approved match`);
     } catch (error) {
       console.error(`❌ Error approving match:`, error);
     }
@@ -93,13 +91,13 @@ const FeedScreen = () => {
           userId: userId,
           userId2: profileId,
           lastMessage: '',
+          status: 'active',
           updatedAt: new Date().toISOString(),
         },
       );
       track(`Conversation Created with ${profileId}`, {
         targetUserId: userId,
       });
-      console.log(`✅ Created conversation with ${profileId}`);
     } catch (error) {
       console.error(`❌ Error creating conversation with ${profileId}:`, error);
     }
@@ -114,38 +112,8 @@ const FeedScreen = () => {
           viewed: profileId,
         },
       );
-      console.log(`✅ Created viewed with ${profileId}`);
     } catch (error) {
       console.error(`❌ Error creating conversation with ${profileId}:`, error);
-    }
-  };
-
-  const fetchUsage = async () => {
-    if (!userId) return;
-    try {
-      let maxLikes = 15;
-      let maxSuperLikes = 10;
-      const res = await axios.get(
-        `https://marhaba-server.onrender.com/api/user/weeklyStats/${userId}`,
-      );
-      const {likesSentThisWeek, superLikesSentThisWeek} = res.data.data;
-
-      if (profile?.tier === 1) {
-        maxLikes = 15;
-        maxSuperLikes = 10;
-        setLikes(Math.max(0, maxLikes - likesSentThisWeek));
-        setSuperLikes(Math.max(0, maxSuperLikes - superLikesSentThisWeek));
-      } else if (profile?.tier === 2) {
-        maxSuperLikes = 15;
-        setLikes(100);
-        setSuperLikes(Math.max(0, maxSuperLikes - superLikesSentThisWeek));
-      } else if (profile?.tier === 3) {
-        maxSuperLikes = 20;
-        setLikes(100);
-        setSuperLikes(Math.max(0, maxSuperLikes - superLikesSentThisWeek));
-      }
-    } catch (error) {
-      console.error('❌ Failed to fetch usage:', error);
     }
   };
 
@@ -153,7 +121,7 @@ const FeedScreen = () => {
     track('Profile Disliked', {
       targetUserId: userId,
     });
-    console.log(`disliked profile: ${profileId}`);
+
     try {
       const checkRes = await axios.get(
         `https://marhaba-server.onrender.com/api/user/matchStatus/${userId}/${profileId}`,
@@ -214,17 +182,13 @@ const FeedScreen = () => {
     profile: any,
     reason: string,
   ) => {
-    console.log(
-      `🚀 likeProfile called: profileId=${profileId}, reason=${reason}`,
-    );
+    fetchWeeklyLikeCount(profile.userId, profile.tier);
 
     track('Profile Liked', {
       targetUserId: userId,
     });
 
-    console.log(`👍 Current likes: ${likes}`);
-
-    if (likes === 0) {
+    if (likesThisWeek === 0) {
       track('Out of Likes', {
         targetUserId: userId,
       });
@@ -233,36 +197,23 @@ const FeedScreen = () => {
         {text: 'Cancel', style: 'cancel'},
         {
           text: 'Upgrade',
-          onPress: () => navigation.navigate('Profiles'),
+          onPress: () => navigation.navigate('Profile'),
         },
       ]);
 
       return;
     }
 
-    if (likes && likes > 0) {
-      console.log(`✅ Likes remaining: ${likes - 1}`);
-      setLikes(prev => (prev ? prev - 1 : null));
-
+    if (likesThisWeek && likesThisWeek > 0) {
       try {
-        console.log(
-          `🔍 Checking existing interaction for profileId=${profileId}`,
-        );
         const checkRes = await axios.get(
           `https://marhaba-server.onrender.com/api/user/matchStatus/${userId}/${profileId}`,
         );
 
-        console.log('✅ matchStatus response:', checkRes.data);
-
         const existingInteraction = checkRes.data?.data?.[0];
-        console.log('🗂 existingInteraction:', existingInteraction);
 
         // === CASE 1: Already interacted -> convert to match
         if (existingInteraction) {
-          console.log(
-            `🔄 Updating interaction ID=${existingInteraction.id} to match`,
-          );
-
           const updatedRes = await axios.put(
             `https://marhaba-server.onrender.com/api/user/updateInteraction`,
             {
@@ -280,8 +231,6 @@ const FeedScreen = () => {
             },
           );
 
-          console.log('✅ Updated interaction response:', updatedRes.data);
-
           track('Match Approved', {
             targetUserId: userId,
           });
@@ -289,17 +238,15 @@ const FeedScreen = () => {
           updateMatchStatus(existingInteraction.id);
           createConversation(profileId);
           setMatchedProfile(profile);
+          createViewed(profileId);
           setShowMatchModal(true);
+          fetchWeeklyLikeCount(profile.userId, profile.tier);
 
-          console.log('🔔 Checking notificationsProfile for match...');
           const notificationsProfile = profile.Notifications
             ? profile.Notifications[0]
             : null;
 
-          console.log('notificationsProfile:', notificationsProfile);
-
           if (notificationsProfile && notificationsProfile.matches) {
-            console.log('📤 Sending "New Match" notification...');
             try {
               await axios.post(
                 'https://marhaba-server.onrender.com/api/notifications/send',
@@ -309,7 +256,6 @@ const FeedScreen = () => {
                   body: 'You have a new match!',
                 },
               );
-              console.log('✅ Notification sent to liked profile');
             } catch (err) {
               console.error('❌ Failed to send "New Match" notification:', err);
             }
@@ -319,9 +265,6 @@ const FeedScreen = () => {
         }
 
         // === CASE 2: No prior interaction -> create new "like"
-        console.log(
-          '✨ No existing interaction, creating new LIKE interaction',
-        );
 
         const response = await axios.post(
           `https://marhaba-server.onrender.com/api/user/interaction`,
@@ -339,28 +282,20 @@ const FeedScreen = () => {
           },
         );
 
-        console.log('✅ New like interaction response:', response.data);
-
         if (response.data?.success) {
           track('Profile Liked', {
             targetUserId: userId,
           });
 
-          console.log(`✅ Profile liked successfully: profileId=${profileId}`);
-
           createViewed(profileId);
-          fetchUsage();
+          fetchWeeklyLikeCount(profile.userId, profile.tier);
           removeTopProfile();
 
-          console.log('🔔 Checking notificationsProfile for like...');
           const notificationsProfile = profile.Notifications
             ? profile.Notifications[0]
             : null;
 
-          console.log('notificationsProfile:', notificationsProfile);
-
           if (notificationsProfile && notificationsProfile.likes) {
-            console.log('📤 Sending "New Like" notification...');
             try {
               await axios.post(
                 'https://marhaba-server.onrender.com/api/notifications/send',
@@ -370,7 +305,6 @@ const FeedScreen = () => {
                   body: 'Someone liked your profile!',
                 },
               );
-              console.log('✅ Notification sent to liked profile');
             } catch (err) {
               console.error('❌ Failed to send "New Like" notification:', err);
             }

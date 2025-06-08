@@ -62,6 +62,25 @@ const SubSettingsScreen = () => {
     }
   };
 
+  const getPlanName = () => {
+    switch (profile?.tier) {
+      case 1:
+        return 'Marhabah Free';
+      case 2:
+        return 'Marhabah Pro';
+      case 3:
+        return 'Marhabah Pro+';
+      default:
+        return 'Unknown';
+    }
+  };
+
+  const openManageSubscriptions = () => {
+    Linking.openURL('https://apps.apple.com/account/subscriptions').catch(err =>
+      console.error('Failed to open subscriptions URL:', err),
+    );
+  };
+
   return (
     <View style={[tailwind`flex-1`, {backgroundColor: themeColors.secondary}]}>
       <View
@@ -161,7 +180,7 @@ const SubSettingsScreen = () => {
           </Text>
           <ChevronsRight height={24} width={24} color={themeColors.primary} />
         </TouchableOpacity>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           onPress={() => setActiveModal('restore')}
           style={[
             tailwind`flex-row justify-between items-center p-4 mt-2 rounded-2`,
@@ -171,7 +190,7 @@ const SubSettingsScreen = () => {
             Restore Purchase
           </Text>
           <ChevronsRight height={24} width={24} color={themeColors.primary} />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         {/* Help & Support */}
         <Text style={tailwind`text-xl font-semibold text-gray-500 my-3`}>

@@ -18,6 +18,7 @@ import EditTraitsView from '../../Components/Views/EditTraitsView';
 import EitherOrEditView from '../../Components/Views/EitherOrView';
 import EditSocialsView from '../../Components/Views/EditSocialsView';
 import {useProfile} from '../../Context/ProfileContext';
+import EditVideoView from '../../Components/Views/EditVideoView';
 
 const EditProfileScreen = () => {
   const navigation = useNavigation();
@@ -40,6 +41,9 @@ const EditProfileScreen = () => {
       <ScrollView style={tailwind`flex-1 mb-8`}>
         <View style={tailwind`w-full flex flex-col`}>
           <EditPhotosView />
+        </View>
+        <View style={tailwind`w-full flex flex-col`}>
+          <EditVideoView />
         </View>
         <View style={tailwind`w-full flex flex-col`}>
           <EditProfileView />

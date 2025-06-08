@@ -52,7 +52,7 @@ const numColumns = 2;
 const imageSize = (width - itemPadding * (numColumns + 1)) / numColumns;
 
 const SearchScreent = () => {
-  const {profile, userId, location} = useProfile();
+  const {profile, userId, location, checkActiveSubscription} = useProfile();
   const {region, requestPermissions} = useLocation();
   const navigation = useNavigation();
 
@@ -89,6 +89,14 @@ const SearchScreent = () => {
     'Far (150 miles)': 150,
     'Everywhere (500+ miles)': 2000,
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      if (userId && profile) {
+        checkActiveSubscription(userId, profile);
+      }
+    }, [userId, profile]),
+  );
 
   useFocusEffect(
     useCallback(() => {

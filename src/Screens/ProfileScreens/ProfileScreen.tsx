@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {
   Image,
   ScrollView,
@@ -9,6 +9,7 @@ import {
   Linking,
   SafeAreaView,
   Dimensions,
+  Modal,
 } from 'react-native';
 import tailwind from 'twrnc';
 import {
@@ -16,18 +17,33 @@ import {
   ChevronsUp,
   ChevronsLeft,
   Settings,
+  Pause,
+  Play,
+  Video,
+  X,
 } from 'react-native-feather';
 import themeColors from '../../Utils/custonColors';
 import {countryFlagMap} from '../../Utils/FlagMaps';
 import SingleInfoFull from '../../Components/Info/SingleInfoFull';
 import {useProfile} from '../../Context/ProfileContext';
-import {useNavigation} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import RNVideo from 'react-native-video';
 
 const ProfileScreen = () => {
-  const {userId, profile} = useProfile();
+  const {userId, profile, checkActiveSubscription} = useProfile();
   const navigation = useNavigation();
   const [showFullProfile, setShowFullProfile] = useState(false);
   const [photoIndex, setPhotoIndex] = useState(0);
+  const [showVideoModal, setShowVideoModal] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (userId && profile) {
+        checkActiveSubscription(userId, profile);
+      }
+    }, [userId, profile]),
+  );
 
   const PLACEHOLDER = '—';
 
@@ -151,7 +167,7 @@ const ProfileScreen = () => {
             <TouchableOpacity
               onPress={() => navigation.navigate('Settings')}
               style={[
-                tailwind`absolute top-3 right-5 p-2 rounded-full`,
+                tailwind`absolute top-8 right-5 p-2 rounded-full`,
                 {backgroundColor: themeColors.lightGreyOpacity},
               ]}>
               <Settings height={24} width={24} color={'white'} />
@@ -680,7 +696,7 @@ const ProfileScreen = () => {
               </Text>
               {profile.tier === 1 || profile.tier === 2 ? (
                 <TouchableOpacity
-                  onPress={() => navigation.navigate('Profiles')}
+                  onPress={() => navigation.navigate('Profile')}
                   style={[
                     tailwind`px-5 py-4 rounded-lg mb-6`,
                     {
@@ -1080,6 +1096,22 @@ const ProfileScreen = () => {
       )}
       <View
         style={tailwind`absolute bottom-26 w-full flex flex-row items-center justify-center`}>
+        {about.videoIntro ? (
+          <TouchableOpacity
+            onPress={() => {
+              setShowVideoModal(true);
+            }}
+            style={[
+              tailwind`absolute left-2 p-2.7 rounded-full shadow-lg`,
+              {backgroundColor: themeColors.primary},
+            ]}>
+            <View style={tailwind`flex flex-row items-center`}>
+              <Video height={20} width={20} color={'white'} strokeWidth={2} />
+            </View>
+          </TouchableOpacity>
+        ) : (
+          <></>
+        )}
         <TouchableOpacity
           onPress={() => {
             setShowFullProfile(!showFullProfile);
@@ -1102,6 +1134,51 @@ const ProfileScreen = () => {
           )}
         </TouchableOpacity>
       </View>
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={showVideoModal}
+        onRequestClose={() => setShowVideoModal(false)}>
+        <View
+          style={tailwind`flex-1 bg-black bg-opacity-50 justify-center items-center`}>
+          <View
+            style={[
+              tailwind`w-11/12 h-10/12 rounded-2xl p-3 mb-3`,
+              {backgroundColor: themeColors.secondary},
+            ]}>
+            <View
+              style={tailwind`w-full flex flex-row items-center justify-between`}>
+              <Text style={tailwind`text-xl font-bold`}>Intro Video</Text>
+              <TouchableOpacity onPress={() => setShowVideoModal(false)}>
+                <X height={20} width={20} color={'red'} strokeWidth={3} />
+              </TouchableOpacity>
+            </View>
+            <View
+              style={tailwind`flex-1 relative bg-white mt-2 rounded-3 overflow-hidden`}>
+              <RNVideo
+                source={{uri: about.videoIntro}}
+                style={tailwind`w-full h-full rounded-3 overflow-hidden`}
+                resizeMode="cover"
+                paused={!isPlaying} // controlled by button
+                onEnd={() => setIsPlaying(false)} // stop when done
+              />
+
+              {/* Play/Pause button (center overlay) */}
+              <TouchableOpacity
+                onPress={() => setIsPlaying(prev => !prev)}
+                style={tailwind`absolute top-1/2 left-1/2 -mt-6 -ml-6 bg-black bg-opacity-50 rounded-full p-3`}>
+                {isPlaying ? (
+                  <Pause height={24} width={24} color="#fff" />
+                ) : (
+                  <Play height={24} width={24} color="#fff" />
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Video Player */}
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };

@@ -51,7 +51,8 @@ const numColumns = 2;
 const imageSize = (width - itemPadding * (numColumns + 1)) / numColumns;
 
 const LikeScreen = () => {
-  const {profile, userId, markLikesAsViewed} = useProfile();
+  const {profile, userId, markLikesAsViewed, checkActiveSubscription} =
+    useProfile();
   const navigation = useNavigation();
 
   console.log('like main profile', profile);
@@ -63,6 +64,14 @@ const LikeScreen = () => {
   const [error, setError] = useState<string | null>(null);
   const [viewType, setViewType] = useState<'likes' | 'views'>('likes');
   const [showDropdown, setShowDropdown] = useState(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (userId && profile) {
+        checkActiveSubscription(userId, profile);
+      }
+    }, [userId, profile]),
+  );
 
   const fetchLikes = useCallback(async (refreshing = false) => {
     if (!refreshing) {
@@ -226,6 +235,7 @@ const LikeScreen = () => {
           userId,
           userId2: userId2,
           lastMessage: '',
+          status: 'active',
           updatedAt: new Date().toISOString(),
         },
       );
@@ -244,8 +254,8 @@ const LikeScreen = () => {
     }
   };
 
-  const handleViewProfile = (userProfile: any) => {
-    if (profile?.tier === 3) {
+  const handleViewProfile = (userProfile: any, approved: boolean) => {
+    if (profile?.tier === 3 || profile?.tier === 2 || approved) {
       navigation.navigate('SingleProfile', {profile: userProfile});
       track(`Viewed profile (Likes Screen): ${userProfile.name}`, {
         targetUserId: userId,
@@ -271,17 +281,25 @@ const LikeScreen = () => {
     return (
       <TouchableWithoutFeedback
         onPress={() => {
-          handleViewProfile(item.likerProfile);
+          handleViewProfile(item.likerProfile, item.approved);
           track(`Viewed profile (Likes Screen): ${item.likerProfile.name}`, {
             targetUserId: userId,
           });
         }}>
-        <View style={styles.gridItem}>
+        <TouchableOpacity
+          onPress={() => {
+            handleViewProfile(item.likerProfile, item.approved);
+          }}
+          style={styles.gridItem}>
           <Image
             source={{uri: profilePicUrl}}
             style={styles.profileImage}
             resizeMode="cover"
-            blurRadius={profile?.tier === 3 || profile?.tier === 2 ? 0 : 15}
+            blurRadius={
+              profile?.tier === 3 || profile?.tier === 2 || item.approved
+                ? 0
+                : 15
+            }
           />
           <View
             style={[
@@ -299,7 +317,9 @@ const LikeScreen = () => {
                   <View
                     style={tailwind`w-full flex flex-row items-center justify-end`}>
                     <TouchableOpacity
-                      onPress={() => handleViewProfile(item.likerProfile)}
+                      onPress={() =>
+                        handleViewProfile(item.likerProfile, item.approved)
+                      }
                       style={tailwind`p-3 bg-slate-400 rounded-full`}>
                       <Maximize
                         height={20}
@@ -350,7 +370,7 @@ const LikeScreen = () => {
               />
             </View>
           )}
-        </View>
+        </TouchableOpacity>
       </TouchableWithoutFeedback>
     );
   };

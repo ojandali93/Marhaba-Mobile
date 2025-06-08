@@ -213,7 +213,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
               </View>
             ) : (
               <TouchableOpacity
-                onPress={() => navigation.navigate('Profiles')}
+                onPress={() => navigation.navigate('Profile')}
                 style={[
                   tailwind`px-5 py-4 rounded-lg mb-6`,
                   {
@@ -254,7 +254,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
               </View>
             ) : (
               <TouchableOpacity
-                onPress={() => navigation.navigate('Profiles')}
+                onPress={() => navigation.navigate('Profile')}
                 style={[
                   tailwind`px-5 py-4 rounded-lg mb-6`,
                   {
@@ -329,7 +329,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
               </View>
             ) : (
               <TouchableOpacity
-                onPress={() => navigation.navigate('Profiles')}
+                onPress={() => navigation.navigate('Profile')}
                 style={[
                   tailwind`px-5 py-4 rounded-lg mb-6`,
                   {
@@ -402,7 +402,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
               </View>
             ) : (
               <TouchableOpacity
-                onPress={() => navigation.navigate('Profiles')}
+                onPress={() => navigation.navigate('Profile')}
                 style={[
                   tailwind`px-5 py-4 rounded-lg mb-6`,
                   {
@@ -476,7 +476,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
               </View>
             ) : (
               <TouchableOpacity
-                onPress={() => navigation.navigate('Profiles')}
+                onPress={() => navigation.navigate('Profile')}
                 style={[
                   tailwind`px-5 py-4 rounded-lg mb-6`,
                   {
@@ -550,7 +550,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
               </View>
             ) : (
               <TouchableOpacity
-                onPress={() => navigation.navigate('Profiles')}
+                onPress={() => navigation.navigate('Profile')}
                 style={[
                   tailwind`px-5 py-4 rounded-lg mb-6`,
                   {
@@ -624,7 +624,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
               </View>
             ) : (
               <TouchableOpacity
-                onPress={() => navigation.navigate('Profiles')}
+                onPress={() => navigation.navigate('Profile')}
                 style={[
                   tailwind`px-5 py-4 rounded-lg mb-6`,
                   {
@@ -698,7 +698,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
               </View>
             ) : (
               <TouchableOpacity
-                onPress={() => navigation.navigate('Profiles')}
+                onPress={() => navigation.navigate('Profile')}
                 style={[
                   tailwind`px-5 py-4 rounded-lg mb-6`,
                   {
@@ -772,7 +772,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
               </View>
             ) : (
               <TouchableOpacity
-                onPress={() => navigation.navigate('Profiles')}
+                onPress={() => navigation.navigate('Profile')}
                 style={[
                   tailwind`px-5 py-4 rounded-lg mb-6`,
                   {

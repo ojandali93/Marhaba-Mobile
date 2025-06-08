@@ -7,11 +7,12 @@ import React, {
 } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import {PermissionsAndroid, Platform} from 'react-native';
+import {BackHandler, Linking, PermissionsAndroid, Platform} from 'react-native';
 import Geolocation from '@react-native-community/geolocation';
 import {initializeSocket} from '../Services/socket';
 import {Alert} from 'react-native';
 import {identify, setUserId} from '@amplitude/analytics-react-native';
+import * as RNIap from 'react-native-iap';
 
 interface ProfileContextType {
   profile: any | null;
@@ -55,6 +56,11 @@ interface ProfileContextType {
   interactions: any[];
   unreadMap: {[key: string]: number};
   setUnreadMap: (unreadMap: {[key: string]: number}) => void;
+  checkActiveSubscription: (userId: string, profile: any) => Promise<void>;
+  weeklyLikeCount: number;
+  maxLikesPerWeek: number;
+  likesThisWeek: number;
+  fetchWeeklyLikeCount: (userId: string, tier: number) => Promise<void>;
 }
 
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
@@ -81,6 +87,10 @@ export const ProfileProvider = ({children}: {children: React.ReactNode}) => {
   const [unViewedInteractions, setUnViewedInteractions] =
     useState<boolean>(false);
 
+  const [weeklyLikeCount, setWeeklyLikeCount] = useState<number>(0);
+  const [maxLikesPerWeek, setMaxLikesPerWeek] = useState<number>(7);
+  const [likesThisWeek, setLikesThisWeek] = useState<number>(0);
+
   const grabUserProfile = async (userId: string) => {
     try {
       const response = await axios.get(
@@ -92,6 +102,67 @@ export const ProfileProvider = ({children}: {children: React.ReactNode}) => {
       }
     } catch (error) {
       console.error('No Profile Found:', error);
+    }
+  };
+
+  const fetchWeeklyLikeCount = async (userId: string, tier: number) => {
+    try {
+      const response = await axios.get(
+        `https://marhaba-server.onrender.com/api/user/weeklyStats/${userId}`,
+      );
+
+      const likeCount = response.data?.data?.likesSentThisWeek ?? 0;
+
+      setWeeklyLikeCount(likeCount);
+      console.log('👍 Weekly Likes:', likeCount);
+
+      // Set max likes based on tier
+      let maxLikes;
+      if (profile?.tier === 1) maxLikes = 7;
+      else if (profile?.tier === 2) maxLikes = 12;
+      else if (profile?.tier === 3) maxLikes = 20;
+
+      setMaxLikesPerWeek(maxLikes);
+
+      setLikesThisWeek(maxLikes - likeCount);
+    } catch (err) {
+      console.error('❌ Error fetching weekly like count:', err);
+      setWeeklyLikeCount(0);
+    }
+  };
+
+  const checkActiveSubscription = async (userId, profile) => {
+    try {
+      // 1️⃣ Get active purchases from App Store
+      const purchases = await RNIap.getAvailablePurchases();
+
+      // 2️⃣ Extract active product IDs
+      const activeProductIds = purchases.map(p => p.productId);
+
+      // 3️⃣ Map productId to tier
+      let newTier = 1; // Free by default
+
+      if (activeProductIds.includes('marhabah_pro_plus_899')) {
+        newTier = 3;
+      } else if (activeProductIds.includes('marhabah_pro_499')) {
+        newTier = 2;
+      }
+
+      // 4️⃣ If different than current tier → update DB
+      if (newTier !== profile?.tier) {
+        const response = await axios.put(
+          'https://marhaba-server.onrender.com/api/user/upgrade',
+          {
+            userId,
+            tier: newTier,
+          },
+        );
+
+        // Optional: You can also refresh profile here if needed
+        // await grabUserProfile(userId);
+      }
+    } catch (err) {
+      console.error('❌ Error checking active subscription:', err);
     }
   };
 
@@ -226,19 +297,82 @@ export const ProfileProvider = ({children}: {children: React.ReactNode}) => {
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
         );
+
         if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+          Alert.alert(
+            'Location Permission Needed',
+            'Please enable location services in your phone settings to use Marhabah properly.',
+            [
+              {
+                text: 'Cancel',
+                style: 'cancel',
+                onPress: () => {
+                  // Optional: close app or navigate to splash/login
+                  BackHandler.exitApp();
+                },
+              },
+              {
+                text: 'Open Settings',
+                onPress: () => {
+                  Linking.openSettings();
+                },
+              },
+            ],
+          );
           return;
         }
       }
+
       Geolocation.getCurrentPosition(
         position => {
           addLocation(userId, position?.coords);
         },
-        error => console.log(error),
+        error => {
+          console.log('❌ Location error:', error);
+
+          if (error.code === 1) {
+            // PERMISSION_DENIED
+            Alert.alert(
+              'Location Permission Needed',
+              'Please enable location services in your phone settings to use Marhabah properly.',
+              [
+                {
+                  text: 'Cancel',
+                  style: 'cancel',
+                  onPress: () => {
+                    BackHandler.exitApp();
+                  },
+                },
+                {
+                  text: 'Open Settings',
+                  onPress: () => {
+                    Linking.openSettings();
+                  },
+                },
+              ],
+            );
+          } else if (error.code === 2) {
+            // POSITION_UNAVAILABLE
+            Alert.alert(
+              'Location Unavailable',
+              'Unable to retrieve your location. Please try again later.',
+            );
+          } else if (error.code === 3) {
+            // TIMEOUT
+            Alert.alert(
+              'Location Timeout',
+              'Unable to retrieve location in time. Please check your connection and try again.',
+            );
+          }
+        },
         {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000},
       );
     } catch (error) {
-      console.log(error);
+      console.log('❌ Error in requestLocation:', error);
+      Alert.alert(
+        'Location Error',
+        'An unexpected error occurred while requesting your location.',
+      );
     }
   };
 
@@ -279,7 +413,6 @@ export const ProfileProvider = ({children}: {children: React.ReactNode}) => {
         },
       );
       if (response.data) {
-        console.log('matched profiles:', response.data.matches);
         setMatchedProfiles(response.data.matches);
       }
     } catch (error) {
@@ -401,6 +534,11 @@ export const ProfileProvider = ({children}: {children: React.ReactNode}) => {
         interactions,
         unreadMap,
         setUnreadMap,
+        checkActiveSubscription,
+        weeklyLikeCount,
+        maxLikesPerWeek,
+        likesThisWeek,
+        fetchWeeklyLikeCount,
       }}>
       {children}
     </ProfileContext.Provider>

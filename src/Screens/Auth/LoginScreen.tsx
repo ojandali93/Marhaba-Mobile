@@ -27,8 +27,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {identify, setUserId, track} from '@amplitude/analytics-react-native';
 import backgroundIMage from '../../Assets/m-flow-1-3.png';
 
-const screenHeight = Dimensions.get('window').height;
-const screenWidth = Dimensions.get('window').width;
+const screenHeight = Dimensions.get('screen').height;
+const screenWidth = Dimensions.get('screen').width;
 
 const LoginScreen = () => {
   const navigation = useNavigation();

@@ -5,19 +5,15 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {
   Grid,
   Heart,
-  Zap,
   MessageSquare,
   Shield,
   User,
-  FileText,
-  Home,
-  Star,
-  Check,
   Users,
+  Home,
+  FileText,
 } from 'react-native-feather';
 import tailwind from 'twrnc';
 import themeColors from '../Utils/custonColors';
-
 import FeedStackNavigation from './FeedStackNavigation';
 import ProfileStackNavigation from './ProfileStackNavigation';
 import LikeStackNavigation from './LikeStackNavigation';
@@ -26,16 +22,14 @@ import SearchStackNavigation from './SearchStackNavigation';
 import AdminReviewScreen from '../Screens/HomeScreens/AdminReviewScreen';
 import {useProfile} from '../Context/ProfileContext';
 import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
-import LoadDtabaseScreen from '../Screens/HomeScreens/LoadDtabaseScreen';
-import SocialStackNavigation from './SocialStackNavigation';
 
 const Tab = createBottomTabNavigator();
 
 const BottomTabNavigation = () => {
   const {unViewedInteractions, hasUnreadMessages, userId, profile} =
     useProfile();
-  const [isAdmin, setIsAdmin] = useState(false);
 
+  const [isAdmin, setIsAdmin] = useState(false);
   const [incompleteProfile, setIncompleteProfile] = useState(false);
 
   useEffect(() => {
@@ -73,7 +67,7 @@ const BottomTabNavigation = () => {
     }
   }, [userId, profile]);
 
-  const transparentScreens = [''];
+  const transparentScreens = []; // No transparent screens used currently
 
   const getTabBarStyle = route => {
     const focusedRoute = getFocusedRouteNameFromRoute(route) ?? route.name;
@@ -115,8 +109,9 @@ const BottomTabNavigation = () => {
 
   return (
     <Tab.Navigator screenOptions={screenOptions}>
+      {/* Feed */}
       <Tab.Screen
-        name="Feeds"
+        name="Feed"
         component={FeedStackNavigation}
         options={({route}) => ({
           tabBarIcon: ({focused}) => (
@@ -126,6 +121,8 @@ const BottomTabNavigation = () => {
           ),
         })}
       />
+
+      {/* List */}
       <Tab.Screen
         name="List"
         component={LikeStackNavigation}
@@ -135,15 +132,17 @@ const BottomTabNavigation = () => {
               {renderIcon(Users, focused)}
               {unViewedInteractions && (
                 <View
-                  style={tailwind`absolute top--.25 right--1 w-2.5 h-2.5 bg-red-500 rounded-full`}
+                  style={tailwind`absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full`}
                 />
               )}
             </View>
           ),
         })}
       />
+
+      {/* Search */}
       <Tab.Screen
-        name="Searchs"
+        name="Search"
         component={SearchStackNavigation}
         options={({route}) => ({
           tabBarIcon: ({focused}) => (
@@ -153,6 +152,8 @@ const BottomTabNavigation = () => {
           ),
         })}
       />
+
+      {/* Conversations */}
       <Tab.Screen
         name="Conversations"
         component={ConversationStackNavigation}
@@ -162,41 +163,32 @@ const BottomTabNavigation = () => {
               {renderIcon(MessageSquare, focused)}
               {hasUnreadMessages && (
                 <View
-                  style={tailwind`absolute top--.75 right--1 w-2.5 h-2.5 bg-red-500 rounded-full`}
+                  style={tailwind`absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full`}
                 />
               )}
             </View>
           ),
         })}
       />
+
+      {/* Admin (optional) */}
       {isAdmin && (
-        <>
-          <Tab.Screen
-            name="Admin"
-            component={AdminReviewScreen}
-            options={({route}) => ({
-              tabBarIcon: ({focused}) => (
-                <View style={tailwind`items-center`}>
-                  {renderIcon(Shield, focused)}
-                </View>
-              ),
-            })}
-          />
-          {/* <Tab.Screen
-            name="Database"
-            component={LoadDtabaseScreen}
-            options={({route}) => ({
-              tabBarIcon: ({focused}) => (
-                <View style={tailwind`items-center`}>
-                  {renderIcon(FileText, focused)}
-                </View>
-              ),
-            })}
-          /> */}
-        </>
+        <Tab.Screen
+          name="Admin"
+          component={AdminReviewScreen}
+          options={({route}) => ({
+            tabBarIcon: ({focused}) => (
+              <View style={tailwind`items-center`}>
+                {renderIcon(Shield, focused)}
+              </View>
+            ),
+          })}
+        />
       )}
+
+      {/* Profile */}
       <Tab.Screen
-        name="Profiles"
+        name="Profile"
         component={ProfileStackNavigation}
         options={({route}) => ({
           tabBarIcon: ({focused}) => (
@@ -204,7 +196,7 @@ const BottomTabNavigation = () => {
               {renderIcon(User, focused)}
               {incompleteProfile && (
                 <View
-                  style={tailwind`absolute top--.25 right--1 w-2.5 h-2.5 bg-yellow-400 rounded-full`}
+                  style={tailwind`absolute top-0 right-0 w-2.5 h-2.5 bg-orange-400 rounded-full`}
                 />
               )}
             </View>

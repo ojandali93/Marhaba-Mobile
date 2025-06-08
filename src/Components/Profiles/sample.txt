@@ -331,7 +331,7 @@
                   </Text>
                   {userProfile.tier === 1 || userProfile.tier === 2 ? (
                     <TouchableOpacity
-                      onPress={() => navigation.navigate('Profiles')}
+                      onPress={() => navigation.navigate('Profile')}
                       style={[
                         tailwind`px-5 py-4 rounded-lg mb-6`,
                         {
@@ -414,7 +414,7 @@
                     </Text>
                     {userProfile.tier === 1 || userProfile.tier === 2 ? (
                       <TouchableOpacity
-                        onPress={() => navigation.navigate('Profiles')}
+                        onPress={() => navigation.navigate('Profile')}
                         style={[
                           tailwind`px-5 py-4 rounded-lg mb-6`,
                           {
@@ -470,7 +470,7 @@
                     </Text>
                     {userProfile.tier === 1 || userProfile.tier === 2 ? (
                       <TouchableOpacity
-                        onPress={() => navigation.navigate('Profiles')}
+                        onPress={() => navigation.navigate('Profile')}
                         style={[
                           tailwind`px-5 py-4 rounded-lg`,
                           {
@@ -522,7 +522,7 @@
                   </Text>
                   {userProfile.tier === 1 || userProfile.tier === 2 ? (
                     <TouchableOpacity
-                      onPress={() => navigation.navigate('Profiles')}
+                      onPress={() => navigation.navigate('Profile')}
                       style={[
                         tailwind`px-5 py-4 rounded-lg mb-6`,
                         {
@@ -604,7 +604,7 @@
                   </Text>
                   {userProfile.tier === 1 || userProfile.tier === 2 ? (
                     <TouchableOpacity
-                      onPress={() => navigation.navigate('Profiles')}
+                      onPress={() => navigation.navigate('Profile')}
                       style={[
                         tailwind`px-5 py-4 rounded-lg mb-6`,
                         {

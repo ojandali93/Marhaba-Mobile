@@ -36,7 +36,7 @@ interface Conversation {
 const {width} = Dimensions.get('window');
 
 const Conversations = () => {
-  const {userId, unreadMap} = useProfile();
+  const {userId, profile, unreadMap, checkActiveSubscription} = useProfile();
   const navigation = useNavigation();
   const [loading, setLoading] = useState<boolean>(true);
   const [conversations, setConversations] = useState<Conversation[]>([]);
@@ -50,6 +50,14 @@ const Conversations = () => {
       });
       grabConversations();
     }, []),
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      if (userId && profile) {
+        checkActiveSubscription(userId, profile);
+      }
+    }, [userId, profile]),
   );
 
   const onRefresh = useCallback(() => {

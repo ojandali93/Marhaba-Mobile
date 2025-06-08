@@ -1,6 +1,6 @@
 import 'react-native-url-polyfill/auto';
 import React, {useEffect, useLayoutEffect, useState} from 'react';
-import {View, Text, ActivityIndicator, Alert} from 'react-native';
+import {View, Text, ActivityIndicator, Alert, StatusBar} from 'react-native';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {NavigationContainer} from '@react-navigation/native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
@@ -28,6 +28,8 @@ function App(): React.JSX.Element {
     fetchLikes,
     fetchUnreadMessages,
     profile,
+    checkActiveSubscription,
+    fetchWeeklyLikeCount,
   } = useProfile();
 
   const [loading, setLoading] = useState(true);
@@ -37,6 +39,13 @@ function App(): React.JSX.Element {
   useLayoutEffect(() => {
     initializeApp();
   }, []);
+
+  useEffect(() => {
+    if (profile?.userId) {
+      fetchWeeklyLikeCount(profile.userId, profile.tier);
+      checkActiveSubscription(profile.userId, profile);
+    }
+  }, [profile?.userId]);
 
   useEffect(() => {
     const fetchToken = async () => {
@@ -94,6 +103,7 @@ function App(): React.JSX.Element {
 
   return (
     <GestureHandlerRootView style={{flex: 1}}>
+      <StatusBar barStyle="dark-content" />
       <SafeAreaProvider>
         <NavigationContainer>
           {loading ? (

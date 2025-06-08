@@ -1,4 +1,4 @@
-import React, {useLayoutEffect, useState} from 'react';
+import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
 import {
   Image,
   ScrollView,
@@ -26,22 +26,37 @@ import {
   ChevronsUp,
   ChevronLeft,
   ChevronsLeft,
+  Pause,
+  Play,
+  Video,
+  Lock,
 } from 'react-native-feather';
 import themeColors from '../../Utils/custonColors';
 import {countryFlagMap} from '../../Utils/FlagMaps';
 import SingleInfoFull from '../../Components/Info/SingleInfoFull';
-import {useRoute, useNavigation} from '@react-navigation/native';
+import {
+  useRoute,
+  useNavigation,
+  useFocusEffect,
+} from '@react-navigation/native';
 import axios from 'axios';
 import {useProfile} from '../../Context/ProfileContext';
 import {calculateCompatibility} from '../../Utils/Functions/Comptability';
 import {track} from '@amplitude/analytics-react-native';
 import {getDistance} from 'geolib';
 import {getSharedSimilarities} from '../../Utils/Functions/Simlarities';
+import RNVideo from 'react-native-video';
+
 const SingleProfileScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const {profile} = route.params as {profile: any};
-  const {userId, profile: userProfile} = useProfile();
+  const {
+    userId,
+    profile: userProfile,
+    fetchWeeklyLikeCount,
+    likesThisWeek,
+  } = useProfile();
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [superlikeMessage, setSuperlikeMessage] = useState('');
@@ -64,6 +79,10 @@ const SingleProfileScreen = () => {
   const [decisionType, setDecisionType] = useState<'like' | 'dislike' | ''>('');
   const [selectedDecisionReason, setSelectedDecisionReason] = useState('');
   const [customDecisionReason, setCustomDecisionReason] = useState('');
+  const [showVideoModal, setShowVideoModal] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const [existingInteraction, setExistingInteraction] = useState<any>(null);
 
   const PLACEHOLDER = '—';
 
@@ -122,6 +141,27 @@ const SingleProfileScreen = () => {
 
   const photoUrl = photos?.[photoIndex]?.photoUrl;
 
+  useEffect(() => {
+    fetchInteraction();
+    createViewed(profileId);
+  }, []);
+
+  const fetchInteraction = async () => {
+    try {
+      const checkRes = await axios.get(
+        `https://marhaba-server.onrender.com/api/user/matchStatus/${userId}/${profileId}`,
+      );
+
+      if (checkRes.data?.data?.length > 0) {
+        setExistingInteraction(checkRes.data.data[0]);
+      } else {
+        setExistingInteraction(null);
+      }
+    } catch (error) {
+      console.error('❌ Error fetching interaction:', error);
+    }
+  };
+
   const handleImageTap = () => {
     if (photos.length <= 1) return;
     setPhotoIndex(prev => (prev + 1) % photos.length);
@@ -146,8 +186,6 @@ const SingleProfileScreen = () => {
   };
 
   const submitDecision = async () => {
-    console.log('submit decision');
-
     // Determine final reason
     const finalReason =
       selectedDecisionReason === 'Other'
@@ -168,10 +206,8 @@ const SingleProfileScreen = () => {
 
     // Like or Dislike logic
     if (decisionType === 'like') {
-      console.log('Calling likeProfile with reason:', finalReason);
       likeProfile(profileId, profile, finalReason);
     } else if (decisionType === 'dislike') {
-      console.log('Calling dislikeProfile with reason:', finalReason);
       dislikeProfile(profileId, finalReason);
     } else {
       console.warn('Unknown decision type:', decisionType);
@@ -199,7 +235,6 @@ const SingleProfileScreen = () => {
     track('Profile Disliked', {
       targetUserId: userId,
     });
-    console.log(`disliked profile: ${profileId}`);
     try {
       const checkRes = await axios.get(
         `https://marhaba-server.onrender.com/api/user/matchStatus/${userId}/${profileId}`,
@@ -224,7 +259,6 @@ const SingleProfileScreen = () => {
             approved_at: new Date().toISOString(),
           },
         );
-        createViewed(profileId);
         navigation.goBack();
         return;
       }
@@ -249,7 +283,6 @@ const SingleProfileScreen = () => {
         track('Profile disliked', {
           targetUserId: userId,
         });
-        createViewed(profileId);
         navigation.goBack();
       }
     } catch (error) {
@@ -266,7 +299,6 @@ const SingleProfileScreen = () => {
           viewed: profileId,
         },
       );
-      console.log(`✅ Created viewed with ${profileId}`);
     } catch (error) {
       console.error(`❌ Error creating conversation with ${profileId}:`, error);
     }
@@ -277,7 +309,6 @@ const SingleProfileScreen = () => {
       await axios.put(`https://marhaba-server.onrender.com/api/user/approved`, {
         id: interactionId,
       });
-      console.log(`✅ Approved match`);
     } catch (error) {
       console.error(`❌ Error approving match:`, error);
     }
@@ -291,10 +322,10 @@ const SingleProfileScreen = () => {
           userId: userId,
           userId2: profileId,
           lastMessage: '',
+          status: 'active',
           updatedAt: new Date().toISOString(),
         },
       );
-      console.log(`✅ Created conversation with ${profileId}`);
     } catch (error) {
       console.error(`❌ Error creating conversation with ${profileId}:`, error);
     }
@@ -305,33 +336,37 @@ const SingleProfileScreen = () => {
     profile: any,
     reason: string,
   ) => {
-    console.log(
-      `🚀 likeProfile called: profileId=${profileId}, reason=${reason}`,
-    );
+    fetchWeeklyLikeCount(profile.userId, profile.tier);
 
     track('Profile Liked', {
       targetUserId: userId,
     });
 
+    if (likesThisWeek === 0) {
+      track('Out of Likes', {
+        targetUserId: userId,
+      });
+
+      Alert.alert('Out of Likes', 'Upgrade to Pro to get more!', [
+        {text: 'Cancel', style: 'cancel'},
+        {
+          text: 'Upgrade',
+          onPress: () => navigation.navigate('Profile'),
+        },
+      ]);
+
+      return;
+    }
+
     try {
-      console.log(
-        `🔍 Checking existing interaction for profileId=${profileId}`,
-      );
       const checkRes = await axios.get(
         `https://marhaba-server.onrender.com/api/user/matchStatus/${userId}/${profileId}`,
       );
 
-      console.log('✅ matchStatus response:', checkRes.data);
-
       const existingInteraction = checkRes.data?.data?.[0];
-      console.log('🗂 existingInteraction:', existingInteraction);
 
       // === CASE 1: Already interacted -> convert to match
       if (existingInteraction) {
-        console.log(
-          `🔄 Updating interaction ID=${existingInteraction.id} to match`,
-        );
-
         const updatedRes = await axios.put(
           `https://marhaba-server.onrender.com/api/user/updateInteraction`,
           {
@@ -349,8 +384,6 @@ const SingleProfileScreen = () => {
           },
         );
 
-        console.log('✅ Updated interaction response:', updatedRes.data);
-
         track('Match Approved', {
           targetUserId: userId,
         });
@@ -360,15 +393,11 @@ const SingleProfileScreen = () => {
         setMatchedProfile(profile);
         setShowMatchModal(true);
 
-        console.log('🔔 Checking notificationsProfile for match...');
         const notificationsProfile = profile.Notifications
           ? profile.Notifications[0]
           : null;
 
-        console.log('notificationsProfile:', notificationsProfile);
-
         if (notificationsProfile && notificationsProfile.matches) {
-          console.log('📤 Sending "New Match" notification...');
           try {
             await axios.post(
               'https://marhaba-server.onrender.com/api/notifications/send',
@@ -378,7 +407,6 @@ const SingleProfileScreen = () => {
                 body: 'You have a new match!',
               },
             );
-            console.log('✅ Notification sent to liked profile');
           } catch (err) {
             console.error('❌ Failed to send "New Match" notification:', err);
           }
@@ -388,7 +416,6 @@ const SingleProfileScreen = () => {
       }
 
       // === CASE 2: No prior interaction -> create new "like"
-      console.log('✨ No existing interaction, creating new LIKE interaction');
 
       const response = await axios.post(
         `https://marhaba-server.onrender.com/api/user/interaction`,
@@ -406,27 +433,18 @@ const SingleProfileScreen = () => {
         },
       );
 
-      console.log('✅ New like interaction response:', response.data);
-
       if (response.data?.success) {
         track('Profile Liked', {
           targetUserId: userId,
         });
 
-        console.log(`✅ Profile liked successfully: profileId=${profileId}`);
-
-        createViewed(profileId);
         navigation.goBack();
 
-        console.log('🔔 Checking notificationsProfile for like...');
         const notificationsProfile = profile.Notifications
           ? profile.Notifications[0]
           : null;
 
-        console.log('notificationsProfile:', notificationsProfile);
-
         if (notificationsProfile && notificationsProfile.likes) {
-          console.log('📤 Sending "New Like" notification...');
           try {
             await axios.post(
               'https://marhaba-server.onrender.com/api/notifications/send',
@@ -436,7 +454,6 @@ const SingleProfileScreen = () => {
                 body: 'Someone liked your profile!',
               },
             );
-            console.log('✅ Notification sent to liked profile');
           } catch (err) {
             console.error('❌ Failed to send "New Like" notification:', err);
           }
@@ -1144,9 +1161,9 @@ const SingleProfileScreen = () => {
                 ]}>
                 Lifestyle Habits
               </Text>
-              {userProfile.tier === 1 || userProfile.tier === 2 ? (
+              {userProfile.tier === 1 ? (
                 <TouchableOpacity
-                  onPress={() => navigation.navigate('Profiles')}
+                  onPress={() => navigation.navigate('Profile')}
                   style={[
                     tailwind`px-5 py-4 rounded-lg mb-6`,
                     {
@@ -1165,8 +1182,8 @@ const SingleProfileScreen = () => {
                       tailwind`text-base  text-center mt-1`,
                       {color: 'white'},
                     ]}>
-                    Upgrade to Pro+ to view full profile insights like
-                    lifestyle, career, and more.
+                    Upgrade to Pro to view full profile insights like lifestyle,
+                    career, and more.
                   </Text>
                   <Text
                     style={[
@@ -1226,9 +1243,9 @@ const SingleProfileScreen = () => {
                   ]}>
                   Interests
                 </Text>
-                {userProfile.tier === 1 || userProfile.tier === 2 ? (
+                {userProfile.tier === 1 ? (
                   <TouchableOpacity
-                    onPress={() => navigation.navigate('Profiles')}
+                    onPress={() => navigation.navigate('Profile')}
                     style={[
                       tailwind`px-5 py-4 rounded-lg mb-6`,
                       {
@@ -1247,7 +1264,7 @@ const SingleProfileScreen = () => {
                         tailwind`text-base  text-center mt-1`,
                         {color: 'white'},
                       ]}>
-                      Upgrade to Pro+ to view full profile insights like
+                      Upgrade to Pro to view full profile insights like
                       lifestyle, career, and more.
                     </Text>
                     <Text
@@ -1283,7 +1300,7 @@ const SingleProfileScreen = () => {
                 </Text>
                 {userProfile.tier === 1 || userProfile.tier === 2 ? (
                   <TouchableOpacity
-                    onPress={() => navigation.navigate('Profiles')}
+                    onPress={() => navigation.navigate('Profile')}
                     style={[
                       tailwind`px-5 py-4 rounded-lg`,
                       {
@@ -1334,7 +1351,7 @@ const SingleProfileScreen = () => {
               </Text>
               {userProfile.tier === 1 || userProfile.tier === 2 ? (
                 <TouchableOpacity
-                  onPress={() => navigation.navigate('Profiles')}
+                  onPress={() => navigation.navigate('Profile')}
                   style={[
                     tailwind`px-5 py-4 rounded-lg mb-6`,
                     {
@@ -1415,7 +1432,7 @@ const SingleProfileScreen = () => {
               </Text>
               {userProfile.tier === 1 || userProfile.tier === 2 ? (
                 <TouchableOpacity
-                  onPress={() => navigation.navigate('Profiles')}
+                  onPress={() => navigation.navigate('Profile')}
                   style={[
                     tailwind`px-5 py-4 rounded-lg mb-6`,
                     {
@@ -1559,6 +1576,37 @@ const SingleProfileScreen = () => {
       )}
       <View
         style={tailwind`absolute bottom-22 w-full flex flex-row items-center justify-center`}>
+        {about.videoIntro && (
+          <TouchableOpacity
+            onPress={() => {
+              profile.tier !== 1
+                ? setShowVideoModal(true)
+                : navigation.navigate('Profile');
+            }}
+            style={[
+              tailwind`absolute left-2 p-2.7 rounded-full shadow-lg`,
+              {backgroundColor: themeColors.primary},
+            ]}>
+            {about.videoIntro ? (
+              <View style={tailwind`flex flex-row items-center`}>
+                {profile.tier !== 1 ? null : (
+                  <View
+                    style={tailwind`flex-1 absolute right--4.5 top--4.5 bg-stone-400 rounded-full p-1.5 flex flex-row items-center`}>
+                    <Lock
+                      height={10}
+                      width={10}
+                      color={'white'}
+                      strokeWidth={2}
+                    />
+                  </View>
+                )}
+                <Video height={20} width={20} color={'white'} strokeWidth={2} />
+              </View>
+            ) : (
+              <></>
+            )}
+          </TouchableOpacity>
+        )}
         <TouchableOpacity
           onPress={() => {
             setShowFullProfile(!showFullProfile);
@@ -1582,18 +1630,32 @@ const SingleProfileScreen = () => {
         </TouchableOpacity>
         <TouchableOpacity
           onPress={handleDislikeProfile}
+          disabled={existingInteraction?.targetInteraction === 'disliked'}
           style={[
             tailwind`p-2 rounded-full shadow-lg`,
-            {backgroundColor: isInteracting ? '#fca5a5' : '#f87171'},
+            {
+              backgroundColor:
+                existingInteraction?.targetInteraction === 'disliked'
+                  ? '#d1d5db' // Gray if disabled
+                  : isInteracting
+                  ? '#fca5a5'
+                  : '#f87171',
+            },
           ]}>
           <X height={20} width={20} color={'white'} strokeWidth={3} />
         </TouchableOpacity>
         <TouchableOpacity
           onPress={handleLikeProfile}
+          disabled={existingInteraction?.targetInteraction === 'liked'}
           style={[
             tailwind`py-2.5 rounded-2 shadow-lg mx-4 px-6`,
             {
-              backgroundColor: isInteracting ? '#6ee7b7' : themeColors.primary,
+              backgroundColor:
+                existingInteraction?.targetInteraction === 'liked'
+                  ? themeColors.lightGrey // Gray if disabled
+                  : isInteracting
+                  ? '#6ee7b7'
+                  : themeColors.primary,
             },
           ]}>
           <Text style={tailwind`text-white text-lg font-semibold`}>
@@ -1839,6 +1901,51 @@ const SingleProfileScreen = () => {
               </Text>
             </TouchableOpacity>
           </View>
+        </View>
+      </Modal>
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={showVideoModal}
+        onRequestClose={() => setShowVideoModal(false)}>
+        <View
+          style={tailwind`flex-1 bg-black bg-opacity-50 justify-center items-center`}>
+          <View
+            style={[
+              tailwind`w-11/12 h-10/12 rounded-2xl p-3 mb-3`,
+              {backgroundColor: themeColors.secondary},
+            ]}>
+            <View
+              style={tailwind`w-full flex flex-row items-center justify-between`}>
+              <Text style={tailwind`text-xl font-bold`}>Intro Video</Text>
+              <TouchableOpacity onPress={() => setShowVideoModal(false)}>
+                <X height={20} width={20} color={'red'} strokeWidth={3} />
+              </TouchableOpacity>
+            </View>
+            <View
+              style={tailwind`flex-1 relative bg-white mt-2 rounded-3 overflow-hidden`}>
+              <RNVideo
+                source={{uri: about.videoIntro}}
+                style={tailwind`w-full h-full rounded-3 overflow-hidden`}
+                resizeMode="cover"
+                paused={!isPlaying} // controlled by button
+                onEnd={() => setIsPlaying(false)} // stop when done
+              />
+
+              {/* Play/Pause button (center overlay) */}
+              <TouchableOpacity
+                onPress={() => setIsPlaying(prev => !prev)}
+                style={tailwind`absolute top-1/2 left-1/2 -mt-6 -ml-6 bg-black bg-opacity-50 rounded-full p-3`}>
+                {isPlaying ? (
+                  <Pause height={24} width={24} color="#fff" />
+                ) : (
+                  <Play height={24} width={24} color="#fff" />
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Video Player */}
         </View>
       </Modal>
       <Modal

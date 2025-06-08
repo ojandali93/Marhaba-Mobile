@@ -215,34 +215,43 @@ const PhotosScreen = () => {
       <View style={tailwind`w-11/12 h-10/12 flex`}>
         <View style={[tailwind`flex`, {marginTop: screenHeight * 0.07}]}>
           <View style={tailwind`mt-2`}>
-            <View style={tailwind`w-full flex flex-row items-center`}>
-              <TouchableWithoutFeedback
-                style={tailwind`w-20 h-20`}
+            <View
+              style={tailwind`w-full flex flex-row items-center justify-between`}>
+              <View style={tailwind`flex-1 flex flex-row items-center`}>
+                <TouchableWithoutFeedback
+                  style={tailwind`w-20 h-20`}
+                  onPress={() => {
+                    navigation.goBack();
+                  }}>
+                  <View>
+                    <ChevronsLeft
+                      height={30}
+                      width={30}
+                      color={themeColors.primary}
+                      style={tailwind`mr-1`}
+                    />
+                  </View>
+                </TouchableWithoutFeedback>
+                <Text
+                  style={[
+                    tailwind`text-3xl font-semibold`,
+                    {color: themeColors.primary},
+                  ]}>
+                  Photos
+                </Text>
+              </View>
+              <TouchableOpacity
                 onPress={() => {
-                  navigation.goBack();
+                  navigation.navigate('Photos');
                 }}>
-                <View style={tailwind``}>
-                  <ChevronsLeft
-                    height={30}
-                    width={30}
-                    color={themeColors.primary}
-                    style={tailwind`mr-1`}
-                  />
-                </View>
-              </TouchableWithoutFeedback>
-              <Text
-                style={[
-                  tailwind`text-3xl font-semibold`,
-                  {color: themeColors.primary},
-                ]}>
-                Photos
-              </Text>
+                <Text style={tailwind`text-sm text-red-500`}>Skip</Text>
+              </TouchableOpacity>
             </View>
-            <Text style={tailwind`text-sm mt-1`}>
-              Show off your personality.
+            <Text style={tailwind`text-sm mt-3`}>
+              Show off your best moments. You can upload more photos later.
             </Text>
             <Text style={tailwind`text-sm mt-1 text-red-500`}>
-              ** 1 image required **
+              ** Minimum 1 image required **
             </Text>
           </View>
         </View>
@@ -251,7 +260,7 @@ const PhotosScreen = () => {
           <View style={tailwind`flex-1 flex-row flex-wrap`}>
             {uploadedImageUrls.map((_, index) => (
               <View
-                style={tailwind`w-1/3 h-52 items-center justify-center p-1`}
+                style={tailwind`w-1/3 h-48 items-center justify-center p-1`}
                 key={index}>
                 <TouchableOpacity
                   onPress={() => handlePickImage(index)}
@@ -296,13 +305,14 @@ const PhotosScreen = () => {
             onPress={() => {
               navigation.popToTop();
             }}>
-            <View style={tailwind``}>
+            <View>
               <Text style={tailwind`text-base font-bold text-red-400`}>
                 Cancel
               </Text>
             </View>
           </TouchableWithoutFeedback>
         </View>
+
         <ContinueButton
           text={'Preferences'}
           click={redirectToPersonalityScreen}

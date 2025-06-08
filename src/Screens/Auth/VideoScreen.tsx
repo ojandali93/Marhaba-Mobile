@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState, useRef} from 'react';
 import {
   View,
   Text,
@@ -7,24 +7,36 @@ import {
   Modal,
   Dimensions,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import tailwind from 'twrnc';
 import themeColors from '../../Utils/custonColors';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
-import {ChevronsLeft, Camera} from 'react-native-feather';
+import {
+  ChevronsLeft,
+  Camera,
+  X,
+  Repeat,
+  Play,
+  Pause,
+} from 'react-native-feather';
 import ContinueButton from '../../Components/Buttons/ContinueButton';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {track} from '@amplitude/analytics-react-native';
 import Video from 'react-native-video';
 import {pickVideoFromGallery} from '../../Utils/Functions/ImageFunctions';
+import axios from 'axios';
 
 const screenHeight = Dimensions.get('window').height;
 
 const VideoScreen = () => {
   const navigation = useNavigation();
+  const videoRef = useRef(null);
 
   const [videoUri, setVideoUri] = useState<string | null>(null);
   const [showGuidelines, setShowGuidelines] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -45,25 +57,77 @@ const VideoScreen = () => {
   };
 
   const handlePickVideo = async () => {
+    setLoading(true);
     try {
       const video = await pickVideoFromGallery();
+      console.log('video from gallery', video);
       if (!video?.uri) return;
-
-      console.log('✅ Video picked:', video.uri);
-
-      setVideoUri(video.uri);
-      await AsyncStorage.setItem('videoIntro', video.uri);
+      if (video.duration < 14 || video.duration > 31) {
+        Alert.alert(
+          'Video duration',
+          'Please upload a video between 15 and 30 seconds.',
+        );
+        return;
+      }
+      const uploadedVideo = await uploadImageToServer(video.uri, 'video.mp4');
+      if (uploadedVideo) {
+        setVideoUri(uploadedVideo);
+        await AsyncStorage.setItem('videoIntro', uploadedVideo);
+        setIsPlaying(false);
+      }
+      setLoading(false);
     } catch (err) {
       console.error('Video pick error:', err);
+      setLoading(false);
     }
   };
 
-  const redirectToPersonalityScreen = () => {
+  const uploadImageToServer = async (
+    localUri: string,
+    originalFileName: string,
+  ) => {
+    try {
+      const formData = new FormData();
+      formData.append('file', {
+        uri: localUri,
+        name: originalFileName || 'video.mp4',
+        type: 'video/quicktime',
+      } as any);
+
+      const response = await axios.post(
+        'https://marhaba-server.onrender.com/api/account/uploadVideo',
+        formData,
+        {
+          headers: {'Content-Type': 'multipart/form-data'},
+          maxContentLength: Infinity,
+          maxBodyLength: Infinity,
+        },
+      );
+
+      console.log('response', response.data.url);
+      return response.data.success ? response.data.url : null;
+    } catch (error) {
+      console.error('Upload failed:', error);
+      setLoading(false);
+      return null;
+    }
+  };
+
+  const togglePlayPause = () => {
+    setIsPlaying(prev => !prev);
+  };
+
+  const handleRemoveVideo = async () => {
+    setVideoUri(null);
+    setIsPlaying(false);
+  };
+
+  const redirectToPersonalityScreen = async () => {
     if (!videoUri) {
       Alert.alert('Add a video', 'You need to upload a video to continue.');
       return;
     }
-
+    await AsyncStorage.setItem('videoIntro', videoUri);
     track('Video Completed');
     navigation.navigate('Photos');
   };
@@ -90,29 +154,6 @@ const VideoScreen = () => {
                 </Text>{' '}
                 you can make! Keep it natural and show your personality.
               </Text>
-
-              <Text style={tailwind`text-sm mb-3 text-red-600`}>
-                All videos are reviewed before an account is approved. Follow
-                the guidelines below to ensure your account is approved.
-              </Text>
-
-              <Text style={tailwind`text-base font-bold mb-1`}>
-                ✅ Recommended:
-              </Text>
-              <Text style={tailwind`text-sm text-gray-800`}>
-                • 30-60 seconds long{'\n'}• Clear and good lighting{'\n'}• Speak
-                naturally or share about yourself{'\n'}• Smile and have fun!
-              </Text>
-
-              <Text style={tailwind`text-base font-bold mt-4 mb-1`}>
-                🚫 Avoid:
-              </Text>
-              <Text style={tailwind`text-sm text-gray-800`}>
-                • Videos under 15 seconds or over 60 seconds{'\n'}•
-                Inappropriate content{'\n'}• Group videos{'\n'}• AI / deepfake /
-                filters hiding identity
-              </Text>
-
               <TouchableOpacity
                 onPress={() => setShowGuidelines(false)}
                 style={[
@@ -141,7 +182,7 @@ const VideoScreen = () => {
                   onPress={() => {
                     navigation.goBack();
                   }}>
-                  <View style={tailwind``}>
+                  <View>
                     <ChevronsLeft
                       height={30}
                       width={30}
@@ -166,35 +207,74 @@ const VideoScreen = () => {
               </TouchableOpacity>
             </View>
             <Text style={tailwind`text-sm mt-3`}>
-              Upload a 15 - 60 second video introduction.
+              Upload a 15 - 30 second video introduction.
             </Text>
           </View>
         </View>
 
         {/* Video Picker */}
-        <View style={tailwind`w-full flex items-center  mt-5`}>
+        <View style={tailwind`w-full flex items-center mt-5`}>
           <TouchableOpacity
-            onPress={handlePickVideo}
+            onPress={videoUri ? togglePlayPause : handlePickVideo}
+            activeOpacity={0.9}
             style={[
-              tailwind`w-full h-22/24 border-2 flex items-center justify-center rounded-3`,
+              tailwind`w-full h-22/24 border-2 items-center justify-center rounded-3 overflow-hidden relative`,
               {
                 borderColor: themeColors.primary,
                 backgroundColor: themeColors.secondary,
               },
             ]}>
             {videoUri ? (
-              <Video
-                source={{uri: videoUri}}
-                style={tailwind`w-full h-full rounded-2 overflow-hidden`}
-                controls
-                resizeMode="contain"
-              />
+              <>
+                <Video
+                  ref={videoRef}
+                  source={{uri: videoUri}}
+                  style={tailwind`w-full h-full`}
+                  paused={!isPlaying}
+                  resizeMode="cover"
+                />
+
+                {/* Play/Pause Button (center) */}
+                <TouchableOpacity
+                  onPress={togglePlayPause}
+                  style={tailwind`absolute top-1/2 left-1/2 -mt-6 -ml-6 bg-black bg-opacity-50 rounded-full p-3`}>
+                  {isPlaying ? (
+                    <Pause height={24} width={24} color="#fff" />
+                  ) : (
+                    <Play height={24} width={24} color="#fff" />
+                  )}
+                </TouchableOpacity>
+
+                {/* Remove Button (top-left) */}
+                <TouchableOpacity
+                  onPress={handleRemoveVideo}
+                  style={tailwind`absolute top-2 left-2 bg-black bg-opacity-50 rounded-full p-2`}>
+                  <X height={18} width={18} color="#fff" />
+                </TouchableOpacity>
+
+                {/* Replace Button (top-right) */}
+                <TouchableOpacity
+                  onPress={handlePickVideo}
+                  style={tailwind`absolute top-2 right-2 bg-black bg-opacity-50 rounded-full p-2`}>
+                  <Repeat height={18} width={18} color="#fff" />
+                </TouchableOpacity>
+              </>
             ) : (
               <>
-                <Camera height={24} width={24} color={themeColors.primary} />
-                <Text style={tailwind` text-base mt-2`}>
-                  Tap to select video
-                </Text>
+                {loading ? (
+                  <ActivityIndicator size="small" color={themeColors.primary} />
+                ) : (
+                  <>
+                    <Camera
+                      height={24}
+                      width={24}
+                      color={themeColors.primary}
+                    />
+                    <Text style={tailwind` text-base mt-2`}>
+                      Tap to select video
+                    </Text>
+                  </>
+                )}
               </>
             )}
           </TouchableOpacity>

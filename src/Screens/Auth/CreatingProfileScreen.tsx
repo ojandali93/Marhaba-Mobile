@@ -25,7 +25,8 @@ const CreatingProfileScreen = () => {
           [{text: 'OK'}],
         );
 
-        // await AsyncStorage.clear();
+        await clearSignupStorage();
+        // await AsyncStoragawait clearSignupStorage();e.clear();
         navigation.navigate('Login');
       })();
     }, 6000); // 20 seconds
@@ -135,6 +136,7 @@ const CreatingProfileScreen = () => {
     const gender = await AsyncStorage.getItem('E_gender');
     const height = await AsyncStorage.getItem('E_height');
     const backgroundArray = await AsyncStorage.getItem('BG_Background');
+    const videoIntro = await AsyncStorage.getItem('videoIntro');
     const background = JSON.parse(backgroundArray);
     const backgroundString =
       background.length > 1 ? background.join(',') : background;
@@ -149,6 +151,7 @@ const CreatingProfileScreen = () => {
         gender,
         height,
         background: backgroundString,
+        videoIntro,
       })
       .then(response => {
         track('About Created');
@@ -525,6 +528,83 @@ const CreatingProfileScreen = () => {
       console.log('notification response:', data);
     } catch (error) {
       console.log('❌ Server responded with status:', error.error);
+    }
+  };
+
+  const clearSignupStorage = async () => {
+    try {
+      const signupKeys = [
+        // Account
+        'SU_email',
+        'SU_password',
+        'SU_phone',
+
+        // Essentials
+        'E_name',
+        'E_dob',
+        'E_gender',
+        'E_height',
+
+        // Background
+        'BG_Background',
+
+        // Looking For
+        'LF_Intentions',
+        'LF_Timeline',
+        'LF_Marriage',
+        'LF_MarriageStatus',
+        'LF_LongDistance',
+        'LF_Relocate',
+        'LF_FirstStep',
+
+        // Photos
+        'images',
+
+        // Preferences
+        'PR_Gender',
+        'PR_Radius',
+        'PR_Views',
+        'PR_Sect',
+        'PR_Religion',
+        'PR_AgeMin',
+        'PR_AgeMax',
+        'PR_Background',
+
+        // Prompts
+        'T0_WhoAmI',
+        'T0_WhatMakesMe',
+        'T1_Weekends',
+        'T1_Friends',
+        'T1_Mastger',
+        'T1_MakeTime',
+        'T1_Daily',
+        'T2_Love',
+        'T2_Faith',
+        'T2_Appreciate',
+        'T2_Lifestyle',
+        'T3_Refuse',
+        'T3_Show',
+        'T3_Grown',
+        'T3_Life',
+        'T4_Moment',
+        'T4_Deeply',
+        'T4_Partner',
+        'T4_Lifelong',
+
+        // Habits
+        'LFH_Smoking',
+        'LFH_Drinking',
+        'LFH_HasKids',
+        'LFH_WantsKids',
+        'LFH_Sleep',
+        'LFH_Exercise',
+        'LFH_Diet',
+      ];
+
+      await AsyncStorage.multiRemove(signupKeys);
+      console.log('✅ Signup flow data cleared!');
+    } catch (error) {
+      console.error('❌ Error clearing signup data:', error);
     }
   };
 
