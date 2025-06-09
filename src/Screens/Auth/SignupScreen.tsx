@@ -111,8 +111,7 @@ const SignupScreen = () => {
     verify.length > 0 &&
     validEmail &&
     validPassowrd &&
-    validVerify &&
-    phone.length > 0
+    validVerify
       ? storeNextScreen()
       : Alert.alert(
           'Requirements',
@@ -235,11 +234,12 @@ const SignupScreen = () => {
                       fieldName="Phone"
                       label="Phone"
                       value={phone}
-                      changeText={(text: string) =>
-                        setPhone(formatPhoneNumber(text))
-                      }
+                      changeText={(text: string) => {
+                        setPhone(formatPhoneNumber(text));
+                      }}
                       secure={false}
                       valid={false}
+                      optional
                     />
                   </View>
                 </View>

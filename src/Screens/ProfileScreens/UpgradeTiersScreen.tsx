@@ -43,7 +43,7 @@ const tiers = [
   {
     name: 'Marhabah Pro',
     price: '$4.99 / week',
-    productId: 'marhabah_pro_499',
+    productId: 'mbs_pro',
     tierNumber: 2,
     perks: [
       '12 Likes / Week',
@@ -58,7 +58,8 @@ const tiers = [
   {
     name: 'Marhabah Pro+',
     price: '$8.99 / week',
-    productId: 'marhabah_pro_plus_899',
+    originalPrice: '12.99 / week',
+    productId: 'mbs_pro_plus',
     tierNumber: 3,
     perks: [
       '20 Likes / Week',
@@ -128,8 +129,8 @@ const UpgradeTiersScreen = () => {
     } catch (err) {
       console.error('❌ Error fetching products:', err);
       Alert.alert(
-        'Error Fetching Products',
-        err?.message || JSON.stringify(err),
+        'Purchase',
+        'Could not complete purchase. Please try again later.',
       );
     }
   };
@@ -164,7 +165,7 @@ const UpgradeTiersScreen = () => {
 
       console.log('✅ Receipt verification response:', response.data);
 
-      Alert.alert('Success', 'Subscription purchase completed!');
+      navigation.goBack();
     } catch (err) {
       console.log('❌ Purchase error:', err);
       Alert.alert(

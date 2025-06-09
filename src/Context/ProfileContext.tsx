@@ -135,16 +135,18 @@ export const ProfileProvider = ({children}: {children: React.ReactNode}) => {
     try {
       // 1️⃣ Get active purchases from App Store
       const purchases = await RNIap.getAvailablePurchases();
+      console.log('👍 Purchases:', purchases);
 
       // 2️⃣ Extract active product IDs
       const activeProductIds = purchases.map(p => p.productId);
+      console.log('👍 Active Product IDs:', activeProductIds);
 
       // 3️⃣ Map productId to tier
       let newTier = 1; // Free by default
 
-      if (activeProductIds.includes('marhabah_pro_plus_899')) {
+      if (activeProductIds.includes('mbs_pro_plus')) {
         newTier = 3;
-      } else if (activeProductIds.includes('marhabah_pro_499')) {
+      } else if (activeProductIds.includes('mbs_pro')) {
         newTier = 2;
       }
 
@@ -160,6 +162,7 @@ export const ProfileProvider = ({children}: {children: React.ReactNode}) => {
 
         // Optional: You can also refresh profile here if needed
         // await grabUserProfile(userId);
+        grabUserProfile(userId);
       }
     } catch (err) {
       console.error('❌ Error checking active subscription:', err);

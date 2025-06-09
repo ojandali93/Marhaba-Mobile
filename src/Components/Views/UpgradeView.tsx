@@ -34,6 +34,7 @@ const tiers = [
     priceAmount: 9.99,
     price: '$9.99/mo',
     originalPrice: '',
+    productId: 'mbs_pro',
     features: [
       'Unlimited Likes',
       '15 Super Likes / Week',
@@ -48,6 +49,7 @@ const tiers = [
     price: '$24.99/mo',
     priceAmount: 24.99,
     originalPrice: '$34.99/mo',
+    productId: 'mbs_pro_plus',
     features: [
       'Everything in Pro',
       '20 Super Likes / Week',
@@ -63,14 +65,11 @@ const tiers = [
 ];
 
 const UpgradeView = ({updateTab}) => {
-  const {profile} = useProfile();
+  const {profile, grabUserProfile} = useProfile();
   const currentTier = profile?.data?.tier || 1;
   const [availableSubs, setAvailableSubs] = useState<RNIap.Subscription[]>([]);
 
-  const productIds = React.useMemo(
-    () => ['marhabah_pro_subscriptions', 'marhabah_pro_plus_subscriptions'],
-    [],
-  );
+  const productIds = React.useMemo(() => ['mbs_pro', 'mbs_pro_plus'], []);
 
   useEffect(() => {
     track('Viewed Upgrade Screen', {
@@ -112,7 +111,6 @@ const UpgradeView = ({updateTab}) => {
       const receipt = purchase.transactionReceipt;
       if (receipt) {
         console.log('✅ Purchase complete:', purchase);
-
         try {
           const res = await fetch(
             'https://marhaba-server.onrender.com/api/subscription/verify-subscription',
@@ -120,9 +118,11 @@ const UpgradeView = ({updateTab}) => {
               method: 'POST',
               headers: {'Content-Type': 'application/json'},
               body: JSON.stringify({
+                transactionDate: new Date().toISOString(),
                 userId: profile.userId,
-                receipt: receipt,
                 productId: purchase.productId,
+                transactionId: purchase.transactionId,
+                transactionReceipt: purchase.transactionReceipt,
               }),
             },
           );
@@ -130,6 +130,7 @@ const UpgradeView = ({updateTab}) => {
           const data = await res.json();
           if (data.success) {
             console.log('🎉 Receipt verified and stored.');
+            grabUserProfile(profile.userId);
             await RNIap.finishTransaction(purchase);
             Alert.alert('Success', 'Your subscription is now active!');
             updateTab('profile');

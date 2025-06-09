@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {
   View,
   ScrollView,
@@ -9,7 +9,7 @@ import {
   Linking,
 } from 'react-native';
 import tailwind from 'twrnc';
-import {useNavigation} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {ChevronsLeft, ChevronsRight} from 'react-native-feather';
 import themeColors from '../../Utils/custonColors';
 import {useProfile} from '../../Context/ProfileContext';
@@ -20,10 +20,11 @@ import EmailModalContent from '../../Components/Modals/EmailModalContent';
 import PasswordModalContent from '../../Components/Modals/PasswordModalContent';
 import PhoneModalContent from '../../Components/Modals/PhoneModalContent';
 import PastTransactionsModalContent from '../../Components/Modals/PastTransactionsModalContent';
+import axios from 'axios';
 
 const SubSettingsScreen = () => {
   const navigation = useNavigation();
-  const {profile} = useProfile();
+  const {profile, checkActiveSubscription} = useProfile();
   const [activeModal, setActiveModal] = useState<string | null>(null);
   const [password, setPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -32,6 +33,12 @@ const SubSettingsScreen = () => {
   const [verificationCode, setVerificationCode] = useState('');
 
   const openLink = (url: string) => Linking.openURL(url);
+
+  useFocusEffect(
+    useCallback(() => {
+      checkActiveSubscription(profile.userId, profile);
+    }, [profile.userId, profile]),
+  );
 
   const updatePasswordViaServer = async () => {
     if (newPassword !== verifyPassword) {
